@@ -1,0 +1,48 @@
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyNzM2NjM1OCwiZXhwIjoxNzQ4OTY2MzU4fQ.YxYo-KD0r0eAuRWcJCaGyqDBcbgNhpdGuoHSyxwalX8
+
+### Test API
+
+#### Get all tests
+GET {{baseUrl}}/test
+Authorization: Bearer {{accessToken}}   
+
+
+
+### add a test
+POST {{baseUrl}}/test
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "IELTS Practice Test",
+  "description": "A comprehensive IELTS practice test covering all four sections.",
+  "duration": 180,
+  "sections": [
+    {
+      "name": "reading",
+      "duration": 60,
+      "passages": ["66fc13b0932c5cd5f7e99c9a"]
+    },
+    {
+      "name": "listening",
+      "duration": 40,
+      "passages": ["66fc13b0932c5cd5f7e99c9a", "66fc13b0932c5cd5f7e99c9b"]
+    },
+    {
+      "name": "writing",
+      "questions": ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
+      "duration": 60
+    },
+    {
+      "name": "general",
+      "questions": ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
+      "duration": 20
+    }
+  ],
+  "difficulty": "B2",
+  "isPublished": false,
+  "attemptsAllowed": 1,
+  "availableFrom": "2024-10-09",
+  "availableUntil": "2024-10-10"
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>English Testing System</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Improve scroll performance
+      let ticking = false;
+      window.addEventListener("scroll", function (e) {
+        if (!ticking) {
+          window.requestAnimationFrame(function () {
+            // Your scroll handling code here, if any
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/2.4.1/eruda.min.js"></script>
+    <script>
+      eruda.init();
+    </script> -->
+  </body>
+</html>

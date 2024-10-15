@@ -1,0 +1,36 @@
+### Auth API
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyNjkzNDIyMywiZXhwIjoxNzI2OTM0MjUzfQ.3L4AsgsPCMHqHsl2Yv2fkm-b4nIU_zFVLH6TXbWmo44
+
+#### Signup a new user
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+ 
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "username": "johndoe"
+}
+
+
+#### Login a user
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+
+
+### user routes
+GET {{baseUrl}}/user
+Authorization: Bearer {{accessToken}}
+
+
+
+###search question
+GET {{baseUrl}}/question/search?type=multiple_choice&section=reading
+Authorization: Bearer {{accessToken}}
+

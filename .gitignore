@@ -1,0 +1,11 @@
+Backend/.venv/
+localhost+1-key.pem
+localhost+1.pem
+Backend/.env
+Backend/agents
+SpeakingAgent/EnglishExam
+Backend/.node_modules
+Frontend/.node_modules
+Backend/node_modules
+Frontend/node_modules
+Backend/uploads/audio

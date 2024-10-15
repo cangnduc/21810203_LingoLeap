@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-blue10 dark:bg-blue1 text-gray-600 dark:text-gray-400;
+  }
+}
+
+@layer components {
+  .theme-transition {
+    @apply transition-colors duration-300;
+  }
+  .bg-theme {
+    @apply custom-radial-gradient dark:dark-custom-radial-gradient theme-transition;
+  }
+  .text-theme {
+    @apply text-blue1 dark:text-blue7;
+  }
+  .btn-theme {
+    @apply bg-blue1 dark:bg-blue9 text-blue10 dark:text-blue1;
+  }
+}
+
+@layer utilities {
+  .custom-radial-gradient {
+    background: radial-gradient(circle at 50% 50%, #ffffff, #dcdee4);
+  }
+  .dark-custom-radial-gradient {
+    background: radial-gradient(circle at 50% 50%, #01003b, #000000);
+  }
+}
+
+/* Force scrollbar to always show */
+
+body {
+  width: 100%;
+  -webkit-overflow-scrolling: touch; /* For smoother scrolling on iOS devices */
+}
+
+.menu-icon {
+  width: 25px;
+  height: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.menu-icon span {
+  display: block;
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: #070707;
+  @apply dark:bg-blue10;
+  border-radius: 3px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: 0.5s ease-in-out;
+}
+
+.menu-icon span:nth-child(1) {
+  top: 0px;
+}
+
+.menu-icon span:nth-child(2) {
+  top: 8px;
+}
+
+.menu-icon span:nth-child(3) {
+  top: 16px;
+}
+
+.menu-icon.open span:nth-child(1) {
+  top: 9px;
+  transform: rotate(135deg);
+}
+
+.menu-icon.open span:nth-child(2) {
+  opacity: 0;
+  left: -60px;
+}
+
+.menu-icon.open span:nth-child(3) {
+  top: 9px;
+  transform: rotate(-135deg);
+}
+
+.menu-panel {
+  transition: opacity 0.3s ease-out;
+  opacity: 1;
+}
+
+.menu-panel.closing {
+  opacity: 0;
+}

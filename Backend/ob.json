@@ -1,0 +1,63 @@
+[
+  {
+    "job_request": {
+      "id": "AJ_Tr5uLVZC94oV",
+      "room": {
+        "sid": "RM_RJuum369feSA",
+        "name": "playground-sTku-7bg6",
+        "empty_timeout": 300,
+        "creation_time": 1726660466,
+        "enabled_codecs": [
+          { "mime": "video/H264" },
+          { "mime": "video/VP8" },
+          { "mime": "video/VP9" },
+          { "mime": "video/AV1" },
+          { "mime": "audio/red" },
+          { "mime": "audio/opus" }
+        ],
+        "version": {
+          "unix_micro": 1726660466768251
+        },
+        "departure_timeout": 20
+      },
+      "state": {
+        "updated_at": 1726660468077009945
+      }
+    },
+    "resuming": false,
+    "agent_name": ""
+  },
+  {
+    "theme": {
+      "extend": {
+        "dropShadow": {
+          "glow": [
+            "0 0px 20px rgba(255, 255, 255, 0.35)",
+
+            "0 0px 65px rgba(255, 255, 255, 0.2)"
+          ]
+        },
+        "colors": {
+          "darker_blue": "#000000",
+          "dark_blue": "#01003b",
+          "lighter_blue": "#d1e1e3",
+
+          "light_blue": "#e6f7ff",
+          "blue1": "#000000",
+
+          "blue2": "#1c1cff",
+          "blue3": "#3939ff",
+          "blue4": "#5555ff",
+
+          "blue5": "#7272ff",
+          "blue6": "#8f8fff",
+
+          "blue7": "#ababff",
+          "blue8": "#c8c8ff",
+          "blue9": "#e5e5ff",
+          "blue10": "#ffffff"
+        }
+      }
+    }
+  }
+]
