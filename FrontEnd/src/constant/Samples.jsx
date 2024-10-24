@@ -60,8 +60,19 @@ const sectionToTypeMap = {
     "matching",
     "ordering",
   ],
-  vocabulary: ["multiple_choice", "fill_in_the_blank", "matching"],
-  grammar: ["multiple_choice", "fill_in_the_blank", "true_false", "matching"],
+  vocabulary: [
+    "single_choice",
+    "multiple_choice",
+    "fill_in_the_blank",
+    "matching",
+  ],
+  grammar: [
+    "single_choice",
+    "multiple_choice",
+    "fill_in_the_blank",
+    "true_false",
+    "matching",
+  ],
 };
 const difficultyList = [
   { name: "A1", label: "A1" },

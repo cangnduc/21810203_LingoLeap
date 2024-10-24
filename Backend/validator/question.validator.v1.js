@@ -10,6 +10,7 @@ const BaseQuestionValidator = z.object({
   isPublic: z.boolean().default(true),
   difficulty: z.number().int().min(1).max(5),
   createdBy: ObjectIdSchema,
+  points: z.number().int().min(0).default(1),
 });
 
 // Multiple Choice Question Schema
@@ -71,8 +72,7 @@ const TrueFalseValidator = BaseQuestionValidator.extend({
 // Open-Ended Question Schema
 const OpenEndedValidator = BaseQuestionValidator.extend({
   type: z.literal("open_ended"),
-  maxWords: z.number().int().positive(),
-  sampleAnswer: z.string().max(1000),
+  prompt: z.string().max(1000),
 });
 
 // Essay Question Schema

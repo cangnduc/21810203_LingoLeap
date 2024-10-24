@@ -1,5 +1,5 @@
 @baseUrl = https://localhost:3000/api/v1
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyNzM2NjM1OCwiZXhwIjoxNzQ4OTY2MzU4fQ.YxYo-KD0r0eAuRWcJCaGyqDBcbgNhpdGuoHSyxwalX8
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y
 
 ### Question API
 
@@ -13,21 +13,13 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "section": "speaking",
-  "questions": [
-    {
+  "question": 
+    {"section": "speaking",
       "type": "open_ended",
       "questionText": "Tell me about a time when you had to solve a problem.",
       "prompt": "Describe a situation where you had to overcome a challenge and explain how you did it.",
       "difficulty": 5
-    },
-    {
-      "type": "open_ended",
-      "questionText": "Tell me about a time when you had to solve a problemsss.",
-      "prompt": "Describe a situation where you had tasdo overcome a challenge and explain how you did it.",
-      "difficulty": 4
     }
-  ]
 }
 
 ###
@@ -36,24 +28,99 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
   
 {
-  "section": "readings",
-  "title": "The Solar System",
-  "text": "The solar system consists of the Sun and the objects that orbit it...",
-  "url": "https://example.com/solar-system",
+  "passage": {
+    "passageType": "reading",
+    "title": "The Solar System",
+    "text": "The solar system consists of the Sun and the objects that orbit it"
+  },
+  "section": "reading",
   "questions": [
     {
-      "type": "single_choice",
+      "type": "multiple_choice",
       "questionText": "What is the center of the solar system?",
-      "answers": ["Earth", "Sun", "Moon"],
-      "correctAnswer": "Sun",
-      "difficulty": 3
+      "answers": ["Earth", "Sun", "Moon", "Mars"],
+      "correctAnswers": ["Sun", "Mars"],
+      "difficulty": 3,
+      "section": "reading"
     },
     {
-      "type": "multiple_choice",
+      "type": "single_choice",
       "questionText": "Which of the following are planets?",
-      "answers": ["Mars", "Venus", "Pluto","Mars"],
-      "correctAnswers": ["Mars", "Venus"],
-      "difficulty": 2
+      "answers": ["Mars", "Venus", "Pluto", "Saturn"],
+      "correctAnswer": "Mars",
+      "difficulty": 2,
+      "section": "reading"
+    },
+    {
+      "type": "true_false",
+      "statement": "The Sun is a planet.",
+      "questionText": "The Sun is a planet.",
+      "correctAnswer": false,
+      "difficulty": 1,
+      "section": "reading"
+    },
+    {
+     "type": "fill_in_the_blank",
+      "section": "reading",
+      "questionText": "Complete the sentence with the correct form of the verb.",
+      "instruction": "Fill in the blanks with the appropriate words.",
+      "difficulty": 3,
+      "text": "If I _____ (know) about the party, I _____ (bring) a gift.",
+      "blanks": [
+        { "index": 0, "correctAnswer": "had known" },
+        { "index" : 1, "correctAnswer": "would have brought" }
+      ]
+    },
+    {
+      "type": "ordering",
+      "section": "reading",
+      "questionText": "Put the following events in the correct order.",
+      "instruction": "conect the sentences into the correct order.",
+      "difficulty": 3,
+      "items": [
+        { "id": "1", "text": "The Sun rises." },
+        { "id": "2", "text": "The Sun sets." },
+        { "id": "3", "text": "The Moon appears." },
+        { "id": "4", "text": "The stars come out." }
+      ],
+      "correctOrder": ["1", "3", "4", "2"]
+    },
+    {
+      "type": "matching",
+      "section": "reading",
+      "questionText": "Match the words with their definitions.",
+      "instruction": "Drag and drop the words to their correct definitions.",
+      "difficulty": 4,
+      "leftColumn": [ {
+        "id": 1, "text": "Astronomy"
+      },
+      {
+        "id": 2, "text": "Galaxy"
+      },
+      {
+        "id": 3, "text": "Orbit"
+      },
+      {
+        "id": 4, "text": "Constellation"
+      }],
+      "rightColumn": [{
+        "id": "A", "text": "The study of celestial objects."
+      },
+      {
+        "id": "B", "text": "A system of stars, dust, and gas bound together by gravity."
+      },
+      {
+        "id": "C", "text": "The path an object takes around another object."
+      },
+      {
+        "id": "D", "text": "A group of stars that form a pattern or shape."
+      }],
+      "correctPairs": [
+        { "left": 1, "right": "A" },
+        { "left": 2, "right": "B" },
+        { "left": 3, "right": "C" },
+        { "left": 4, "right": "D" }
+      ]
     }
   ]
 }
@@ -64,14 +131,15 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
+  "question": {
   "type": "multiple_choice",
-  "section": "reading",
+  "section": "general",
   "questionText": "Which of the following are primary colors?",
   "instruction": "Select all that apply.",
   "difficulty": 2,
-  "answers": ["Red", "Green", "Blue"],
-  "correctAnswers": ["Red"],
-  "isPublic": true
+  "answers": ["Red", "Green", "Blue", "Yellow"],
+  "correctAnswers": ["Red", "Blue"],
+  "isPublic": true}
 }
 
 

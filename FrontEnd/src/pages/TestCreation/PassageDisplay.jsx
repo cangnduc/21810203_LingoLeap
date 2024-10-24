@@ -18,13 +18,13 @@ const PassageDisplay = ({
   onDeletePassage,
   selectedPassages,
   onSortChange,
+  onPassageScoreChange,
 }) => {
   const [expandedPassage, setExpandedPassage] = useState(null);
   const [questionPage, setQuestionPage] = useState(1);
   const questionsPerPage = 5; // You can adjust this number as needed
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
-
   const togglePassage = (passageId) => {
     setExpandedPassage(expandedPassage === passageId ? null : passageId);
     setQuestionPage(1); // Reset question page when toggling passage
@@ -87,6 +87,9 @@ const PassageDisplay = ({
                 Questions
               </th>
               <th scope="col" className="px-6 py-3">
+                Score
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Actions
               </th>
             </tr>
@@ -120,8 +123,26 @@ const PassageDisplay = ({
                     </button>
                   </td>
                   <td className="px-3 py-2">
+                    {selectedPassages.find((p) => p._id === passage._id) && (
+                      <input
+                        type="number"
+                        className=" border text-center w-[70%] "
+                        required
+                        min={0}
+                        max={100}
+                        defaultValue={1}
+                        onChange={(e) =>
+                          onPassageScoreChange(
+                            passage._id,
+                            parseInt(e.target.value)
+                          )
+                        }
+                      />
+                    )}
+                  </td>
+                  <td className="px-3 py-2">
                     <div className="flex justify-center">
-                      {selectedPassages.includes(passage._id) ? (
+                      {selectedPassages.find((p) => p._id === passage._id) ? (
                         <button
                           className="text-red-500 hover:text-red-700"
                           onClick={() => onDeletePassage(passage._id)}

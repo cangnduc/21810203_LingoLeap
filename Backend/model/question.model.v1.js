@@ -35,7 +35,12 @@ const baseQuestionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
+    points: {
+      type: Number,
+      required: [true, "Question points is required"],
+      min: [0, "Points cannot be negative"],
+      default: 1,
+    },
     difficulty: {
       type: Number,
       min: 1,
@@ -192,11 +197,7 @@ orderingSchema.path("correctOrder").validate(function (v) {
 const OrderingQuestion = BaseQuestion.discriminator("ordering", orderingSchema);
 // Open-Ended Question Schema
 const openEndedSchema = new mongoose.Schema({
-  maxWords: {
-    type: Number,
-    required: true,
-  },
-  sampleAnswer: {
+  prompt: {
     type: String,
     required: true,
     maxlength: [1000, "Sample answer cannot exceed 1000 characters"],
@@ -232,6 +233,11 @@ const EssayQuestion = BaseQuestion.discriminator("essay", essaySchema);
 // Passage Schema (for both Reading and Listening)
 const passageSchema = new mongoose.Schema(
   {
+    passageType: {
+      type: String,
+      enum: ["reading", "listening"],
+      required: [true, "Passage type is required"],
+    },
     title: {
       type: String,
       required: [true, "Passage title is required"],
@@ -301,8 +307,9 @@ const multipleChoiceInput = {
   instruction: "Select all that apply.",
   difficulty: 2,
   answers: ["Red", "Green", "Blue", "Yellow"],
-  correctAnswers: [true, false, true, false],
+  correctAnswers: ["Green", "Blue"],
   isPublic: true,
+  points: 1,
   createdBy: "60a3e5b9f5e6a81234567890", // ObjectId of the user
 };
 
@@ -358,6 +365,7 @@ const matchingInput = {
     { left: 2, right: "B" },
     { left: 3, right: "C" },
   ],
+  points: 1,
 };
 
 // 5. True/False Question
@@ -371,6 +379,7 @@ const trueFalseInput = {
   difficulty: 2,
   statement: "Climate change is a recent phenomenon.",
   correctAnswer: false,
+
   isPublic: true,
   createdBy: "60a3e5b9f5e6a81234567890",
 };

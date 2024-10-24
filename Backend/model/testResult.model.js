@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-
+const {
+  writingQuestionResultSchema,
+} = require("./writtingQuestionResult.model");
 const sectionScoreSchema = new mongoose.Schema({
   sectionType: {
     type: String,
@@ -53,7 +55,16 @@ const testResultSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Total score is required"],
       min: [0, "Total score cannot be negative"],
-      max: [100, "Total score cannot exceed 100"],
+    },
+    maxTotalScore: {
+      type: Number,
+      required: [true, "Maximum total score is required"],
+      min: [0, "Maximum total score cannot be negative"],
+    },
+    scorePercentage: {
+      type: Number,
+      min: [0, "Score percentage cannot be negative"],
+      max: [100, "Score percentage cannot exceed 100"],
     },
     totalQuestions: {
       type: Number,
@@ -62,6 +73,7 @@ const testResultSchema = new mongoose.Schema(
     },
     sectionScores: [sectionScoreSchema],
     questionScores: [questionScoreSchema],
+    writingQuestionResults: [writingQuestionResultSchema],
     feedback: { type: String },
     gradedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -92,9 +104,14 @@ testResultSchema.methods.calculateTotalScore = function () {
     (sum, qs) => sum + qs.score,
     0
   );
-  const maxPoints = this.totalQuestions * 100; // Assuming each question is worth 100 points
-  this.totalScore = (totalPoints / maxPoints) * 100;
-  return this.totalScore;
+  const maxPoints = this.questionScores.reduce(
+    (sum, qs) => sum + qs.maxScore,
+    0
+  );
+  this.totalScore = totalPoints;
+  this.maxTotalScore = maxPoints;
+  this.scorePercentage = (totalPoints / maxPoints) * 100;
+  return this.scorePercentage;
 };
 
 // Virtuals
@@ -105,31 +122,3 @@ testResultSchema.virtual("isPassing").get(function () {
 const TestResult = mongoose.model("TestResult", testResultSchema);
 
 module.exports = TestResult;
-
-//generate a test result for a test attempt as json object
-/*
-{
-  testAttempt: ObjectId,
-  user: ObjectId,
-  test: ObjectId,
-  totalScore: Number,
-  totalQuestions: Number,
-  sectionScores: [sectionScoreSchema],
-  questionScores: [questionScoreSchema],
-  feedback: String,
-
-}
-{
-  sectionScoreSchema: {
-    sectionType: String,
-    score: Number,
-    totalQuestions: Number,
-  }
-}
-{
-  questionScoreSchema: {
-    question: ObjectId,
-    score: Number,
-  }
-}
-*/

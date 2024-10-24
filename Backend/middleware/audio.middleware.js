@@ -38,12 +38,4 @@ const upload = multer({
   limits: { fileSize: 1000 * 1024 * 1024 }, // 10 MB file size limit
 });
 
-const simulateSlowUpload = (req, res, next) => {
-  upload.single("soundFile")(req, res, (err) => {
-    if (err) {
-      return next(err);
-    }
-  });
-};
-
-module.exports = simulateSlowUpload;
+module.exports = upload;

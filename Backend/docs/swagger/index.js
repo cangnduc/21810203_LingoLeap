@@ -1,5 +1,6 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const questionExamples = require("./examples/questionExamples");
 
 const options = {
   definition: {
@@ -98,6 +99,9 @@ const options = {
             },
           },
         },
+        listeningSection: {
+
+        },
         createQuestionRequest: {
           type: "object",
           properties: {
@@ -188,6 +192,11 @@ const options = {
                     type: "string",
                     description: "The prompt for speaking or writing questions",
                     required: ["speaking", "writing"],
+                  },
+                  soundFile: {
+                    type: "string",
+                    format: "binary",
+                    description: "Audio file for listening questions",
                   },
                 },
                 required: ["type", "questionText", "difficulty"],
@@ -282,6 +291,7 @@ const options = {
           },
         },
       },
+      examples: questionExamples,
     },
   },
   apis: ["./routes/*.js", "./models/*.js"],

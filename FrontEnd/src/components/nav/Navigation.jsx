@@ -12,7 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import MenuPanel from "./MenuPanel";
 import UserProfile from "./UserProfile";
 import NavLinks from "./NavLinks";
-import Logout from "./Logout";
+import logo from "../logo";
 export default function Navigation() {
   const isDarkMode = useSelector((state) => state.app.isDarkMode);
   const user = useSelector((state) => state.auth.user);
@@ -44,6 +44,7 @@ export default function Navigation() {
             <span></span>
             <span></span>
           </button>
+
           <Link
             to="/"
             className="text-2xl font-bold font-serif drop-shadow-glow"
@@ -51,6 +52,7 @@ export default function Navigation() {
             <span className="text-blue1 dark:text-blue10">Lingo</span>
             <span className="text-indigo-500">Leap</span>
           </Link>
+
           <div className="hidden md:flex items-center gap-2">
             {/* NavLinks */}
             <NavLinks className="py-2 font-bold hover:opacity-80 transition-opacity duration-200 relative px-5  " />

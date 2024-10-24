@@ -1,7 +1,7 @@
 import React from "react";
 import NavLinks from "./NavLinks";
 import { Link } from "react-router-dom";
-
+import logo from "../logo";
 export default function MenuPanel({ className, toggleMenu }) {
   return (
     <div className="flex-grow">

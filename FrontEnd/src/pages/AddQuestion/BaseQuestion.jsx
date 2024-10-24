@@ -24,7 +24,9 @@ export default function BaseQuestion() {
     reset,
     setValue,
     control,
-    trigger, // Add this
+    trigger,
+    clearErrors,
+    getValues,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(SectionBasedValidator),
@@ -103,6 +105,43 @@ export default function BaseQuestion() {
     reset(newDefaultValues);
   }, [section, reset]);
 
+  const resetForm = () => {
+    const defaultValues = {
+      section: "reading",
+      data: {
+        passage: {
+          passageType: "reading",
+          title: "",
+          text: "",
+          url: "",
+        },
+        questions: [
+          {
+            type: "single_choice",
+            questionText: "",
+            instruction: "",
+            difficulty: 1,
+            answers: ["", "", "", ""],
+            correctAnswer: "",
+            section: "reading",
+          },
+        ],
+      },
+    };
+
+    reset(defaultValues);
+    setAudioPreviewUrl(null);
+    setUploadProgress(0);
+    clearErrors();
+
+    // Force re-render
+    setValue("section", "reading");
+
+    console.log("Form reset. New values:", getValues());
+
+    // Delay the trigger to ensure the form has been reset
+  };
+
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("section", section);
@@ -131,34 +170,36 @@ export default function BaseQuestion() {
         formData.append("questions", JSON.stringify(processedQuestions));
         const { soundFile, ...passage } = data.data.passage;
         formData.append("passage", JSON.stringify(passage));
-        console.log("formData", formData.get("passage"));
 
         setUploadProgress(0);
 
-        const result = await addQuestion(formData, {
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percentCompleted);
-          },
-        }).unwrap();
+        const result = await addQuestion(formData).unwrap();
+        console.log("Result from addQuestion:", result);
 
-        reset();
-        setValue("data.passage.soundFile", "");
-        setAudioPreviewUrl(null);
-        setUploadProgress(0);
-        toast.success("Question added successfully!");
+        if (result.error) {
+          throw new Error(result.error.message || "Unknown error occurred");
+        }
+
+        if (result.data) {
+          console.log("Question added successfully. Result:", result.data);
+          resetForm();
+          toast.success("Question added successfully!");
+        } else {
+          console.warn("Unexpected response format:", result);
+          toast.warn(
+            "Question may have been added, but the response was unexpected."
+          );
+        }
       } else {
         const processedQuestion = processQuestion(data.data.question);
-
         formData.append("question", JSON.stringify(processedQuestion));
         const result = await addQuestion(formData).unwrap();
-
+        console.log("Question added successfully. Result:", result);
+        resetForm();
         toast.success("Question added successfully!");
       }
     } catch (error) {
-      console.log("error", error.message);
+      console.error("Error in onSubmit:", error);
       toast.error(error.message || "Failed to add question");
       setUploadProgress(0);
     }
@@ -368,7 +409,7 @@ export default function BaseQuestion() {
           </button>
           <button
             type="button"
-            onClick={handleReset}
+            onClick={resetForm}
             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             disabled={isLoading}
           >

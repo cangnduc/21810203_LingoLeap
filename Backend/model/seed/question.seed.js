@@ -1,4 +1,3 @@
-const connectDB = require("../../config/mongoose.db");
 const saveDummyData = require("../dummy.data/questions");
 
 async function seedDatabase() {

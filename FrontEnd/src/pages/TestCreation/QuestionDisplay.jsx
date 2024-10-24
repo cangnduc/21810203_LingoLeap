@@ -17,10 +17,12 @@ const QuestionDisplay = ({
   onDeleteQuestion,
   selectedQuestions,
   onSortChange,
+  onQuestionScoreChange,
 }) => {
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [questionScore, setQuestionScore] = useState({});
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -50,6 +52,10 @@ const QuestionDisplay = ({
       ...prev,
       [questionId]: !prev[questionId],
     }));
+  };
+
+  const handleQuestionScoreChange = (questionId, score) => {
+    setQuestionScore((prev) => ({ ...prev, [questionId]: score }));
   };
 
   return (
@@ -84,6 +90,9 @@ const QuestionDisplay = ({
                 <span className="flex items-center justify-center">
                   Difficulty {renderSortIcon("difficulty")}
                 </span>
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Score
               </th>
               <th scope="col" className="px-6 py-3">
                 Actions
@@ -122,8 +131,26 @@ const QuestionDisplay = ({
                 </td>
                 <td className="px-3 py-2 text-center">{question.difficulty}</td>
                 <td className="px-3 py-2">
+                  {selectedQuestions.find((q) => q._id === question._id) && (
+                    <input
+                      type="number"
+                      className=" border text-center w-[70%] "
+                      required
+                      min={0}
+                      max={100}
+                      defaultValue={1}
+                      onChange={(e) =>
+                        onQuestionScoreChange(
+                          question._id,
+                          parseInt(e.target.value)
+                        )
+                      }
+                    />
+                  )}
+                </td>
+                <td className="px-3 py-2">
                   <div className="flex justify-center">
-                    {selectedQuestions.includes(question._id) ? (
+                    {selectedQuestions.find((q) => q._id === question._id) ? (
                       <button
                         className="text-red-500 hover:text-red-700"
                         onClick={() => onDeleteQuestion(question._id)}

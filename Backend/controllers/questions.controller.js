@@ -1,9 +1,4 @@
-const {
-  QuestionValidator,
-  PassageValidator,
-} = require("../validator/question.validator.v1");
 //import mongoose server error
-const { MongoServerError } = require("mongodb");
 const questionFunction = require("../model/function/question.function");
 const {
   BaseQuestion,
@@ -22,14 +17,9 @@ const {
 const {
   SingleQuestionValidator,
   CombinedQuestionPassageValidator,
-  FillInTheBlankValidator,
 } = require("../validator/question.validator.v1");
-const { zodError } = require("zod");
 const { BadRequestError } = require("../helpers/error");
-const { wrapAsyncRoutes } = require("../helpers/asyncHandler");
 const Response = require("../helpers/response");
-const Question = require("../model/question.model");
-const { calculateSimilarity } = require("../utils/similarity");
 
 class QuestionsController {
   constructor() {
@@ -47,13 +37,16 @@ class QuestionsController {
 
     const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
     const sortOrder = order === "asc" ? 1 : -1;
-    //const filter = { createdBy: user._id };
-    const filter = {};
+    const filter = {
+      createdBy: user._id,
+    };
+
     const totalQuestions = await BaseQuestion.countDocuments(filter);
     const questions = await BaseQuestion.find(filter)
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .sort({ [sortField]: sortOrder })
+      .select(["-__v", "-updatedAt", "-createdAt"])
       .lean();
     const totalPages = Math.ceil(totalQuestions / limit);
     Response.sendSuccess(res, "Questions fetched successfully", {
@@ -76,9 +69,8 @@ class QuestionsController {
     let questionData;
 
     if (section === "reading" || section === "listening") {
-      const questions = JSON.parse(req.body.questions);
-      const passage = JSON.parse(req.body.passage);
-
+      const questions = req.body.questions;
+      const passage = req.body.passage;
       if (section === "listening") {
         const soundFile = req.file;
         if (!soundFile) {
@@ -118,7 +110,6 @@ class QuestionsController {
       };
     }
 
-    console.log("questionData", questionData);
     const validationResult = validator.safeParse(questionData);
 
     if (!validationResult.success) {
@@ -128,17 +119,21 @@ class QuestionsController {
       console.log("errorMessages", errorMessages);
       throw new BadRequestError(errorMessages);
     }
-
     try {
       let result;
       if (section === "reading" || section === "listening") {
         // Handle multiple questions for reading and listening sections
-        const passage = new BasePassage({
-          ...validationResult.data.passage,
-          soundFile: req.file.path,
-        });
-        //await passage.save();
+        const passageData = validationResult.data.passage;
 
+        if (section === "listening") {
+          const soundFile = req.file;
+          if (!soundFile) {
+            throw new BadRequestError("Sound file is required");
+          }
+          passageData.soundFile = soundFile.path;
+        }
+
+        const passage = new BasePassage(passageData);
         const questions = await Promise.all(
           validationResult.data.questions.map(async (questionData) => {
             const question = this.createQuestionInstance.call(
@@ -146,17 +141,22 @@ class QuestionsController {
               questionData
             );
 
-            await question.save();
-            return question;
+            return await question.save();
           })
         );
-        console.log("questions", questions);
         //add questions id to the passage
         passage.questions = questions.map((question) => question._id);
         await passage.save();
         result = {
-          passage,
-          questions,
+          passage: (() => {
+            const { __v, updatedAt, createdAt, createdBy, ...rest } =
+              passage._doc;
+            return rest;
+          })(),
+          questions: questions.map((q) => {
+            const { _id, __v, updatedAt, createdAt, ...rest } = q._doc;
+            return rest;
+          }),
         };
       } else {
         // Handle single question for other sections
@@ -168,7 +168,12 @@ class QuestionsController {
         result = await question.save();
       }
 
-      Response.sendSuccess(res, "Question(s) created successfully", result);
+      Response.sendSuccess(
+        res,
+        "Question(s) created successfully",
+        result,
+        201
+      );
     } catch (error) {
       console.log("error", error);
       if (error.name === "ValidationError") {

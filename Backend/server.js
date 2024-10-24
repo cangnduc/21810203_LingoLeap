@@ -12,6 +12,8 @@ const seedDummyData = require("./model/seed/question.seed");
 //zip the response
 const compression = require("compression");
 const swagger = require("./docs/swagger/index");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const sslOptions = {
   key: fs.readFileSync("../localhost+1-key.pem"),
   cert: fs.readFileSync("../localhost+1.pem"),
@@ -34,7 +36,7 @@ const { ZodError } = require("zod");
 
 app.use(
   cors({
-    origin: ["https://localhost:5173", "https://192.168.1.9:5173"],
+    origin: ["https://localhost:5173", "https://192.168.1.10:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -50,6 +52,7 @@ mongooseClient.connect();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+//app.use(upload.any());
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(clientInfoMiddleware);

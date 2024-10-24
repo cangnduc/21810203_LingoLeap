@@ -28,20 +28,34 @@ export const questionApi = createApi({
       refetchOnMountOrArgChange: true,
     }),
     addQuestion: builder.mutation({
-      query: (formData) => ({
-        url: "/question",
-        method: "POST",
-        body: formData,
-        formData: true,
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          // Handle successful upload
-          console.log("Upload successful:", data);
-        } catch (error) {
-          // Handle upload error
-          console.error("Upload failed:", error);
+      query: (formData) => {
+        const section = formData.get("section");
+        const contentType =
+          section === "listening" ? "multipart/form-data" : "application/json";
+        if (contentType === "application/json") {
+          // Convert FormData to JSON
+          const jsonBody = {};
+          for (let [key, value] of formData.entries()) {
+            try {
+              jsonBody[key] = JSON.parse(value);
+            } catch {
+              jsonBody[key] = value;
+            }
+          }
+          return {
+            url: "/question",
+            method: "POST",
+            body: jsonBody,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+        } else {
+          return {
+            url: "/question",
+            method: "POST",
+            body: formData,
+          };
         }
       },
     }),

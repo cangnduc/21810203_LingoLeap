@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const { difficultyLevels, sections } = require("../constant/value");
 const testSchema = new mongoose.Schema(
   {
     title: {
@@ -39,35 +39,67 @@ const testSchema = new mongoose.Schema(
         {
           name: {
             type: String,
-            enum: [
-              "reading",
-              "listening",
-              "writing",
-              "speaking",
-              "grammar",
-              "vocabulary",
-              "general",
-            ],
+            enum: sections,
             required: true,
+          },
+          totalSectionScore: {
+            type: Number,
+            required: [true, "Section points is required"],
+            min: [0, "Points cannot be negative"],
+            default: function () {
+              if (this.name === "reading" || this.name === "listening") {
+                return this.passages.reduce(
+                  (total, passage) => total + passage.points,
+                  0
+                );
+              }
+              return this.questions.reduce(
+                (total, question) => total + question.points,
+                0
+              );
+            },
           },
           questions: {
             type: [
               {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Questions",
+                _id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "Questions",
+                  required: true,
+                },
+                points: {
+                  type: Number,
+                  required: true,
+                  min: [0, "Points cannot be negative"],
+                },
               },
             ],
             required: function () {
               return this.name !== "reading" && this.name !== "listening";
             },
             default: undefined,
+            validate: {
+              validator: function (questions) {
+                return questions.every(
+                  (q) => q.question && q.points !== undefined
+                );
+              },
+              message: "Each question must have both a question ID and points.",
+            },
           },
           duration: { type: Number, min: 1, required: true },
           passages: {
             type: [
               {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "BasePassage",
+                _id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "BasePassage",
+                },
+                points: {
+                  type: Number,
+                  required: true,
+                  min: [0, "Points cannot be negative"],
+                },
               },
             ],
             required: function () {
@@ -90,10 +122,32 @@ const testSchema = new mongoose.Schema(
           "Reading and Listening sections must have an associated passage.",
       },
     },
+    totalScore: {
+      type: Number,
+      required: [true, "Total possible score is required"],
+      min: [0, "Total possible score cannot be negative"],
+      default: function () {
+        return this.sections.reduce(
+          (total, section) => total + section.totalSectionScore,
+          0
+        );
+      },
+    },
+    passingScore: {
+      type: Number,
+      required: [true, "Passing score is required"],
+      min: [0, "Passing score cannot be negative"],
 
+      validate: {
+        validator: function (value) {
+          return value <= this.totalScore;
+        },
+        message: "Passing score cannot exceed total possible score",
+      },
+    },
     difficulty: {
       type: String,
-      enum: ["A1", "A2", "B1", "B2", "C1", "C2"],
+      enum: difficultyLevels,
       required: [true, "Difficulty level is required"],
     },
     createdBy: {
@@ -186,40 +240,75 @@ testSchema.virtual("questionCount").get(function () {
 });
 
 const Test = mongoose.model("Test", testSchema);
-
-module.exports = Test;
-// generate an example of test
-// Example of creating a test
-const exampleTest = new Test({
-  title: "IELTS Practice Test",
+//sample test data
+const sampleTest = new Test({
+  title: "IELTS General Training Practice Test",
   description:
-    "A comprehensive IELTS practice test covering all four sections.",
-  duration: 180,
+    "A comprehensive practice test for IELTS General Training, covering all four sections.",
+  duration: 170, // 2 hours and 50 minutes
   sections: [
     {
-      name: "reading",
-      duration: 60,
-      passage: "66fc13b0932c5cd5f7e99c9a",
+      name: "listening",
+      totalSectionScore: 40,
+      duration: 30,
+      passages: [
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+      ],
     },
     {
-      name: "listening",
-      duration: 40,
-      passage: "66fc13b0932c5cd5f7e99c9a",
+      name: "reading",
+      totalSectionScore: 40,
+      duration: 60,
+      passages: [
+        { id: new mongoose.Types.ObjectId(), points: 13 },
+        { id: new mongoose.Types.ObjectId(), points: 13 },
+        { id: new mongoose.Types.ObjectId(), points: 14 },
+      ],
     },
     {
       name: "writing",
-      questions: ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
+      totalSectionScore: 20,
       duration: 60,
+      questions: [
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+        { id: new mongoose.Types.ObjectId(), points: 10 },
+      ],
     },
     {
-      name: "general",
-      questions: ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
+      name: "speaking",
+      totalSectionScore: 20,
       duration: 20,
+      questions: [
+        { id: new mongoose.Types.ObjectId(), points: 5 },
+        { id: new mongoose.Types.ObjectId(), points: 5 },
+        { id: new mongoose.Types.ObjectId(), points: 5 },
+        { id: new mongoose.Types.ObjectId(), points: 5 },
+      ],
     },
   ],
-  difficulty: "B2",
-  isPublished: false,
-  attemptsAllowed: 1,
-  availableFrom: "2024-10-09",
-  availableUntil: "2024-10-10",
+  totalScore: 120,
+  passingScore: 65,
+  difficulty: "intermediate",
+  createdBy: new mongoose.Types.ObjectId(),
+  isPublished: true,
+  attemptsAllowed: 2,
+  availableFrom: new Date(),
+  availableUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Available for 30 days
+  averageRating: 4.5,
+  reviewCount: 10,
 });
+
+// You can use this to save the sample test to the database
+// sampleTest.save()
+//   .then(savedTest => console.log('Sample test saved:', savedTest))
+//   .catch(error => console.error('Error saving sample test:', error));
+
+module.exports = Test;
+
+testSchema.methods.getResults = async function () {
+  const TestResult = mongoose.model("TestResult");
+  return TestResult.find({ test: this._id }).populate("user");
+};
