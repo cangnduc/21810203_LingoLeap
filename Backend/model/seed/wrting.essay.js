@@ -1,4 +1,4 @@
-const WritingEssayQuestion = require("../../model/question.model.v1");
+const { EssayQuestion } = require("../../model/question.model.v1");
 const writingEssayQuestions = [
   {
     type: "essay",
@@ -274,7 +274,7 @@ const writingEssayQuestions = [
 
 async function seedWritingEssayQuestions() {
   try {
-    const insertedQuestions = await WritingEssayQuestion.insertMany(
+    const insertedQuestions = await EssayQuestion.insertMany(
       writingEssayQuestions
     );
     return insertedQuestions;

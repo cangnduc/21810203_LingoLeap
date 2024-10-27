@@ -134,11 +134,11 @@ const QuestionDisplay = ({
                   {selectedQuestions.find((q) => q._id === question._id) && (
                     <input
                       type="number"
-                      className=" border text-center w-[70%] "
+                      className="border text-center w-[70%] px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:border-gray-700 transition-colors duration-200"
                       required
                       min={0}
                       max={100}
-                      defaultValue={1}
+                      defaultValue={question.points || 1}
                       onChange={(e) =>
                         onQuestionScoreChange(
                           question._id,

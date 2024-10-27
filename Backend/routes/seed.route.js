@@ -26,9 +26,9 @@ router.get(
   asyncHandler(async (req, res) => {
     // await seedMultipleChoiceQuestions();
     // await seedSingleChoiceQuestions();
-    // await seedWritingEssayQuestions();
+    await seedWritingEssayQuestions();
     // await seedFillInTheBlankQuestions();
-    await seedMatchingQuestions();
+    //await seedMatchingQuestions();
     res.status(200).json({ message: "Questions seeded successfully" });
   })
 );

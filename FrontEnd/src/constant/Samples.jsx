@@ -75,11 +75,35 @@ const sectionToTypeMap = {
   ],
 };
 const difficultyList = [
-  { name: "A1", label: "A1" },
-  { name: "A2", label: "A2" },
-  { name: "B1", label: "B1" },
-  { name: "B2", label: "B2" },
-  { name: "C1", label: "C1" },
-  { name: "C2", label: "C2" },
+  { name: "beginner", label: "Beginner" },
+  { name: "elementary", label: "Elementary" },
+  { name: "intermediate", label: "Intermediate" },
+  { name: "upper_intermediate", label: "Upper Intermediate" },
+  { name: "advanced", label: "Advanced" },
+  { name: "expert", label: "Expert" },
+  { name: "master", label: "Master" },
 ];
-export { sectionList, typeList, sectionToTypeMap, difficultyList };
+const testTypeList = [
+  { name: "ielts", label: "IELTS" },
+  { name: "toefl", label: "TOEFL" },
+  { name: "toeic", label: "TOEIC" },
+  { name: "cambridge", label: "Cambridge English" },
+  { name: "pte", label: "PTE Academic" },
+  { name: "vstep", label: "VSTEP" },
+  { name: "vnu_ept", label: "VNU-EPT" },
+  { name: "toefl_itp", label: "TOEFL ITP" },
+  { name: "ielts_life_skills", label: "IELTS Life Skills" },
+  { name: "a1", label: "A1" },
+  { name: "a2", label: "A2" },
+  { name: "b1", label: "B1" },
+  { name: "b2", label: "B2" },
+  { name: "c1", label: "C1" },
+  { name: "c2", label: "C2" },
+];
+export {
+  sectionList,
+  typeList,
+  sectionToTypeMap,
+  difficultyList,
+  testTypeList,
+};

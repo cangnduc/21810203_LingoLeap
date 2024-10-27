@@ -41,19 +41,6 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
     setCreatedBy(e.target.value);
     setCurrentPage(1);
   };
-  const calculateSectionScore = () => {
-    let sectionScore = 0;
-    if (isReadingOrListening) {
-      sectionScore = section.passages.reduce((acc, curr) => {
-        return acc + curr.score;
-      }, 0);
-      return sectionScore;
-    }
-    sectionScore = section.questions.reduce((acc, curr) => {
-      return acc + curr.score;
-    }, 0);
-    return sectionScore;
-  };
 
   const handleSectionChange = (field, value) => {
     const updatedSection = { ...section, [field]: value };
@@ -68,7 +55,7 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
       const updatedSection = {
         ...section,
         sectionScore: section.sectionScore + 1,
-        questions: [...section.questions, { _id: questionId, score: 1 }],
+        questions: [...section.questions, { _id: questionId, points: 1 }],
       };
       onUpdateSection(updatedSection);
     }
@@ -82,41 +69,40 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
     onUpdateSection(updatedSection);
   };
 
-  const handleAddPassage = (passageId) => {
+  const handleAddPassage = (passageId, points) => {
     const foundPassage = section.passages.find((p) => p._id === passageId);
     if (!foundPassage) {
       const updatedSection = {
         ...section,
-        sectionScore: section.sectionScore + 1,
-        passages: [...section.passages, { _id: passageId, score: 1 }],
+        sectionScore: section.sectionScore + points,
+        passages: [...section.passages, { _id: passageId, points: points }],
       };
 
       onUpdateSection(updatedSection);
     }
   };
-  const handlePassageScoreChange = (passageId, score) => {
+  const handlePassagePointChange = (passageId, points) => {
     const updatedSection = {
       ...section,
       sectionScore:
         section.sectionScore +
-        score -
-        section.passages.find((p) => p._id === passageId).score,
+        points -
+        section.passages.find((p) => p._id === passageId).points,
       passages: section.passages.map((p) =>
-        p._id === passageId ? { ...p, score } : p
+        p._id === passageId ? { ...p, points } : p
       ),
     };
-    console.log("updatedSection", updatedSection);
     onUpdateSection(updatedSection);
   };
-  const handleQuestionScoreChange = (questionId, score) => {
+  const handleQuestionScoreChange = (questionId, points) => {
     const updatedSection = {
       ...section,
       sectionScore:
         section.sectionScore +
-        score -
-        section.questions.find((q) => q._id === questionId).score,
+        points -
+        section.questions.find((q) => q._id === questionId).points,
       questions: section.questions.map((q) =>
-        q._id === questionId ? { ...q, score } : q
+        q._id === questionId ? { ...q, points } : q
       ),
     };
     onUpdateSection(updatedSection);
@@ -126,7 +112,7 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
       ...section,
       sectionScore:
         section.sectionScore -
-        section.passages.find((p) => p._id === passageId).score,
+        section.passages.find((p) => p._id === passageId).points,
       passages: section.passages.filter((p) => p._id !== passageId),
     };
     onUpdateSection(updatedSection);
@@ -202,7 +188,7 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
               onDeletePassage={handleDeletePassage}
               selectedPassages={section.passages}
               onSortChange={handleSortChange}
-              onPassageScoreChange={handlePassageScoreChange}
+              onPassagePointChange={handlePassagePointChange}
             />
           )
         )

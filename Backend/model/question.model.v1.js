@@ -256,7 +256,7 @@ const passageSchema = new mongoose.Schema(
     questions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "BaseQuestion",
+        ref: "Question",
       },
     ],
     createdBy: {

@@ -18,7 +18,7 @@ const PassageDisplay = ({
   onDeletePassage,
   selectedPassages,
   onSortChange,
-  onPassageScoreChange,
+  onPassagePointChange,
 }) => {
   const [expandedPassage, setExpandedPassage] = useState(null);
   const [questionPage, setQuestionPage] = useState(1);
@@ -87,7 +87,7 @@ const PassageDisplay = ({
                 Questions
               </th>
               <th scope="col" className="px-6 py-3">
-                Score
+                Point
               </th>
               <th scope="col" className="px-6 py-3">
                 Actions
@@ -126,13 +126,13 @@ const PassageDisplay = ({
                     {selectedPassages.find((p) => p._id === passage._id) && (
                       <input
                         type="number"
-                        className=" border text-center w-[70%] "
+                        className="border text-center w-[70%] px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:border-gray-700 transition-colors duration-200"
                         required
                         min={0}
                         max={100}
-                        defaultValue={1}
+                        defaultValue={passage.questions.length}
                         onChange={(e) =>
-                          onPassageScoreChange(
+                          onPassagePointChange(
                             passage._id,
                             parseInt(e.target.value)
                           )
@@ -152,7 +152,9 @@ const PassageDisplay = ({
                       ) : (
                         <button
                           className="text-blue-500 hover:text-blue-700"
-                          onClick={() => onAddPassage(passage._id)}
+                          onClick={() =>
+                            onAddPassage(passage._id, passage.questions.length)
+                          }
                         >
                           <FaPlus />
                         </button>

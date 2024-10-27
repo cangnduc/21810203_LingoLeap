@@ -20,11 +20,37 @@ const questionTypes = [
   "open_ended",
   "essay",
 ];
-const difficultyLevels = ["A1", "A2", "B1", "B2", "C1", "C2"];
+const difficultyLevels = [
+  "beginner",
+  "elementary",
+  "intermediate",
+  "upper_intermediate",
+  "advanced",
+  "expert",
+  "master",
+];
+const testTypes = [
+  "ielts",
+  "toefl",
+  "toeic",
+  "cambridge",
+  "pte",
+  "vstep",
+  "vnu_ept",
+  "toefl_itp",
+  "ielts_life_skills",
+  "a1",
+  "a2",
+  "b1",
+  "b2",
+  "c1",
+  "c2",
+];
 module.exports = {
   accessTokenTime,
   refreshTokenTime,
   sections,
   questionTypes,
   difficultyLevels,
+  testTypes,
 };

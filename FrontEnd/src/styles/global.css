@@ -1,0 +1,5 @@
+@layer utilities {
+  .dark .dark\:calendar-icon-white::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}

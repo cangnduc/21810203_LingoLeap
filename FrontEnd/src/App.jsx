@@ -31,11 +31,15 @@ function App() {
     { path: "/test", element: <Test /> },
     { path: "/courses", element: <Courses />, roles: ["admin", "user"] },
     { path: "/chat", element: <AiAssisstant />, roles: ["admin", "user"] },
-    { path: "/question", element: <AddQuestion />, roles: ["admin", "user"] },
+    {
+      path: "/question",
+      element: <AddQuestion />,
+      roles: ["admin", "user", "teacher"],
+    },
     {
       path: "/test-creation",
       element: <TestCreation />,
-      roles: ["user"],
+      roles: ["admin", "teacher"],
     },
   ];
   return (

@@ -11,7 +11,9 @@ import {
   FaSignInAlt,
   FaUserPlus,
   FaQuestion,
+  FaPen,
 } from "react-icons/fa";
+import { RiSpeakFill } from "react-icons/ri";
 
 export default function NavLinks({ className = "", showIcons = false }) {
   const location = useLocation();
@@ -21,11 +23,12 @@ export default function NavLinks({ className = "", showIcons = false }) {
     "/": FaHome,
     "/test": FaClipboardCheck,
     "/courses": FaBook,
-    "/questions": FaQuestion,
+    "/question": FaQuestion,
     "/game": FaGamepad,
-    "/chat": FaEnvelope,
+    "/chat": RiSpeakFill,
     "/login": FaSignInAlt,
     "/register": FaUserPlus,
+    "/test-creation": FaPen,
   };
 
   const NavLink = ({ to, children }) => {
@@ -50,8 +53,8 @@ export default function NavLinks({ className = "", showIcons = false }) {
   return (
     <>
       <NavLink to="/">Home</NavLink>
-      <NavLink to="/test-creation">Test</NavLink>
-      <NavLink to="/chat">Chat</NavLink> <NavLink to="/game">Game</NavLink>
+      <NavLink to="/test-creation">Tests</NavLink>
+      <NavLink to="/chat">Speaking</NavLink> <NavLink to="/game">Game</NavLink>
       <NavLink to="/question">Questions</NavLink>
       {!user && (
         <>

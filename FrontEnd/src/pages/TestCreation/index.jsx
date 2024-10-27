@@ -1,32 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TestInfo from "./TestInfo";
 import Section from "./Section";
 import PreviewDisplay from "./PreviewDisplay";
+import { testTypeList, difficultyList } from "../../constant/Samples";
+import { useAddTestMutation } from "@/app/services/testApi";
+import { toast } from "react-toastify";
 
-const TestCreation = () => {
+const INITIAL_TEST_INFO = {
+  title: "",
+  description: "",
+  duration: 0,
+  difficulty: difficultyList[0].name,
+  testType: testTypeList[0].name,
+  passingScore: 0,
+  totalPossibleScore: 0,
+  availableFrom: new Date().toISOString().split("T")[0],
+  availableUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    .toISOString()
+    .split("T")[0],
+  attemptsAllowed: 1,
+};
+
+const INITIAL_SECTIONS = [];
+
+const TestCreation = ({ id }) => {
   const [step, setStep] = useState(1);
-  const [testInfo, setTestInfo] = useState({
-    title: "",
-    description: "",
-    duration: 0,
-    difficulty: "A1",
-    availableFrom: new Date().toISOString().split("T")[0],
-    availableTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-      .toISOString()
-      .split("T")[0],
-    attemptsAllowed: 1,
-  });
-  const [sections, setSections] = useState([]);
+  const [testInfo, setTestInfo] = useState(INITIAL_TEST_INFO);
+  const [sections, setSections] = useState(INITIAL_SECTIONS);
   const [errors, setErrors] = useState({});
+  const [
+    addTest,
+    { isLoading: isAddingTest, isSuccess: isTestAdded, error: addTestError },
+  ] = useAddTestMutation();
+  useEffect(() => {
+    if (id) {
+      //fetch the test info from the backend
+    }
+  }, [id]);
 
   const handleBasicInfoChange = (e) => {
-    setTestInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value, type } = e.target;
+    setTestInfo((prev) => ({
+      ...prev,
+      [name]: type === "number" ? parseFloat(value) || 0 : value,
+    }));
   };
 
   const handleDifficultyChange = (e) => {
     setTestInfo((prev) => ({ ...prev, difficulty: e.target.value }));
   };
-
+  const handleTestTypeChange = (e) => {
+    setTestInfo((prev) => ({ ...prev, testType: e.target.value }));
+  };
   const handleAddSection = (newSection) => {
     setSections((prev) => [...prev, newSection]);
   };
@@ -38,7 +63,19 @@ const TestCreation = () => {
       return updatedSections;
     });
   };
-
+  const calculateTotalPossibleScore = () => {
+    let total = 0;
+    for (const section of sections) {
+      total += section.sectionScore;
+    }
+    return total;
+  };
+  useEffect(() => {
+    setTestInfo((prev) => ({
+      ...prev,
+      totalPossibleScore: calculateTotalPossibleScore(),
+    }));
+  }, [sections]);
   const validateTestInfo = () => {
     const newErrors = {};
     if (!testInfo.title.trim()) newErrors.title = "Title is required";
@@ -47,11 +84,13 @@ const TestCreation = () => {
     if (!testInfo.difficulty) newErrors.difficulty = "Difficulty is required";
     if (!testInfo.availableFrom)
       newErrors.availableFrom = "Available From date is required";
-    if (!testInfo.availableTo)
-      newErrors.availableTo = "Available To date is required";
+    if (!testInfo.availableUntil)
+      newErrors.availableUntil = "Available Until date is required";
     if (!testInfo.attemptsAllowed)
       newErrors.attemptsAllowed = "Attempts Allowed is required";
 
+    if (testInfo.passingScore <= 0)
+      newErrors.passingScore = "Passing Score must be greater than 0";
     setErrors(newErrors); // Fix: Set the actual errors object instead of a number
     return Object.keys(newErrors).length === 0;
   };
@@ -110,14 +149,29 @@ const TestCreation = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (testInfo.passingScore > testInfo.totalPossibleScore) {
+      setErrors({
+        passingScore: "Passing score cannot exceed total possible score",
+      });
+      return;
+    }
     if (validateTestInfo() && validateSections()) {
       const finalTestData = {
         ...testInfo,
         sections: sections,
       };
       console.log("Final Test Data:", finalTestData);
-      // Here you would typically send this data to your backend
+      const response = await addTest(finalTestData);
+      console.log("Response:", response);
+
+      if (isTestAdded) {
+        // Reset testInfo and sections to initial values
+        setTestInfo(INITIAL_TEST_INFO);
+        setSections(INITIAL_SECTIONS);
+        setStep(1); // Go back to step 1
+        toast.success("Test created successfully!");
+      }
     }
   };
 
@@ -133,6 +187,7 @@ const TestCreation = () => {
             testInfo={testInfo}
             handleBasicInfoChange={handleBasicInfoChange}
             handleDifficultyChange={handleDifficultyChange}
+            handleTestTypeChange={handleTestTypeChange}
           />
         );
       case 2:
@@ -183,8 +238,16 @@ const TestCreation = () => {
           <button
             onClick={handleSubmit}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-200"
+            disabled={isAddingTest}
           >
-            Finalize Test
+            {isAddingTest ? (
+              <div className="flex items-center">
+                <span className="mr-2">Finalizing...</span>
+                <div className="loader"></div>
+              </div>
+            ) : (
+              "Finalize Test"
+            )}
           </button>
         )}
       </div>

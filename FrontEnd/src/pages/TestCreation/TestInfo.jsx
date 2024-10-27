@@ -2,10 +2,12 @@ import React from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import { difficultyList } from "../../constant/Samples";
+import { testTypeList } from "../../constant/Samples";
 const TestInfo = ({
   testInfo,
   handleBasicInfoChange,
   handleDifficultyChange,
+  handleTestTypeChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -28,12 +30,27 @@ const TestInfo = ({
         maxLength={200}
         type="textarea"
         required
-      ></Input>
+      />
       <Select
         name="difficulty"
         label="Difficulty"
         options={difficultyList}
         onChange={handleDifficultyChange}
+        required
+      />
+      <Select
+        name="testType"
+        label="Test Type"
+        options={testTypeList}
+        onChange={handleTestTypeChange}
+        required
+      />
+      <Input
+        name="passingScore"
+        type="number"
+        label="Passing Score"
+        value={testInfo.passingScore || 0}
+        onChange={handleBasicInfoChange}
         required
       />
       <Input
@@ -45,10 +62,10 @@ const TestInfo = ({
         required
       />
       <Input
-        name="availableTo"
+        name="availableUntil"
         type="date"
         label="Available Until"
-        value={testInfo.availableTo || ""}
+        value={testInfo.availableUntil || ""}
         onChange={handleBasicInfoChange}
       />
       <Input

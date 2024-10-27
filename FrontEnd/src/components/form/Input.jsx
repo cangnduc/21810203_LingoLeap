@@ -1,19 +1,23 @@
 import React from "react";
 import { motion } from "framer-motion";
+
 const Input = ({ children, className, label, ...props }) => {
   const renderInput = () => {
+    const baseClasses = `w-full block px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border rounded-lg border-1 border-gray-300 shadow-sm appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer`;
+
+    const dateInputClasses =
+      props.type === "date" ? "dark:calendar-icon-white pr-4" : "";
+
     return (
       <input
         {...props}
-        className={`w-full
-        block px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border rounded-lg border-1 border-gray-300 shadow-sm appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer
-        ${className}
-      `}
+        className={`${baseClasses} ${dateInputClasses} ${className}`}
       >
         {children}
       </input>
     );
   };
+
   return (
     <motion.div
       initial={{ y: 10, opacity: 0 }}

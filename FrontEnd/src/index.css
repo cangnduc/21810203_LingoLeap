@@ -30,6 +30,9 @@
   .dark-custom-radial-gradient {
     background: radial-gradient(circle at 50% 50%, #01003b, #000000);
   }
+  .dark .dark\:calendar-icon-white::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }
 
 /* Force scrollbar to always show */

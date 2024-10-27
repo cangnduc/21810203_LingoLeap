@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const { difficultyLevels, sections } = require("../constant/value");
+const { difficultyLevels, sections, testTypes } = require("../constant/value");
+
 const testSchema = new mongoose.Schema(
   {
     title: {
@@ -42,29 +43,24 @@ const testSchema = new mongoose.Schema(
             enum: sections,
             required: true,
           },
-          totalSectionScore: {
+          instruction: {
+            type: String,
+            maxlength: [
+              500,
+              "Section instruction cannot exceed 500 characters",
+            ],
+          },
+          sectionScore: {
             type: Number,
-            required: [true, "Section points is required"],
-            min: [0, "Points cannot be negative"],
-            default: function () {
-              if (this.name === "reading" || this.name === "listening") {
-                return this.passages.reduce(
-                  (total, passage) => total + passage.points,
-                  0
-                );
-              }
-              return this.questions.reduce(
-                (total, question) => total + question.points,
-                0
-              );
-            },
+            required: [true, "Section score is required"],
+            min: [0, "Section score cannot be negative"],
           },
           questions: {
             type: [
               {
                 _id: {
                   type: mongoose.Schema.Types.ObjectId,
-                  ref: "Questions",
+                  ref: "Question",
                   required: true,
                 },
                 points: {
@@ -80,14 +76,17 @@ const testSchema = new mongoose.Schema(
             default: undefined,
             validate: {
               validator: function (questions) {
-                return questions.every(
-                  (q) => q.question && q.points !== undefined
-                );
+                return questions.every((q) => q._id && q.points !== undefined);
               },
-              message: "Each question must have both a question ID and points.",
+              message:
+                "Each question must have both a question reference and points.",
             },
           },
-          duration: { type: Number, min: 1, required: true },
+          duration: {
+            type: Number,
+            required: true,
+            min: [1, "Section duration must be at least 1 minute"],
+          },
           passages: {
             type: [
               {
@@ -122,16 +121,11 @@ const testSchema = new mongoose.Schema(
           "Reading and Listening sections must have an associated passage.",
       },
     },
-    totalScore: {
+    totalPossibleScore: {
       type: Number,
       required: [true, "Total possible score is required"],
       min: [0, "Total possible score cannot be negative"],
-      default: function () {
-        return this.sections.reduce(
-          (total, section) => total + section.totalSectionScore,
-          0
-        );
-      },
+      default: 0,
     },
     passingScore: {
       type: Number,
@@ -140,7 +134,7 @@ const testSchema = new mongoose.Schema(
 
       validate: {
         validator: function (value) {
-          return value <= this.totalScore;
+          return value <= this.totalPossibleScore;
         },
         message: "Passing score cannot exceed total possible score",
       },
@@ -149,6 +143,11 @@ const testSchema = new mongoose.Schema(
       type: String,
       enum: difficultyLevels,
       required: [true, "Difficulty level is required"],
+    },
+    testType: {
+      type: String,
+      enum: testTypes,
+      required: [true, "Test type is required"],
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

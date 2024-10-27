@@ -1,5 +1,5 @@
 @baseUrl = https://localhost:3000/api/v1
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyNzM2NjM1OCwiZXhwIjoxNzQ4OTY2MzU4fQ.YxYo-KD0r0eAuRWcJCaGyqDBcbgNhpdGuoHSyxwalX8
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y
 
 ### Test API
 
@@ -15,34 +15,67 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "title": "IELTS Practice Test",
-  "description": "A comprehensive IELTS practice test covering all four sections.",
-  "duration": 180,
+  "title": "IELTS General Training Practice Test",
+  "description": "A comprehensive practice test for IELTS General Training, covering all four sections.",
+  "duration": 20,
   "sections": [
     {
       "name": "reading",
-      "duration": 60,
-      "passages": ["66fc13b0932c5cd5f7e99c9a"]
-    },
-    {
-      "name": "listening",
-      "duration": 40,
-      "passages": ["66fc13b0932c5cd5f7e99c9a", "66fc13b0932c5cd5f7e99c9b"]
+      "sectionScore": 18,
+      "instruction": "Read three passages and answer questions to demonstrate your understanding.",
+      "duration": 5,
+      "passages": [
+        { "_id": "67177ef52774d386da36ec59", "points": 12 },
+        { "_id": "67177f1c4da1b9c47eddb380", "points": 6 }
+      ]
     },
     {
       "name": "writing",
-      "questions": ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
-      "duration": 60
+      "sectionScore": 20,
+      "instruction": "Complete two writing tasks within the given time.",
+      "duration": 5,
+      "questions": [
+        { "_id": "671bbc133e42879b0be78624", "points": 10 },
+        { "_id": "671bbc133e42879b0be78625", "points": 10 }
+      ]
     },
     {
       "name": "general",
-      "questions": ["66fbfa3f48a5ce363b3e9860", "66fbfa3f48a5ce363b3e986a"],
-      "duration": 20
+      "sectionScore": 10,
+      "instruction": "Participate in a recorded spoken interview covering various topics.",
+      "duration": 5,
+      "questions": [
+        { "_id": "671662119e0a1e66671825a0", "points": 5 },
+        { "_id": "671662119e0a1e66671825a1", "points": 5 }
+      ]
+    },
+    {
+      "name": "grammar",
+      "sectionScore": 10,
+      "instruction": "Answer questions to demonstrate your understanding of grammar.",
+      "duration": 5,
+      "questions": [
+        { "_id": "671662119e0a1e66671825a2", "points": 5 },
+        { "_id": "671662119e0a1e66671825ad", "points": 5 }
+      ]
     }
   ],
-  "difficulty": "B2",
+  "passingScore": 35,
+  "totalPossibleScore": 58,
+  "difficulty": "elementary",
+  "testType": "ielts",
   "isPublished": false,
-  "attemptsAllowed": 1,
-  "availableFrom": "2024-10-09",
-  "availableUntil": "2024-10-10"
+  "attemptsAllowed": 2,
+  "availableFrom": "2023-07-01T00:00:00Z",
+  "availableUntil": "2025-12-31T23:59:59Z"
 }
+
+
+#### Get a test
+GET {{baseUrl}}/test/671bbc5d3e42879b0be78638
+Authorization: Bearer {{accessToken}}   
+
+#### Get all tests with pagination
+GET {{baseUrl}}/test?page=1&limit=10&orderBy=createdAt&sortBy=desc
+Authorization: Bearer {{accessToken}}   
+

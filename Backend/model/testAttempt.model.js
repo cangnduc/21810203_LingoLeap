@@ -84,13 +84,26 @@ testAttemptSchema.methods.isTimeUp = function () {
 const TestAttempt = mongoose.model("TestAttempt", testAttemptSchema);
 
 module.exports = TestAttempt;
-const Passage = mongoose.model("Passage");
+
 // Add this method to the testAttemptSchema
 testAttemptSchema.methods.calculateResult = async function () {
   const Test = mongoose.model("Test");
   const TestResult = mongoose.model("TestResult");
+  const Question = mongoose.model("Question");
 
-  const test = await Test.findById(this.test).populate("sections.questions");
+  // Load the test with populated sections and questions
+  const test = await Test.findById(this.test).populate({
+    path: "sections.questions",
+    model: "Question",
+  });
+
+  // Load all questions for this test attempt in a single query
+  const questionIds = this.answers.map((answer) => answer.question);
+  const questions = await Question.find({ _id: { $in: questionIds } });
+
+  // Create a map for quick access to questions
+  const questionMap = new Map(questions.map((q) => [q._id.toString(), q]));
+
   const testResult = new TestResult();
   let totalScore = 0;
   let totalQuestions = 0;
@@ -100,116 +113,34 @@ testAttemptSchema.methods.calculateResult = async function () {
   for (const section of test.sections) {
     let sectionScore = 0;
     let sectionQuestions = 0;
-    let questionPoints = 0;
-    if (["reading", "listening"].includes(section.name.toLowerCase())) {
-      // TODO: add passage score
-      for (const passage of section.passages) {
-        const passageDB = await Passage.findById(passage.id);
-        questionPoints = passage.points / passageDB.questions.length;
-        if (passageDB) {
-          let score = 0;
-          const questionIds = passageDB.questions;
-          for (const questionId of questionIds) {
-            const answer = this.answers.find(
-              (a) => a.question.toString() === questionId.toString()
-            );
-            if (answer) {
-              score = await this.calculateScore(
-                questionId,
-                answer,
-                questionPoints || 1
-              );
-              questionScores.push({
-                question: questionId,
-                score: score,
-              });
-              sectionScore += score;
-            } else {
-              questionScores.push({
-                question: questionId,
-                score: 0,
-              });
-              sectionScore += 0;
-            }
-          }
-          sectionQuestions = questionIds.length;
-          totalQuestions += questionIds.length;
-        } else {
-          sectionScore += 0;
-          sectionQuestions = 0;
-          totalQuestions += 0;
-        }
-      }
-    } else if (
-      ["general", "grammar", "vocabulary"].includes(section.name.toLowerCase())
-    ) {
-      for (const question of section.questions) {
-        const answer = this.answers.find(
-          (a) => a.question.toString() === question.id.toString()
-        );
-        let score = 0;
 
-        if (answer) {
-          // Calculate score based on question type
-          score = await this.calculateScore(
-            question.id,
-            answer,
-            question.points || 1
-          );
-          questionScores.push({
-            question: question.id,
-            score: score,
-          });
-          sectionScore += score;
-        } else {
-          questionScores.push({
-            question: question.id,
-            score: 0,
-          });
-          sectionScore += 0;
-        }
+    for (const question of section.questions) {
+      const answer = this.answers.find(
+        (a) => a.question.toString() === question._id.toString()
+      );
+      let score = 0;
 
-        sectionQuestions++;
-        totalQuestions++;
-      }
-    } else if (section.name === "writing") {
-      const questions = section.questions;
-      for (const question of questions) {
-        const answer = this.answers.find(
-          (a) => a.question.toString() === question.id.toString()
-        );
-        if (answer) {
-          const result = await generateCompletion(
-            answer.userAnswer,
-            question.questionText
-          );
-          if (!result) {
-            console.error("Failed to generate writing question result");
+      if (answer) {
+        // Use the questionMap instead of querying the database
+        const questionData = questionMap.get(question._id.toString());
+        score = this.calculateScore(questionData, answer, question.points || 1);
 
-            throw new Error("Failed to generate writing question result");
-          }
-          testResult.writingQuestionResults.push({
-            question: question.id,
-            ...result,
-          });
-          questionScores.push({
-            question: question.id,
-            score: result.totalScore,
-          });
-          sectionScore += result.totalScore;
-        } else {
-          questionScores.push({
-            question: question.id,
-            score: 0,
-          });
-          sectionScore += 0;
-        }
+        questionScores.push({
+          question: question._id,
+          score: score,
+        });
+        sectionScore += score;
+      } else {
+        questionScores.push({
+          question: question._id,
+          score: 0,
+        });
       }
-      // TODO: add speaking and writing score
-      sectionScore = section.points;
-      sectionQuestions = section.questions.length;
-      totalQuestions += section.questions.length;
+
+      sectionQuestions++;
+      totalQuestions++;
     }
+
     sectionScores.push({
       sectionType: section.name,
       score: sectionScore,
@@ -237,21 +168,20 @@ testAttemptSchema.methods.calculateResult = async function () {
 
   return testResult;
 };
-const Question = mongoose.model("Question");
+
 // Helper method to calculate score questions
-testAttemptSchema.methods.calculateScore = async function (
-  questionId,
+testAttemptSchema.methods.calculateScore = function (
+  questionData,
   answer,
   point
 ) {
-  const question = await Question.findById(questionId);
-  switch (question.type) {
+  switch (questionData.type) {
     case "single_choice":
-      return answer.userAnswer === question.correctAnswer ? point : 0;
+      return answer.userAnswer === questionData.correctAnswer ? point : 0;
     case "true_false":
-      return answer.userAnswer === question.correctAnswer ? point : 0;
+      return answer.userAnswer === questionData.correctAnswer ? point : 0;
     case "multiple_choice":
-      const correctAnswers = new Set(question.correctAnswers);
+      const correctAnswers = new Set(questionData.correctAnswers);
       const userAnswers = new Set(answer.userAnswer);
       const correctCount = [...correctAnswers].filter((a) =>
         userAnswers.has(a)
@@ -260,10 +190,10 @@ testAttemptSchema.methods.calculateScore = async function (
       const multipleChoiceScore =
         Math.max(0, (correctCount - incorrectCount) / correctAnswers.size) *
         point;
-      return Math.round(multipleChoiceScore * 100) / 100; // Round to 2 decimal places
+      return Math.round(multipleChoiceScore * 100) / 100;
 
     case "matching":
-      const correctPairs = question.correctPairs;
+      const correctPairs = questionData.correctPairs;
       const userPairs = answer.userAnswer;
       let matchingCorrectCount = 0;
 
@@ -281,7 +211,7 @@ testAttemptSchema.methods.calculateScore = async function (
       return Math.round(matchingScore * 100) / 100; // Round to 2 decimal places
 
     case "ordering":
-      const correctOrder = question.correctOrder;
+      const correctOrder = questionData.correctOrder;
       const userOrder = answer.userAnswer;
 
       if (

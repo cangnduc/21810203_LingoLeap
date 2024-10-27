@@ -34,16 +34,33 @@ const {
 } = require("./helpers/error");
 const { ZodError } = require("zod");
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://localhost:5173",
+  "http://192.168.1.6:5173",
+  "https://192.168.1.6:5173",
+];
+
 app.use(
   cors({
-    origin: ["https://localhost:5173", "https://192.168.1.10:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   })
 );
+
+// Enable pre-flight requests for all routes
+app.options("*", cors());
+
 // JSON parsing error handler
 
 //connect to database
@@ -136,6 +153,10 @@ app.use((req, res, next) => {
   const notFoundError = new NotFoundError("This route is not defined");
   Response.sendError(res, notFoundError);
 });
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
 
 https.createServer(sslOptions, app).listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
