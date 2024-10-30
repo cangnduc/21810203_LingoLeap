@@ -9,6 +9,7 @@ import { userApi } from "./services/userApi";
 import { chatApi } from "./services/chatApi";
 import { questionApi } from "./services/questionApi";
 import { testApi } from "./services/testApi";
+import { reviewApi } from "./services/reviewApi";
 const persistConfig = {
   key: "root",
   storage,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   [chatApi.reducerPath]: chatApi.reducer,
   [questionApi.reducerPath]: questionApi.reducer,
   [testApi.reducerPath]: testApi.reducer,
+  [reviewApi.reducerPath]: reviewApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -44,6 +46,7 @@ export const store = configureStore({
       chatApi.middleware,
       questionApi.middleware,
       testApi.middleware,
+      reviewApi.middleware,
     ]),
   devTools: process.env.NODE_ENV !== "production",
 });

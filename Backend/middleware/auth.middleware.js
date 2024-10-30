@@ -51,6 +51,5 @@ const authMiddleware = (allowedRoles = []) =>
 
     next();
   });
-
 // Remove the roleMiddleware export as it's no longer needed
 module.exports = { authMiddleware };

@@ -29,8 +29,18 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // Indexing
-reviewSchema.index({ test: 1, user: 1 }, { unique: true });
 
+// Create the model
 const Review = mongoose.model("Review", reviewSchema);
+
+// Post-save middleware
+reviewSchema.post("save", async function (doc) {
+  const Test = mongoose.model("Test");
+  const test = await Test.findById(doc.test);
+  if (test) {
+    await test.updateAverageRating();
+    await test.save();
+  }
+});
 
 module.exports = Review;

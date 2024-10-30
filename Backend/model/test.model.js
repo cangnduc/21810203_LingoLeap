@@ -176,38 +176,24 @@ const testSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
-    reviewCount: {
+    totalReviews: {
       type: Number,
       default: 0,
     },
+
+    totalAttempts: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
+
   {
     timestamps: true,
   }
 );
 
-// Indexing
-testSchema.index({ createdBy: 1 });
-testSchema.index({ isPublished: 1 });
-
-// Methods
-testSchema.methods.publish = function () {
-  this.isPublished = true;
-  return this.save();
-};
-
-testSchema.methods.unpublish = function () {
-  this.isPublished = false;
-  return this.save();
-};
-
-// New method to add a review
-testSchema.methods.addReview = async function () {
-  await this.updateAverageRating();
-  return this.save();
-};
-
-// New method to update average rating
+// Define methods BEFORE creating the model
 testSchema.methods.updateAverageRating = async function () {
   const Review = mongoose.model("Review");
   const result = await Review.aggregate([
@@ -223,91 +209,29 @@ testSchema.methods.updateAverageRating = async function () {
 
   if (result.length > 0) {
     this.averageRating = result[0].averageRating;
-    this.reviewCount = result[0].count;
+    this.totalReviews = result[0].count;
   } else {
     this.averageRating = 0;
-    this.reviewCount = 0;
+    this.totalReviews = 0;
   }
 };
 
-// Virtuals
-testSchema.virtual("questionCount").get(function () {
-  return this.sections.reduce(
-    (total, section) => total + section.questions.length,
-    0
-  );
-});
+// Other methods
+testSchema.methods.publish = function () {
+  this.isPublished = true;
+  return this.save();
+};
 
+testSchema.methods.unpublish = function () {
+  this.isPublished = false;
+  return this.save();
+};
+
+// Indexing
+testSchema.index({ createdBy: 1 });
+testSchema.index({ isPublished: 1 });
+
+// Create the model AFTER defining all methods
 const Test = mongoose.model("Test", testSchema);
-//sample test data
-const sampleTest = new Test({
-  title: "IELTS General Training Practice Test",
-  description:
-    "A comprehensive practice test for IELTS General Training, covering all four sections.",
-  duration: 170, // 2 hours and 50 minutes
-  sections: [
-    {
-      name: "listening",
-      totalSectionScore: 40,
-      duration: 30,
-      passages: [
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-      ],
-    },
-    {
-      name: "reading",
-      totalSectionScore: 40,
-      duration: 60,
-      passages: [
-        { id: new mongoose.Types.ObjectId(), points: 13 },
-        { id: new mongoose.Types.ObjectId(), points: 13 },
-        { id: new mongoose.Types.ObjectId(), points: 14 },
-      ],
-    },
-    {
-      name: "writing",
-      totalSectionScore: 20,
-      duration: 60,
-      questions: [
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-        { id: new mongoose.Types.ObjectId(), points: 10 },
-      ],
-    },
-    {
-      name: "speaking",
-      totalSectionScore: 20,
-      duration: 20,
-      questions: [
-        { id: new mongoose.Types.ObjectId(), points: 5 },
-        { id: new mongoose.Types.ObjectId(), points: 5 },
-        { id: new mongoose.Types.ObjectId(), points: 5 },
-        { id: new mongoose.Types.ObjectId(), points: 5 },
-      ],
-    },
-  ],
-  totalScore: 120,
-  passingScore: 65,
-  difficulty: "intermediate",
-  createdBy: new mongoose.Types.ObjectId(),
-  isPublished: true,
-  attemptsAllowed: 2,
-  availableFrom: new Date(),
-  availableUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Available for 30 days
-  averageRating: 4.5,
-  reviewCount: 10,
-});
-
-// You can use this to save the sample test to the database
-// sampleTest.save()
-//   .then(savedTest => console.log('Sample test saved:', savedTest))
-//   .catch(error => console.error('Error saving sample test:', error));
 
 module.exports = Test;
-
-testSchema.methods.getResults = async function () {
-  const TestResult = mongoose.model("TestResult");
-  return TestResult.find({ test: this._id }).populate("user");
-};

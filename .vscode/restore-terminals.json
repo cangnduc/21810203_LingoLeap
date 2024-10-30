@@ -1,0 +1,21 @@
+{
+  "runOnStartup": true,
+  "terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "Backend",
+          "commands": ["cd Backend", "npm start"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "frontend",
+          "commands": ["cd frontend", "npm run dev"]
+        }
+      ]
+    }
+  ]
+}

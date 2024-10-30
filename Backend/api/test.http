@@ -72,10 +72,10 @@ Content-Type: application/json
 
 
 #### Get a test
-GET {{baseUrl}}/test/671bbc5d3e42879b0be78638
+GET {{baseUrl}}/tests/671bbc5d3e42879b0be78638
 Authorization: Bearer {{accessToken}}   
 
 #### Get all tests with pagination
-GET {{baseUrl}}/test?page=1&limit=10&orderBy=createdAt&sortBy=desc
+GET {{baseUrl}}/tests?page=1&limit=10&orderBy=createdAt&sortBy=desc
 Authorization: Bearer {{accessToken}}   
 

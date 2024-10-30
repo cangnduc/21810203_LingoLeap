@@ -10,8 +10,6 @@ import {
   FaPenAlt,
   FaPenFancy,
   FaPenNib,
-
-  // Remove FaPenClip
 } from "react-icons/fa";
 import { GiChoice } from "react-icons/gi";
 const sectionList = [

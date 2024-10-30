@@ -2,38 +2,16 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 // Import icons (assuming you're using a library like react-icons)
-import {
-  FaHome,
-  FaClipboardCheck,
-  FaBook,
-  FaGamepad,
-  FaEnvelope,
-  FaSignInAlt,
-  FaUserPlus,
-  FaQuestion,
-  FaPen,
-} from "react-icons/fa";
-import { RiSpeakFill } from "react-icons/ri";
 
+import { RiSpeakFill } from "react-icons/ri";
+import { siteLinks } from "@/constant";
 export default function NavLinks({ className = "", showIcons = false }) {
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
 
-  const defaultIcons = {
-    "/": FaHome,
-    "/test": FaClipboardCheck,
-    "/courses": FaBook,
-    "/question": FaQuestion,
-    "/game": FaGamepad,
-    "/chat": RiSpeakFill,
-    "/login": FaSignInAlt,
-    "/register": FaUserPlus,
-    "/test-creation": FaPen,
-  };
-
   const NavLink = ({ to, children }) => {
     const isActive = location.pathname === to;
-    const Icon = defaultIcons[to];
+    const Icon = siteLinks[to];
 
     return (
       <Link
@@ -53,8 +31,9 @@ export default function NavLinks({ className = "", showIcons = false }) {
   return (
     <>
       <NavLink to="/">Home</NavLink>
-      <NavLink to="/test-creation">Tests</NavLink>
-      <NavLink to="/chat">Speaking</NavLink> <NavLink to="/game">Game</NavLink>
+      <NavLink to="/test-creation">Tests Creation</NavLink>
+      <NavLink to="/chat">Speaking</NavLink>
+      <NavLink to="/tests">Tests</NavLink>
       <NavLink to="/question">Questions</NavLink>
       {!user && (
         <>

@@ -1,12 +1,12 @@
 import express from "express";
 import { AccessToken } from "livekit-server-sdk";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 const router = express.Router();
 
 router.get(
   "/",
-  authMiddleware(["admin", "user"]),
-  asyncHandler(async (req, res) => {
+  authMiddleware(["admin", "teacher", "user"]),
+  async (req, res) => {
     // Ensure user identity is provided
     const user = req.user || "anonymous-user";
     console.log("User:", user);
@@ -46,7 +46,7 @@ router.get(
       console.error("Error generating token:", error);
       res.status(500).json({ error: "Failed to generate token" });
     }
-  })
+  }
 );
 
 export default router;

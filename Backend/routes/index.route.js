@@ -8,7 +8,8 @@ router.get("/", (req, res) => {
 router.use("/auth", require("./auth.route"));
 router.use("/user", require("./user.route"));
 router.use("/question", require("./question.route"));
-router.use("/test", require("./test.route"));
+router.use("/tests", require("./test.route"));
+router.use("/review", require("./review.route"));
 router.use(
   "/voice",
   asyncHandler(async (req, res, next) => {

@@ -12,7 +12,6 @@ import { AnimatePresence } from "framer-motion";
 import MenuPanel from "./MenuPanel";
 import UserProfile from "./UserProfile";
 import NavLinks from "./NavLinks";
-import logo from "../logo";
 export default function Navigation() {
   const isDarkMode = useSelector((state) => state.app.isDarkMode);
   const user = useSelector((state) => state.auth.user);

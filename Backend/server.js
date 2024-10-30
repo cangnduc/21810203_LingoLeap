@@ -123,6 +123,14 @@ app.use((err, req, res, next) => {
       errors: err.message,
     });
   }
+  if (err instanceof ForbiddenError) {
+    return res.status(403).json({
+      success: false,
+      message: "Forbidden",
+      code: 403,
+      errors: err.message,
+    });
+  }
   if (err instanceof UnauthorizedError) {
     return res.status(401).json({
       success: false,
