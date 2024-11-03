@@ -16,13 +16,7 @@ const TestContainer = () => {
     sortBy: "desc",
     createdBy: "",
   });
-  console.log("filter createdBy", filters.createdBy);
-  const {
-    data: response,
-    isLoading,
-    isError,
-    error,
-  } = useGetTestsQuery({
+  const { data, isLoading, isError, error } = useGetTestsQuery({
     page,
     limit,
     ...filters,
@@ -69,8 +63,9 @@ const TestContainer = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>{error.message}</div>;
+  if (!data) return <div>No data available</div>;
 
-  const { tests, totalPages } = response;
+  const { tests, totalPages } = data;
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
@@ -121,16 +116,15 @@ const TestContainer = () => {
       </div>
 
       {/* Test Cards - Updated grid layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tests &&
-          tests.data.map((test, index) => (
-            <TestCard
-              userId={user?._id}
-              key={test._id}
-              index={index}
-              test={test}
-            />
-          ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+        {tests?.data.map((test, index) => (
+          <TestCard
+            userId={user?._id}
+            key={test._id}
+            index={index}
+            test={test}
+          />
+        ))}
       </div>
 
       {/* Pagination */}

@@ -4,6 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const testApi = createApi({
   reducerPath: "testApi",
   baseQuery: baseApiWithReauth,
+  keepUnusedDataFor: 300,
   endpoints: (builder) => ({
     getTests: builder.query({
       query: (args = {}) => {
@@ -52,6 +53,7 @@ export const testApi = createApi({
         }
         return response;
       },
+      keepUnusedDataFor: 600,
     }),
     addTest: builder.mutation({
       query: (test) => ({
@@ -73,6 +75,11 @@ export const testApi = createApi({
         method: "DELETE",
       }),
     }),
+    getTestForAttempt: builder.query({
+      query: (id) => `/tests/${id}/attempt`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
@@ -81,4 +88,5 @@ export const {
   useGetTestQuery,
   useAddTestMutation,
   useDeleteTestMutation,
+  useGetTestForAttemptQuery,
 } = testApi;

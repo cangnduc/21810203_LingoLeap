@@ -206,7 +206,7 @@ testSchema.methods.updateAverageRating = async function () {
       },
     },
   ]);
-
+  console.log("result", result);
   if (result.length > 0) {
     this.averageRating = result[0].averageRating;
     this.totalReviews = result[0].count;
@@ -214,6 +214,7 @@ testSchema.methods.updateAverageRating = async function () {
     this.averageRating = 0;
     this.totalReviews = 0;
   }
+  return this.save();
 };
 
 // Other methods

@@ -37,7 +37,17 @@ class ForbiddenError extends AppError {
     super(message, code, status);
   }
 }
-
+class ErrorRedirect extends AppError {
+  constructor(
+    message = "Error Redirect",
+    code = 400,
+    status = "error",
+    redirect = null
+  ) {
+    super(message, code, status);
+    this.redirect = redirect;
+  }
+}
 class InternalServerError extends AppError {
   constructor(message = "Internal Server Error", originalError = null) {
     super(message, 500, "error");
@@ -52,4 +62,5 @@ module.exports = {
   UnauthorizedError,
   ForbiddenError,
   InternalServerError,
+  ErrorRedirect,
 };

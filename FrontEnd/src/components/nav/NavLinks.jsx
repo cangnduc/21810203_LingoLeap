@@ -20,7 +20,7 @@ export default function NavLinks({ className = "", showIcons = false }) {
           isActive
             ? "text-black font-semibold dark:text-white bg-gray-200 dark:bg-gray-800 rounded-md"
             : ""
-        } ${className}`}
+        } ${className} whitespace-nowrap overflow-hidden text-ellipsis`}
       >
         {showIcons && Icon && <Icon className="w-5 h-5" />}
         {children}

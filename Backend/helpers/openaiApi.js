@@ -74,16 +74,16 @@ The most immediate benefit of social media has been its ability to bridge geogra
 
 In conclusion, social media has revolutionized modern communication in ways that were unimaginable just a few decades ago. While it has created unprecedented opportunities for connection and information sharing, it has also introduced new challenges to meaningful communication and social cohesion. Understanding and addressing these impacts is crucial for ensuring that social media serves as a tool for enhancing human connection rather than diminishing it. The future of communication will depend on our ability to strike a balance between digital convenience and authentic human interaction.`;
 
-generateCompletion(
-  content,
-  "The Impact of Social Media on Modern Communication"
-).then((processedResponse) => {
-  if (processedResponse) {
-    console.log("Processed response:", processedResponse);
-    // Here you can store the processedResponse in your database
-  } else {
-    console.log("Failed to process the response");
-  }
-});
+// generateCompletion(
+//   content,
+//   "The Impact of Social Media on Modern Communication"
+// ).then((processedResponse) => {
+//   if (processedResponse) {
+//     console.log("Processed response:", processedResponse);
+//     // Here you can store the processedResponse in your database
+//   } else {
+//     console.log("Failed to process the response");
+//   }
+// });
 
 module.exports = { generateCompletion };

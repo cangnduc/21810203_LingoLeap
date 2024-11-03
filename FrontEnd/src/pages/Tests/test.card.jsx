@@ -37,14 +37,10 @@ const TestCard = ({ test, userId, index }) => {
     navigate(`/tests/${_id}`);
   };
 
-  const handleAttempt = () => {
-    navigate(`/tests/${_id}/attempt`);
-  };
-
   // Mobile Card
   const MobileCard = () => (
     <div
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 h-full flex flex-col"
       onClick={() => setShowModal(true)}
     >
       <div className="flex justify-between items-start mb-3">
@@ -68,7 +64,9 @@ const TestCard = ({ test, userId, index }) => {
           : description}
       </p>
 
-      <div className="flex justify-between items-center">
+      <div className="flex-grow"></div>
+
+      <div className="flex justify-between items-center mt-auto">
         <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full text-xs">
           {testType}
         </span>
@@ -77,7 +75,7 @@ const TestCard = ({ test, userId, index }) => {
             <DeleteButton onClick={handleDelete} isLoading={isDeleting} />
           )}
           <ViewButton onClick={handleView} />
-          <TestAttemptButton onClick={handleAttempt} />
+          <TestAttemptButton id={_id} />
         </div>
       </div>
     </div>
@@ -86,12 +84,12 @@ const TestCard = ({ test, userId, index }) => {
   return (
     <>
       {/* Mobile View */}
-      <div className="md:hidden">
+      <div className="md:hidden h-full">
         <MobileCard />
       </div>
 
       {/* Desktop View - Full Model */}
-      <div className="hidden md:block">
+      <div className="hidden md:block h-full">
         <TestModel test={test} userId={userId} />
       </div>
 

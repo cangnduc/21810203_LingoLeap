@@ -28,12 +28,7 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// Indexing
-
-// Create the model
-const Review = mongoose.model("Review", reviewSchema);
-
-// Post-save middleware
+// Move middleware BEFORE model creation
 reviewSchema.post("save", async function (doc) {
   const Test = mongoose.model("Test");
   const test = await Test.findById(doc.test);
@@ -42,5 +37,10 @@ reviewSchema.post("save", async function (doc) {
     await test.save();
   }
 });
+
+// Indexing (if any)
+
+// Create the model at the end
+const Review = mongoose.model("Review", reviewSchema);
 
 module.exports = Review;

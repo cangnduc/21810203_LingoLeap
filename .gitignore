@@ -10,3 +10,5 @@ Backend/node_modules
 Frontend/node_modules
 Backend/uploads/audio
 Backend/google-credentials.json
+localhost+*-key.pem
+localhost+*.pem

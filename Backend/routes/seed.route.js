@@ -15,6 +15,7 @@ const {
 const { seedMatchingQuestions } = require("../model/seed/matching");
 const { seedReadingPassages } = require("../model/seed/reading");
 const { seedReviews } = require("../model/seed/review");
+const Test = require("../model/test.model");
 /**
  * @swagger
  * /seed:
@@ -28,7 +29,13 @@ router.get(
     // await seedMultipleChoiceQuestions();
     // await seedSingleChoiceQuestions();
     //await seedWritingEssayQuestions();
-    await seedReviews();
+    const id = "671bbc5d3e42879b0be78638";
+    const test = await Test.findById(id);
+
+    if (test) {
+      const result = await test.updateAverageRating();
+      console.log("result", result);
+    }
     // await seedFillInTheBlankQuestions();
     //await seedMatchingQuestions();
     res.status(200).json({ message: "seeded successfully" });

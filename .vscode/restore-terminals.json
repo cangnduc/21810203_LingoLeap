@@ -1,5 +1,5 @@
 {
-  "runOnStartup": true,
+  "runOnStartup": false,
   "terminals": [
     {
       "splitTerminals": [

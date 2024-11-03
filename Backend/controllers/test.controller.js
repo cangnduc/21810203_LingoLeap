@@ -4,6 +4,7 @@ const Test = require("../model/test.model");
 const { TestValidator } = require("../validator/test.validator");
 const { BadRequestError, ForbiddenError } = require("../helpers/error");
 const Question = require("../model/question.model");
+const TestAttempt = require("../model/testAttempt.model");
 
 class TestController {
   async getTests(req, res) {
@@ -121,7 +122,7 @@ class TestController {
     const { id } = req.params;
     const { user } = req;
     //await Test.findByIdAndDelete(id);
-    const test = await Test.findById(id);
+    const test = await Test.findById(id).select("createdBy").lean();
     if (!test) {
       throw new NotFoundError("Test not found");
     }
@@ -131,6 +132,116 @@ class TestController {
 
     console.log(`Simulated deletion of test with ID: ${id}`);
     Response.sendSuccess(res, "Test deleted successfully");
+  }
+
+  async getTestForAttempt(req, res) {
+    const selectAttribute = `
+      type instruction questionText
+      answer
+      answers
+      text blanks
+      leftColumn rightColumn
+      items
+      prompt
+      minWords maxWords rubric
+    `;
+    const { id } = req.params;
+    const test = await Test.findById(id)
+      .select("title duration description testType sections attemptsAllowed")
+      .populate({
+        path: "sections.questions._id",
+        model: "Question",
+        // Select common fields and all possible type-specific fields
+        select: selectAttribute,
+      })
+      .populate({
+        path: "sections.passages._id",
+        model: "BasePassage",
+        select: "text title passageType url soundFile", // soundFile only exists for listening passages
+        populate: {
+          path: "questions",
+          model: "Question",
+          select: selectAttribute,
+        },
+      })
+      .lean();
+
+    if (!test) {
+      throw new NotFoundError("Test not found");
+    }
+
+    // Additional validations specific to test attempts
+    const existingAttempts = await TestAttempt.countDocuments({
+      test: id,
+      user: req.user._id,
+      status: { $in: ["completed", "in-progress"] },
+    });
+
+    if (existingAttempts >= test.maxAttempts) {
+      throw new ForbiddenError("Maximum attempts reached for this test");
+    }
+
+    Response.sendSuccess(res, "Test fetched successfully", test);
+  }
+
+  async publishTest(req, res) {
+    const { id } = req.params;
+    const { user } = req;
+
+    // Only select fields we need for validation and updating
+    const test = await Test.findById(id).select(
+      "isPublished sections createdBy"
+    );
+    if (!test) {
+      throw new NotFoundError("Test not found");
+    }
+
+    // Check if user has permission to publish
+    if (test.createdBy.toString() !== user._id.toString()) {
+      throw new ForbiddenError("You are not authorized to publish this test");
+    }
+
+    // Add any additional validation before publishing
+    if (test.sections.length === 0) {
+      throw new BadRequestError("Cannot publish a test without any sections");
+    }
+
+    test.isPublished = true;
+    await test.save();
+
+    Response.sendSuccess(res, "Test published successfully", test);
+  }
+
+  async updateTest(req, res) {
+    const { id } = req.params;
+    const { user } = req;
+
+    const validatedUpdate = TestValidator.partial().safeParse(req.body);
+    if (!validatedUpdate.success) {
+      const errorMessages = validatedUpdate.error.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join(", ");
+      throw new BadRequestError(errorMessages);
+    }
+
+    // Only select fields we need for validation
+    const test = await Test.findById(id).select("createdBy");
+    if (!test) {
+      throw new NotFoundError("Test not found");
+    }
+
+    if (test.createdBy.toString() !== user._id.toString()) {
+      throw new ForbiddenError("You are not authorized to update this test");
+    }
+
+    // Use findByIdAndUpdate for a more efficient update
+    const updatedTest = await Test.findByIdAndUpdate(
+      id,
+      { $set: validatedUpdate.data },
+      { new: true } // Return the updated document
+    );
+
+    Response.sendSuccess(res, "Test updated successfully", updatedTest);
   }
 }
 

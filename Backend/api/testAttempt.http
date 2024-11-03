@@ -1,0 +1,31 @@
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y
+
+### Test Attempt API
+
+#### Get a test attempt
+GET {{baseUrl}}/test-attempt/:id
+Authorization: Bearer {{accessToken}}
+
+#### Create a test attempt
+POST {{baseUrl}}/test-attempt/671bbc5d3e42879b0be78638/initialize
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id": "671bbc5d3e42879b0be78638"
+}
+
+#### Save an answer
+PUT {{baseUrl}}/test-attempt/:id/answer
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "questionId": "question_id_here",
+    "answer": "user_answer_here"
+}
+
+#### Complete test attempt
+POST {{baseUrl}}/test-attempt/:id/complete
+Authorization: Bearer {{accessToken}}

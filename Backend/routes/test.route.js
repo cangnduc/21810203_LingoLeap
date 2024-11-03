@@ -15,6 +15,11 @@ router.get(
   authMiddleware(["admin", "teacher", "user"]),
   asyncHandler(TestController.getTest)
 );
+router.get(
+  "/:id/attempt",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(TestController.getTestForAttempt)
+);
 router.delete(
   "/:id",
   authMiddleware(["admin", "teacher"]),
@@ -25,5 +30,7 @@ router.post(
   authMiddleware(["admin", "teacher", "user"]),
   asyncHandler(TestController.addTest)
 );
+router.patch("/:id/publish", wrapAsyncRoutes(TestController.publishTest));
+router.patch("/:id", wrapAsyncRoutes(TestController.updateTest));
 
 module.exports = router;

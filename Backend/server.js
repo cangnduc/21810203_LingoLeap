@@ -14,9 +14,10 @@ const compression = require("compression");
 const swagger = require("./docs/swagger/index");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const ip = 10;
 const sslOptions = {
-  key: fs.readFileSync("../localhost+1-key.pem"),
-  cert: fs.readFileSync("../localhost+1.pem"),
+  key: fs.readFileSync(`../localhost+${ip}-key.pem`),
+  cert: fs.readFileSync(`../localhost+${ip}.pem`),
 };
 const {
   Question,
@@ -31,14 +32,15 @@ const {
   InternalServerError,
   UnauthorizedError,
   ForbiddenError,
+  ErrorRedirect,
 } = require("./helpers/error");
 const { ZodError } = require("zod");
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://localhost:5173",
-  "http://192.168.1.6:5173",
-  "https://192.168.1.6:5173",
+  `http://192.168.1.${7}:5173`,
+  `https://192.168.1.${7}:5173`,
 ];
 
 app.use(
@@ -69,6 +71,7 @@ mongooseClient.connect();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //app.use(upload.any());
 app.use(morgan("dev"));
 app.use(cookieParser());
@@ -105,6 +108,15 @@ app.use((err, req, res, next) => {
       message: "Bad Request",
       code: 400,
       errors: err.message,
+    });
+  }
+  if (err instanceof ErrorRedirect) {
+    return res.status(400).json({
+      success: false,
+      message: "Bad Request",
+      code: 400,
+      errors: err.message,
+      redirect: err.redirect,
     });
   }
   if (err instanceof SyntaxError) {

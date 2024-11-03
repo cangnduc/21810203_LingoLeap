@@ -1,72 +1,60 @@
 import React from "react";
 import DeleteButton from "@/components/button/delete";
-import { toast } from "react-toastify";
-import Loader from "@/components/loader";
 import ViewButton from "@/components/button/view";
-import { useDeleteTestMutation } from "@/app/services/testApi";
-import { useNavigate } from "react-router-dom";
 import TestAttemptButton from "@/components/button/test.attempt";
-const TestModel = ({ test, userId, className }) => {
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDeleteTestMutation } from "@/app/services/testApi";
+import { format } from "date-fns";
+
+const TestModel = ({ test, userId }) => {
   const navigate = useNavigate();
+  const [deleteTest, { isLoading: isDeleting }] = useDeleteTestMutation();
   const {
     title,
     description,
-    duration,
     testType,
-    difficulty,
+    isPublished,
+    duration,
     totalPossibleScore,
     passingScore,
     sections,
-    isPublished,
+    createdBy,
+    _id,
     availableFrom,
     availableUntil,
-    createdBy,
     totalAttempts,
-    averageRating,
-    _id,
+    attemptsAllowed,
+    difficulty,
   } = test;
-  const [deleteTest, { isLoading: isDeleting }] = useDeleteTestMutation();
 
   const handleDelete = async () => {
     try {
-      await deleteTest(test._id).unwrap();
+      await deleteTest(_id).unwrap();
       toast.success("Test deleted successfully");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to delete test");
     }
   };
+
   const handleView = () => {
-    navigate(`/tests/${test._id}`);
+    navigate(`/tests/${_id}`);
   };
-  const handleAttempt = () => {
-    navigate(`/tests/${test._id}/attempt`);
+
+  const formatDate = (date) => {
+    return format(new Date(date), "MMM dd, yyyy");
   };
+
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 rounded-lg md:shadow-md p-6 hover:shadow-lg transition-shadow md:border md:border-gray-200 dark:border-gray-700 flex flex-col ${className}`}
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 h-full flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-white">
-            {title}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {description?.length > 60 ? (
-              <>
-                {description.substring(0, 60)}...
-                <span className="ml-1 cursor-pointer text-blue-500 hover:text-blue-600">
-                  <i className="fas fa-chevron-right text-xs" />
-                </span>
-              </>
-            ) : (
-              description
-            )}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate pr-2">
+          {title}
+        </h3>
+        <div className="flex gap-2">
           <span
-            className={`px-3 py-1 rounded-full text-xs ${
+            className={`px-2 py-0.5 rounded-full text-xs flex-shrink-0 ${
               isPublished
                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
                 : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
@@ -74,48 +62,61 @@ const TestModel = ({ test, userId, className }) => {
           >
             {isPublished ? "Published" : "Draft"}
           </span>
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full text-xs uppercase">
-            {testType}
+          <span className="px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 rounded-full text-xs">
+            {difficulty}
           </span>
         </div>
       </div>
 
-      {/* Test Details */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      {/* Description */}
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        {description?.length > 100
+          ? `${description.substring(0, 100)}...`
+          : description}
+      </p>
+
+      {/* Test Details Grid */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Duration</p>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Duration:
+          </span>
           <p className="font-medium dark:text-white">{duration} minutes</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Difficulty</p>
-          <p className="font-medium capitalize dark:text-white">{difficulty}</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Total Score
-          </p>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Score:
+          </span>
           <p className="font-medium dark:text-white">
-            {totalPossibleScore} points
+            {passingScore}/{totalPossibleScore}
           </p>
         </div>
         <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Passing Score
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Attempts:
+          </span>
+          <p className="font-medium dark:text-white">
+            {totalAttempts}/{attemptsAllowed || "∞"}
           </p>
-          <p className="font-medium dark:text-white">{passingScore} points</p>
+        </div>
+        <div>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Type:
+          </span>
+          <p className="font-medium dark:text-white">{testType}</p>
         </div>
       </div>
 
       {/* Sections */}
       <div className="mb-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           Sections:
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {sections.map((section, index) => (
+        </span>
+        <div className="flex flex-wrap gap-2 mt-1">
+          {sections.map((section) => (
             <span
-              key={section._id || index}
-              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm"
+              key={section._id}
+              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300"
             >
               {section.name} ({section.sectionScore} pts)
             </span>
@@ -124,42 +125,38 @@ const TestModel = ({ test, userId, className }) => {
       </div>
 
       {/* Availability */}
-      <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        <p>
-          Available: {new Date(availableFrom).toLocaleDateString()} -{" "}
-          {new Date(availableUntil).toLocaleDateString()}
-        </p>
-      </div>
-      {/* Created By and Total Attempts */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Created by: {createdBy.username}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Total Attempts: {totalAttempts}
-          </p>
+      <div className="mb-4">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Available:
+        </span>
+        <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+          <span>From: {formatDate(availableFrom)}</span>
+          <span>To: {formatDate(availableUntil)}</span>
         </div>
       </div>
-      {/* Reviews and actions */}
-      <div className="flex justify-between items-center mt-auto">
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Average Rating: {averageRating}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 ml-auto">
-          {isDeleting ? (
-            <Loader />
-          ) : (
-            userId === createdBy._id && (
-              <DeleteButton onClick={handleDelete} isLoading={isDeleting} />
-            )
+
+      {/* Created By */}
+      <div className="mb-4">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Created by:
+        </span>
+
+        <span className="text-sm font-medium dark:text-white">
+          {createdBy.username}
+        </span>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-grow"></div>
+
+      {/* Footer */}
+      <div className="flex justify-end items-center mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-1">
+          {userId === createdBy._id && (
+            <DeleteButton onClick={handleDelete} isLoading={isDeleting} />
           )}
           <ViewButton onClick={handleView} />
-          <TestAttemptButton onClick={handleAttempt} />
+          <TestAttemptButton id={_id} />
         </div>
       </div>
     </div>

@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 const { generateCompletion } = require("../helpers/openaiApi");
-const {
-  writingQuestionResultSchema,
-  WritingQuestionResult,
-} = require("./writtingQuestionResult.model");
+
 const testAttemptSchema = new mongoose.Schema(
   {
     user: {
@@ -44,12 +41,8 @@ const testAttemptSchema = new mongoose.Schema(
         question: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Questions",
-          required: true,
         },
-        userAnswer: {
-          type: mongoose.Schema.Mixed,
-          required: true,
-        },
+        userAnswer: mongoose.Schema.Types.Mixed,
       },
     ],
   },
@@ -68,22 +61,19 @@ testAttemptSchema.methods.start = function (test) {
   this.maxEndTime = new Date(this.startTime.getTime() + test.duration * 60000); // Convert minutes to milliseconds
   return this.save();
 };
-
+testAttemptSchema.methods.isTimeUp = function () {
+  return new Date() >= this.maxEndTime;
+};
 testAttemptSchema.methods.complete = async function () {
-  const now = new Date();
-  this.endTime = now > this.maxEndTime ? this.maxEndTime : now;
   this.status = "completed";
+  this.endTime = new Date();
   await this.save();
-  return this.calculateResult();
+  return this;
 };
 
 testAttemptSchema.methods.isTimeUp = function () {
   return new Date() >= this.maxEndTime;
 };
-
-const TestAttempt = mongoose.model("TestAttempt", testAttemptSchema);
-
-module.exports = TestAttempt;
 
 // Add this method to the testAttemptSchema
 testAttemptSchema.methods.calculateResult = async function () {
@@ -236,46 +226,49 @@ testAttemptSchema.methods.calculateScore = function (
   }
 };
 
-const exampleTestAttempt = {
-  answers: [
-    {
-      question: "666666666666666666666666",
-      userAnswer: "A",
-      questionType: "single_choice",
-    },
-    {
-      question: "666666666666666666666666",
-      userAnswer: ["A", "B"],
-      questionType: "multiple_choice",
-    },
-    {
-      question: "666666666666666666666666",
-      userAnswer: ["A", "B", "C", "D"],
-      questionType: "ordering",
-    },
-    {
-      question: "666666666666666666666666",
-      userAnswer: "A",
-      questionType: "true_false",
-    },
-    {
-      question: "666666666666666666666666",
-      userAnswer: [
-        { left: "1", right: "A" },
-        { left: "2", right: "B" },
-        { left: "3", right: "C" },
-      ],
-      questionType: "matching",
-    },
-    {
-      question: "666666666666666666666666",
-      userAnswer: ["A", "B"],
-      questionType: "matching",
-    },
-  ],
-  test: "666666666666666666666666",
-  user: "666666666666666666666666",
-  startTime: new Date(),
-  maxEndTime: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hour from now
-  status: "in-progress",
-};
+// const exampleTestAttempt = {
+//   answers: [
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: "A",
+//       questionType: "single_choice",
+//     },
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: ["A", "B"],
+//       questionType: "multiple_choice",
+//     },
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: ["A", "B", "C", "D"],
+//       questionType: "ordering",
+//     },
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: "A",
+//       questionType: "true_false",
+//     },
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: [
+//         { left: "1", right: "A" },
+//         { left: "2", right: "B" },
+//         { left: "3", right: "C" },
+//       ],
+//       questionType: "matching",
+//     },
+//     {
+//       question: "666666666666666666666666",
+//       userAnswer: ["A", "B"],
+//       questionType: "matching",
+//     },
+//   ],
+//   test: "666666666666666666666666",
+//   user: "666666666666666666666666",
+//   startTime: new Date(),
+//   maxEndTime: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hour from now
+//   status: "in-progress",
+// };
+const TestAttempt = mongoose.model("TestAttempt", testAttemptSchema);
+
+module.exports = TestAttempt;

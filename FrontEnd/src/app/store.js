@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import appReducer from "./features/appSlice";
 import authReducer from "./features/authSlice";
+import testAnswerReducer from "./features/testAnswerSlice";
 import { combineReducers } from "redux";
 import { authApi } from "./services/authApi";
 import { userApi } from "./services/userApi";
@@ -10,10 +11,12 @@ import { chatApi } from "./services/chatApi";
 import { questionApi } from "./services/questionApi";
 import { testApi } from "./services/testApi";
 import { reviewApi } from "./services/reviewApi";
+import { testAttemptApi } from "./services/testAttemptApi";
+
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "app"],
+  whitelist: ["auth", "app", "testAnswer"],
 };
 
 const uploadProgressReducer = (state = 0, action) => {
@@ -27,12 +30,14 @@ const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
   uploadProgress: uploadProgressReducer,
+  testAnswer: testAnswerReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,
   [questionApi.reducerPath]: questionApi.reducer,
   [testApi.reducerPath]: testApi.reducer,
   [reviewApi.reducerPath]: reviewApi.reducer,
+  [testAttemptApi.reducerPath]: testAttemptApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -47,6 +52,7 @@ export const store = configureStore({
       questionApi.middleware,
       testApi.middleware,
       reviewApi.middleware,
+      testAttemptApi.middleware,
     ]),
   devTools: process.env.NODE_ENV !== "production",
 });

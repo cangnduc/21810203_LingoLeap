@@ -1,0 +1,6 @@
+{
+  "app": "{\"isDarkMode\":false,\"menu\":{\"isOpen\":false,\"height\":0,\"isClosing\":false}}",
+  "auth": "{\"user\":{\"_id\":\"66eda220f1577aa9a314ab30\",\"username\":\"johndoe\",\"email\":\"john.doe@example.com\",\"role\":\"teacher\"},\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTczMDI2NzAxMiwiZXhwIjoxNzUxODY3MDEyfQ.WOh9oXwrzzs8IogWJLaBmzCyFVP5WbB2R9iMXTpJTaQ\"}",
+  "testAnswer": "{\"answers\":[{\"question\":\"671bb162de4634470cf31953\",\"answer\":[\"Moon\"]},{\"question\":\"671bb162de4634470cf31954\",\"answer\":\"Pluto\"},{\"question\":\"671bb162de4634470cf31955\",\"answer\":true},{\"question\":\"6716a0c448333608a7005344\",\"answer\":\"a\"},{\"question\":\"6716a022c625e4695ad80a83\",\"answer\":\"a\"},{\"question\":\"6716a022c625e4695ad80a84\",\"answer\":[\"a\"]},{\"question\":\"671662119e0a1e66671825b3\",\"answer\":[\"Place\"]},{\"question\":\"67169f04fe23e47752da8ab5\",\"answer\":true}],\"byTestId\":{\"6723842ba50725f0221ca155\":[],\"671bc5eb02e0717609d25619\":[],\"671bc5b202e0717609d25611\":[]}}",
+  "_persist": "{\"version\":-1,\"rehydrated\":true}"
+}

@@ -4,7 +4,7 @@ const appSlice = createSlice({
   name: "app",
   initialState: {
     isDarkMode: false,
-
+    isAttemptTest: false,
     menu: {
       isOpen: false,
       height: 0,
@@ -31,6 +31,9 @@ const appSlice = createSlice({
     toggleDarkMode: (state) => {
       state.isDarkMode = !state.isDarkMode;
     },
+    setIsAttemptTest: (state, action) => {
+      state.isAttemptTest = action.payload;
+    },
   },
 });
 
@@ -39,5 +42,6 @@ export const {
   setIsMenuOpen,
   setMenuHeight,
   finishClosingMenu,
+  setIsAttemptTest,
 } = appSlice.actions;
 export default appSlice.reducer;

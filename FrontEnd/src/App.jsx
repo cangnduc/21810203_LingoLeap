@@ -6,7 +6,6 @@ import Navigation from "./components/nav/Navigation";
 import Home from "./pages/Home";
 import Test from "./pages/Tests";
 import Courses from "./pages/Courses";
-import Contact from "./pages/Contact";
 import PageTransition from "./components/PageTransition";
 import AiAssisstant from "./pages/AiAssisstant";
 import Auth from "./pages/Auth";
@@ -14,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AddQuestion from "./pages/AddQuestion";
 import TestCreation from "./pages/TestCreation";
 import TestDetail from "./pages/Tests/test.detail";
+import TestAttempt from "./pages/TestAttempt";
 function App() {
   const location = useLocation();
   const isDarkMode = useSelector((state) => state.app.isDarkMode);
@@ -46,6 +46,11 @@ function App() {
       path: "/question",
       element: <AddQuestion />,
       roles: ["admin", "user", "teacher"],
+    },
+    {
+      path: "/test-attempt/:testAttemptId",
+      element: <TestAttempt />,
+      roles: ["admin", "teacher", "user"],
     },
     {
       path: "/test-creation",
