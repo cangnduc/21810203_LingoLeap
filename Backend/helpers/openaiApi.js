@@ -12,13 +12,13 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-async function generateCompletion(content, topic) {
+async function generateCompletion(content, topic, point, testType) {
   const completion = await openai.chat.completions.create({
     model: "gpt-4-turbo-preview",
     messages: [
       {
         role: "system",
-        content: `You are an experienced English Essay Examiner to evaluate and assess student essay on topic ${topic}, providing constructive short feedbacks (strengths, weaknesses, and improvements) on content: stay relevant to the topic?, structure, grammar, vocabulary, style. The feedback should be concise and to the point, and the scoring should be fair, range between 0 and 10. return sample of feedback as json object:{"content": {"score": 1, "strengths": "Wide range of academic vocabulary, Appropriate word choice", "weaknesses": "irrelevant to the topic", "improvements": "Incorporate more field-specific terminology, Use more varied synonyms"}, "structure": {"score": 9, "strengths": "Correct sentence structure, Proper use of punctuation", "weaknesses": "Minor errors in subject-verb agreement", "improvements": "Review complex sentence formations, Check verb tenses for consistency"}}`,
+        content: `You are an experienced English Essay Examiner to Evaluate the essay task of ${testType} test on a scale of 0 to ${point} for each aspect: Content & Relevance (addresses the prompt and stays on topic of ${topic}), Structure & Organization (clear introduction, body, conclusion, logical flow), Language Use & Grammar (accurate grammar, varied vocabulary), Clarity & Cohesion (ease of understanding, smooth transitions), and Creativity & Originality (unique ideas or perspectives). Provide brief feedback for each aspect, along with a summary. You only return json object as this example: {"aspects":[{"aspect":"Content & Relevance","score":8,"feedback":"The essay addresses the prompt well, with mostly relevant ideas."},{"aspect":"Structure & Organization","score":7,"feedback":"Clear structure, but some paragraphs could flow better."},{"aspect":"Language Use & Grammar","score":9,"feedback":"Strong grammar and vocabulary with varied sentence structures."},{"aspect":"Clarity & Cohesion","score":8,"feedback":"Generally clear with smooth transitions, minor rephrasing needed."},{"aspect":"Creativity & Originality","score":6,"feedback":"Some original ideas, but lacks unique insights."}],"summary_feedback":"Well-written with strong grammar. Improvement areas: deepen content and add unique insights."}`,
       },
       {
         role: "user",
@@ -32,34 +32,7 @@ async function generateCompletion(content, topic) {
 
 function preprocessResponse(response) {
   if (response.role === "assistant" && response.content) {
-    const jsonMatch = response.content.match(/```json\n([\s\S]*?)\n```/);
-    if (jsonMatch && jsonMatch[1]) {
-      try {
-        const jsonObject = JSON.parse(jsonMatch[1]);
-
-        // Calculate and add mean score
-        let totalScore = 0;
-        let scoreCount = 0;
-
-        for (const key in jsonObject) {
-          if (jsonObject[key].score) {
-            totalScore += jsonObject[key].score;
-            scoreCount++;
-          }
-        }
-
-        const meanScore = scoreCount > 0 ? totalScore / scoreCount : 0;
-
-        // Add mean score to the object
-        return {
-          ...jsonObject,
-          totalScore: parseFloat(meanScore.toFixed(2)),
-        };
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        return null;
-      }
-    }
+    return response.content;
   }
   console.error("Unexpected response format");
   return null;

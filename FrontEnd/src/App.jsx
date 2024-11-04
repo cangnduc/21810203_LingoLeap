@@ -14,6 +14,7 @@ import AddQuestion from "./pages/AddQuestion";
 import TestCreation from "./pages/TestCreation";
 import TestDetail from "./pages/Tests/test.detail";
 import TestAttempt from "./pages/TestAttempt";
+import Contact from "./pages/Contact";
 function App() {
   const location = useLocation();
   const isDarkMode = useSelector((state) => state.app.isDarkMode);
@@ -56,6 +57,11 @@ function App() {
       path: "/test-creation",
       element: <TestCreation />,
       roles: ["admin", "teacher"],
+    },
+    {
+      path: "/contact",
+      element: <Contact />,
+      roles: ["admin", "teacher", "user"],
     },
   ];
   return (

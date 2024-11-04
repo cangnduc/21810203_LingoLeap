@@ -5,6 +5,7 @@ export const testApi = createApi({
   reducerPath: "testApi",
   baseQuery: baseApiWithReauth,
   keepUnusedDataFor: 300,
+  tagTypes: ["Test"],
   endpoints: (builder) => ({
     getTests: builder.query({
       query: (args = {}) => {
@@ -44,6 +45,7 @@ export const testApi = createApi({
           totalTests: 0,
         };
       },
+      providesTags: ["Test"],
     }),
     getTest: builder.query({
       query: (id) => `/tests/${id}`,
@@ -53,6 +55,7 @@ export const testApi = createApi({
         }
         return response;
       },
+      providesTags: ["Test"],
       keepUnusedDataFor: 600,
     }),
     addTest: builder.mutation({
@@ -68,12 +71,14 @@ export const testApi = createApi({
         }
         return response;
       },
+      invalidatesTags: ["Test"],
     }),
     deleteTest: builder.mutation({
       query: (id) => ({
         url: `/tests/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Test"],
     }),
     getTestForAttempt: builder.query({
       query: (id) => `/tests/${id}/attempt`,

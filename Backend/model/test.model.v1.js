@@ -58,11 +58,6 @@ const testSchema = new mongoose.Schema(
           questions: {
             type: [
               {
-                _id: {
-                  type: mongoose.Schema.Types.ObjectId,
-                  ref: "Question",
-                  required: true,
-                },
                 points: {
                   type: Number,
                   required: true,
@@ -90,10 +85,6 @@ const testSchema = new mongoose.Schema(
           passages: {
             type: [
               {
-                _id: {
-                  type: mongoose.Schema.Types.ObjectId,
-                  ref: "BasePassage",
-                },
                 points: {
                   type: Number,
                   required: true,
@@ -233,6 +224,6 @@ testSchema.index({ createdBy: 1 });
 testSchema.index({ isPublished: 1 });
 
 // Create the model AFTER defining all methods
-// const Test = mongoose.model("Test", testSchema);
+const Test = mongoose.model("Test", testSchema);
 
-// module.exports = Test;
+module.exports = Test;

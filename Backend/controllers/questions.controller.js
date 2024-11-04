@@ -76,13 +76,14 @@ class QuestionsController {
         if (!soundFile) {
           throw new BadRequestError("Sound file is required");
         }
-        const soundFilePath = soundFile.path;
 
+        const filename = req.audioFilename;
+        console.log("filename", filename);
         questionData = {
           passage: {
             ...passage,
             createdBy: user._id.toString(),
-            soundFile: soundFilePath,
+            soundFile: filename,
           },
           questions: questions.map((question) => ({
             ...question,
@@ -102,6 +103,7 @@ class QuestionsController {
         };
       }
     } else {
+      // section is not in ["reading", "listening"]
       questionData = {
         question: {
           ...req.body.question,
@@ -130,7 +132,7 @@ class QuestionsController {
           if (!soundFile) {
             throw new BadRequestError("Sound file is required");
           }
-          passageData.soundFile = soundFile.path;
+          passageData.soundFile = req.audioFilename;
         }
 
         const passage = new BasePassage(passageData);

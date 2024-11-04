@@ -80,55 +80,38 @@ class TestAttemptController {
     const { testId } = req.body;
     const { user } = req;
 
-    let testAttempt = await TestAttempt.findOne({
-      user: user._id,
-      status: "in-progress",
-    })
-      .select("test")
-      .lean();
-
+    // Find test and validate availability
     const test = await Test.findById(testId)
       .select(
         "duration attemptsAllowed availableFrom availableUntil isPublished"
       )
       .lean();
-    if (!test) {
-      throw new NotFoundError("Test not found");
-    } else {
-      if (test.availableFrom && test.availableFrom > new Date()) {
-        throw new ForbiddenError("Test is not available yet");
-      }
-      if (test.availableUntil && test.availableUntil < new Date()) {
-        throw new ForbiddenError("Test is not available anymore");
-      }
-      // if (!test.isPublished) {
-      //   throw new ForbiddenError("Test is not published");
-      // }
-    }
-    if (!testAttempt) {
-      testAttempt = await TestAttempt.create({
-        user: user._id,
-        test: testId,
-        status: "in-progress",
-        startTime: new Date(),
-        maxEndTime: new Date(Date.now() + test.duration * 60000),
-        answers: [],
-      });
-    } else {
-      if (testAttempt.maxEndTime < new Date()) {
-        await testAttempt.complete();
-        throw new ForbiddenError("Test time has expired");
-      }
 
-      const existingAttempts = await TestAttempt.countDocuments({
-        test: testId,
-        user: req.user._id,
-        status: { $in: ["completed"] },
-      });
-      if (existingAttempts >= test.attemptsAllowed) {
-        throw new ForbiddenError("Maximum attempts reached for this test");
-      }
+    await TestAttemptService.validateTestAvailability(test);
+
+    // Find or create test attempt
+    const { existingAttempt, testAttempt } =
+      await TestAttemptService.findOrCreateTestAttempt(user._id, testId, test);
+
+    if (existingAttempt) {
+      await TestAttemptService.validateAttemptTime(existingAttempt);
+      console.log("it goes here");
+
+      return Response.sendSuccess(
+        res,
+        "Found existing test attempt currently in progress",
+        existingAttempt
+      );
     }
+
+    // Validate the test attempt
+    await TestAttemptService.validateTestAttempt(
+      testAttempt,
+      user._id,
+      testId,
+      test.attemptsAllowed
+    );
+
     Response.sendSuccess(res, "Test attempt checked successfully", testAttempt);
   }
   async initializeTestAttempt(req, res) {
@@ -193,7 +176,6 @@ class TestAttemptController {
   async saveAnswer(req, res) {
     const { testAttemptId } = req.params;
     const { answers } = req.body;
-    console.log("answers", answers);
     const testAttempt = await TestAttempt.findById(testAttemptId);
     if (!testAttempt) {
       throw new BadRequestError("Test attempt not found");
@@ -211,7 +193,8 @@ class TestAttemptController {
     }
 
     const result = await testAttempt.complete();
-
+    await testAttempt.calculateResult();
+    //await testAttempt.calculateScore();
     Response.sendSuccess(res, "Test completed successfully", result);
   }
 }

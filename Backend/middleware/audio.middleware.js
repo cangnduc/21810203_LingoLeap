@@ -10,10 +10,20 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    //remove ext from orginalname, example: song.mp3 -> song
+    const suffix = path.basename(
+      file.originalname,
+      path.extname(file.originalname)
     );
+
+    const filename =
+      suffix.substring(0, 20) +
+      "-" +
+      uniqueSuffix +
+      path.extname(file.originalname);
+    req.audioFilename = filename;
+
+    cb(null, filename);
   },
 });
 

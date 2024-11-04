@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
-const {
-  writingQuestionResultSchema,
-} = require("./writtingQuestionResult.model");
+
 const sectionScoreSchema = new mongoose.Schema({
   sectionType: {
     type: String,
-    enum: ["reading", "listening", "writing", "speaking"],
+    enum: ["reading", "listening", "writing", "speaking", "general"],
     required: [true, "Section type is required"],
   },
   score: {
@@ -21,15 +19,47 @@ const sectionScoreSchema = new mongoose.Schema({
 });
 
 const questionScoreSchema = new mongoose.Schema({
-  question: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Question",
-    required: [true, "Question reference is required"],
-  },
   score: {
     type: Number,
     required: [true, "Question score is required"],
     min: [0, "Question score cannot be negative"],
+  },
+});
+
+const aspectSchema = new mongoose.Schema({
+  aspect: {
+    type: String,
+    required: true,
+  },
+  score: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 10,
+  },
+  feedback: {
+    type: String,
+    required: true,
+  },
+});
+
+const writingQuestionResultSchema = new mongoose.Schema({
+  question: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BaseQuestion",
+    required: true,
+  },
+  aspects: {
+    type: [aspectSchema],
+    required: true,
+  },
+  summary_feedback: {
+    type: String,
+    required: true,
+  },
+  totalScore: {
+    type: Number,
+    required: true,
   },
 });
 
@@ -58,7 +88,7 @@ const testResultSchema = new mongoose.Schema(
     },
     maxTotalScore: {
       type: Number,
-      required: [true, "Maximum total score is required"],
+      default: 100,
       min: [0, "Maximum total score cannot be negative"],
     },
     scorePercentage: {
@@ -87,8 +117,7 @@ const testResultSchema = new mongoose.Schema(
 );
 
 // Indexing
-testResultSchema.index({ user: 1, test: 1 });
-testResultSchema.index({ gradedBy: 1 });
+testResultSchema.index({ user: 1 });
 testResultSchema.index({ testAttempt: 1 });
 
 // Methods
@@ -99,25 +128,7 @@ testResultSchema.methods.addFeedback = function (feedback, graderId) {
   return this.save();
 };
 
-testResultSchema.methods.calculateTotalScore = function () {
-  const totalPoints = this.questionScores.reduce(
-    (sum, qs) => sum + qs.score,
-    0
-  );
-  const maxPoints = this.questionScores.reduce(
-    (sum, qs) => sum + qs.maxScore,
-    0
-  );
-  this.totalScore = totalPoints;
-  this.maxTotalScore = maxPoints;
-  this.scorePercentage = (totalPoints / maxPoints) * 100;
-  return this.scorePercentage;
-};
-
 // Virtuals
-testResultSchema.virtual("isPassing").get(function () {
-  return this.totalScore >= 60; // Assuming 60% is passing
-});
 
 const TestResult = mongoose.model("TestResult", testResultSchema);
 

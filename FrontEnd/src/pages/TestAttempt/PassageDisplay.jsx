@@ -4,10 +4,8 @@ const PassageDisplay = ({ passage, index }) => {
   // Convert backend path to frontend URL
   const getAudioUrl = (filePath) => {
     if (!filePath) return "";
-    // Extract the relative path after 'uploads'
-    const relativePath = filePath.split("uploads\\").pop()?.replace(/\\/g, "/");
-    // Construct the URL using your backend base URL
-    return `${BACKEND_URL}/uploads/${relativePath}`;
+
+    return `${BACKEND_URL}/uploads/audio/${filePath}`;
   };
   const file = getAudioUrl(passage.soundFile);
   return (

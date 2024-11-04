@@ -182,7 +182,7 @@ export default function BaseQuestion() {
 
         if (result.data) {
           console.log("Question added successfully. Result:", result.data);
-          resetForm();
+          //resetForm();
           toast.success("Question added successfully!");
         } else {
           console.warn("Unexpected response format:", result);

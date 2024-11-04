@@ -1,10 +1,7 @@
 import React, { useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useGetTestQuery,
-  useGetTestForAttemptQuery,
-} from "@/app/services/testApi";
+
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   useSaveAnswerMutation,
@@ -22,6 +19,7 @@ import PassageDisplay from "./PassageDisplay";
 import QuestionDisplay from "./QuestionDisplay";
 import TestTimer from "./TestTimer";
 import { toast } from "react-toastify";
+import { Loader } from "lucide-react";
 const TestAttempt = () => {
   const { testAttemptId } = useParams();
   const navigate = useNavigate();
@@ -96,6 +94,7 @@ const TestAttempt = () => {
         );
       }
     },
+
     [dispatch]
   );
 
@@ -145,14 +144,24 @@ const TestAttempt = () => {
 
   const handleTestComplete = async () => {
     try {
-      await submitFinalAnswers({
-        testId: id,
-        answers,
-      });
+      // Show confirmation dialog
+      const confirmed = window.confirm(
+        "Are you sure you want to submit the test? This action cannot be undone."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+      await saveAnswer({
+        testAttemptId: savedAttempt._id,
+        answers: answers,
+      }).unwrap();
+      await completeTestAttempt(savedAttempt._id).unwrap();
       dispatch(clearTestAnswers());
+      toast.success("Test completed successfully");
+      navigate("/tests");
     } catch (error) {
-      console.error("Failed to submit test:", error);
-      // Show error notification
+      toast.error(error.data?.message || "Failed to complete test");
     }
   };
 
@@ -194,6 +203,21 @@ const TestAttempt = () => {
         startTime={savedAttempt.startTime}
         onTimeUp={handleTimeUp}
       />
+
+      <div className="flex justify-end mb-4">
+        {isSaving || isCompleting ? (
+          <div className="w-8 h-8">
+            <Loader />
+          </div>
+        ) : (
+          <button
+            onClick={handleTestComplete}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Submit Test
+          </button>
+        )}
+      </div>
 
       <div className="lg:grid lg:grid-cols-12 gap-4">
         <div className="lg:col-span-3 mb-4 lg:mb-0">

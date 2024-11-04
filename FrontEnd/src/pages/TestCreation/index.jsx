@@ -162,16 +162,13 @@ const TestCreation = ({ id }) => {
         sections: sections,
       };
       console.log("Final Test Data:", finalTestData);
-      const response = await addTest(finalTestData);
-      console.log("Response:", response);
+      await addTest(finalTestData);
 
-      if (isTestAdded) {
-        // Reset testInfo and sections to initial values
-        setTestInfo(INITIAL_TEST_INFO);
-        setSections(INITIAL_SECTIONS);
-        setStep(1); // Go back to step 1
-        toast.success("Test created successfully!");
-      }
+      // // Reset testInfo and sections to initial values
+      // setTestInfo(INITIAL_TEST_INFO);
+      // setSections(INITIAL_SECTIONS);
+      // setStep(1); // Go back to step 1
+      // toast.success("Test created successfully!");
     }
   };
 

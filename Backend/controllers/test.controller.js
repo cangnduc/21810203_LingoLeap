@@ -1,11 +1,11 @@
 const { wrapAsyncRoutes } = require("../helpers/asyncHandler");
 const Response = require("../helpers/response");
-const Test = require("../model/test.model");
+const Test = require("../model/test.model.v1");
 const { TestValidator } = require("../validator/test.validator");
 const { BadRequestError, ForbiddenError } = require("../helpers/error");
 const Question = require("../model/question.model");
 const TestAttempt = require("../model/testAttempt.model");
-
+const Review = require("../model/review.model");
 class TestController {
   async getTests(req, res) {
     const {
@@ -121,17 +121,28 @@ class TestController {
   async deleteTest(req, res) {
     const { id } = req.params;
     const { user } = req;
-    //await Test.findByIdAndDelete(id);
+
+    // Find and verify test exists
     const test = await Test.findById(id).select("createdBy").lean();
     if (!test) {
       throw new NotFoundError("Test not found");
     }
+
+    // Verify user has permission to delete
     if (test.createdBy.toString() !== user._id.toString()) {
       throw new ForbiddenError("You are not authorized to delete this test");
     }
 
-    console.log(`Simulated deletion of test with ID: ${id}`);
-    Response.sendSuccess(res, "Test deleted successfully");
+    // Delete the test
+    await Test.findByIdAndDelete(id);
+
+    // Delete associated test attempts
+    await TestAttempt.deleteMany({ test: id });
+
+    // Delete associated reviews
+    await Review.deleteMany({ test: id });
+
+    Response.sendSuccess(res, "Test and associated data deleted successfully");
   }
 
   async getTestForAttempt(req, res) {

@@ -29,3 +29,7 @@ Content-Type: application/json
 #### Complete test attempt
 POST {{baseUrl}}/test-attempt/:id/complete
 Authorization: Bearer {{accessToken}}
+
+#### Calculate result
+POST {{baseUrl}}/test-attempt/6728b4da2ab71823e2b9b4fd/result
+Authorization: Bearer {{accessToken}}

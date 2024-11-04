@@ -9,7 +9,8 @@ const LoginSession = require("../model/loginSession.model");
 const upload = require("../middleware/audio.middleware");
 const multer = require("multer");
 const bodyParser = require("body-parser");
-
+const path = require("path");
+const QuestionsControllerV1 = require("../controllers/questions.controller.v1");
 const {
   Question,
   ReadingPassage,
@@ -145,7 +146,7 @@ router.post(
       next(error);
     }
   },
-  asyncHandler(QuestionsController.addQuestion)
+  asyncHandler(QuestionsControllerV1.addQuestion)
 );
 //search question by type and section
 router.get(
@@ -168,6 +169,15 @@ router.get(
   "/:section",
   authMiddleware(["admin", "user", "teacher"]),
   QuestionsController.getQuestionsBySection
+);
+router.post(
+  "/upload/sound",
+  authMiddleware(["admin", "user", "teacher"]),
+  upload.single("soundFile"),
+  (req, res) => {
+    console.log(req.file.filename);
+    res.status(200).json({ message: "File uploaded successfully" });
+  }
 );
 
 module.exports = router;

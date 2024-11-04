@@ -35,6 +35,7 @@ export default function NavLinks({ className = "", showIcons = false }) {
       <NavLink to="/chat">Speaking</NavLink>
       <NavLink to="/tests">Tests</NavLink>
       <NavLink to="/question">Questions</NavLink>
+      <NavLink to="/contact">Contact</NavLink>
       {!user && (
         <>
           <NavLink to="/login">Login</NavLink>

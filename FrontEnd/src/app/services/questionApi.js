@@ -105,6 +105,15 @@ export const questionApi = createApi({
             ]
           : [{ type: "Questions", id: "LIST" }],
     }),
+    uploadSoundFile: builder.mutation({
+      query: (formData) => {
+        return {
+          url: "/question/upload/sound",
+          method: "POST",
+          body: formData,
+        };
+      },
+    }),
   }),
 
   tagTypes: ["Question"],
@@ -116,4 +125,5 @@ export const {
   useSearchQuestionsQuery,
   useGetPassagesWithQuestionsQuery,
   useGetQuestionsBySectionQuery,
+  useUploadSoundFileMutation,
 } = questionApi;
