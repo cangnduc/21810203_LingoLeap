@@ -1,4 +1,3 @@
-const { wrapAsyncRoutes } = require("../helpers/asyncHandler");
 const Response = require("../helpers/response");
 const Test = require("../model/test.model.v1");
 const { TestValidator } = require("../validator/test.validator");
@@ -91,6 +90,7 @@ class TestController {
 
   async getTest(req, res) {
     const { id } = req.params;
+
     const test = await Test.findById(id)
       .populate({
         path: "sections.questions._id",
@@ -111,12 +111,21 @@ class TestController {
       })
       .select("-__v -createdAt -updatedAt") // Unselect these fields from the main document
       .lean();
-
+    console.log("test", test);
     if (!test) {
       throw new NotFoundError("Test not found");
     }
 
     Response.sendSuccess(res, "Test fetched successfully", test);
+  }
+  async getTestById(req, res) {
+    const { id } = req.params;
+    const test = await Test.findById(id)
+      .select(
+        "-__v -createdAt -updatedAt -averageRating -totalReviews -totalAttempts"
+      )
+      .lean();
+    Response.sendSuccess(res, "fetched test by id successfully", test);
   }
   async deleteTest(req, res) {
     const { id } = req.params;
@@ -227,7 +236,7 @@ class TestController {
     const { id } = req.params;
     const { user } = req;
 
-    const validatedUpdate = TestValidator.partial().safeParse(req.body);
+    const validatedUpdate = TestValidator.safeParse(req.body);
     if (!validatedUpdate.success) {
       const errorMessages = validatedUpdate.error.errors
         .map((err) => `${err.path.join(".")}: ${err.message}`)
@@ -240,7 +249,8 @@ class TestController {
     if (!test) {
       throw new NotFoundError("Test not found");
     }
-
+    console.log("test.createdBy", test.createdBy.toString());
+    console.log("user._id", user);
     if (test.createdBy.toString() !== user._id.toString()) {
       throw new ForbiddenError("You are not authorized to update this test");
     }

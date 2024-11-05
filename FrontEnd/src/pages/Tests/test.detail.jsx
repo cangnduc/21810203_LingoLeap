@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { format } from "date-fns";
 import { useGetTestQuery } from "@/app/services/testApi";
 import { difficultyLevels } from "@/constant";
@@ -36,17 +36,25 @@ const TestDetail = () => {
                 {test.description}
               </p>
             </div>
-            <div className="flex gap-2">
-              <span
-                className={`${getDifficultyColor(
-                  test.difficulty
-                )} text-white px-3 py-1 rounded-full text-sm`}
+            <div className="flex flex-col sm:flex-row items-end gap-2">
+              <Link
+                to={`/tests/${id}/edit`}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-full text-sm transition-colors"
               >
-                {test.difficulty}
-              </span>
-              <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
-                {test.testType.toUpperCase()}
-              </span>
+                Edit Test
+              </Link>
+              <div className="flex gap-2">
+                <span
+                  className={`${getDifficultyColor(
+                    test.difficulty
+                  )} text-white px-3 py-1 rounded-full text-sm`}
+                >
+                  {test.difficulty}
+                </span>
+                <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
+                  {test.testType.toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
         </div>

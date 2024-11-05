@@ -85,6 +85,17 @@ export const testApi = createApi({
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),
+    getTestById: builder.query({
+      query: (id) => `/tests/edit/${id}`,
+    }),
+    updateTest: builder.mutation({
+      query: ({ id, ...test }) => ({
+        url: `/tests/${id}`,
+        method: "PUT",
+        body: test,
+      }),
+      invalidatesTags: ["Test"],
+    }),
   }),
 });
 
@@ -94,4 +105,6 @@ export const {
   useAddTestMutation,
   useDeleteTestMutation,
   useGetTestForAttemptQuery,
+  useGetTestByIdQuery,
+  useUpdateTestMutation,
 } = testApi;

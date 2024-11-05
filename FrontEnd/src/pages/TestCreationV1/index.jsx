@@ -3,9 +3,13 @@ import TestInfo from "./TestInfo";
 import Section from "./Section";
 import PreviewDisplay from "./PreviewDisplay";
 import { testTypeList, difficultyList } from "../../constant/Samples";
-import { useAddTestMutation } from "@/app/services/testApi";
+import {
+  useAddTestMutation,
+  useGetTestByIdQuery,
+  useUpdateTestMutation,
+} from "@/app/services/testApi";
 import { toast } from "react-toastify";
-
+import { useParams } from "react-router-dom";
 const INITIAL_TEST_INFO = {
   title: "",
   description: "",
@@ -23,7 +27,9 @@ const INITIAL_TEST_INFO = {
 
 const INITIAL_SECTIONS = [];
 
-const TestCreation = ({ id }) => {
+const TestCreation = ({ mode }) => {
+  console.log("mode", mode);
+  const { id } = useParams();
   const [step, setStep] = useState(1);
   const [testInfo, setTestInfo] = useState(INITIAL_TEST_INFO);
   const [sections, setSections] = useState(INITIAL_SECTIONS);
@@ -32,11 +38,35 @@ const TestCreation = ({ id }) => {
     addTest,
     { isLoading: isAddingTest, isSuccess: isTestAdded, error: addTestError },
   ] = useAddTestMutation();
+  const [
+    updateTest,
+    {
+      isLoading: isUpdatingTest,
+      isSuccess: isTestUpdated,
+      error: updateTestError,
+    },
+  ] = useUpdateTestMutation();
+  console.log("testinfo", testInfo);
+  const {
+    data: testData,
+    isLoading: isLoadingTest,
+    error: testError,
+  } = useGetTestByIdQuery(id, { skip: !id });
+
   useEffect(() => {
-    if (id) {
-      //fetch the test info from the backend
+    if (testData) {
+      setTestInfo({
+        ...testData.data,
+        availableFrom: new Date(testData.data.availableFrom)
+          .toISOString()
+          .split("T")[0],
+        availableUntil: new Date(testData.data.availableUntil)
+          .toISOString()
+          .split("T")[0],
+      });
+      setSections(testData.data?.sections);
     }
-  }, [id]);
+  }, [testData]);
 
   const handleBasicInfoChange = (e) => {
     const { name, value, type } = e.target;
@@ -65,6 +95,7 @@ const TestCreation = ({ id }) => {
   };
   const calculateTotalPossibleScore = () => {
     let total = 0;
+
     for (const section of sections) {
       total += section.sectionScore;
     }
@@ -156,19 +187,35 @@ const TestCreation = ({ id }) => {
       });
       return;
     }
+
     if (validateTestInfo() && validateSections()) {
       const finalTestData = {
         ...testInfo,
         sections: sections,
       };
-      console.log("Final Test Data:", finalTestData);
-      //await addTest(finalTestData);
 
-      // // Reset testInfo and sections to initial values
-      // setTestInfo(INITIAL_TEST_INFO);
-      // setSections(INITIAL_SECTIONS);
-      // setStep(1); // Go back to step 1
-      // toast.success("Test created successfully!");
+      try {
+        if (id) {
+          // Update existing test
+          await updateTest({ id, ...finalTestData });
+          console.log("finalTestData", finalTestData);
+          toast.success("Test updated successfully!");
+        } else {
+          // Create new test
+          //await addTest(finalTestData);
+          console.log("finalTestData", finalTestData);
+          toast.success("Test created successfully!");
+        }
+
+        // Reset form only for creation mode
+        // if (!id) {
+        //   setTestInfo(INITIAL_TEST_INFO);
+        //   setSections(INITIAL_SECTIONS);
+        //   setStep(1);
+        // }
+      } catch (error) {
+        toast.error(error.message || "An error occurred");
+      }
     }
   };
 
@@ -202,10 +249,27 @@ const TestCreation = ({ id }) => {
         return null;
     }
   };
+
+  if (id && isLoadingTest) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
+  if (id && testError) {
+    return (
+      <div className="text-red-500 text-center">
+        Error loading test: {testError.message}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6 dark:text-white">
-        Test Creation Wizard
+        {id ? "Edit Test" : "Create New Test"}
       </h1>
       {renderStep()}
       {Object.keys(errors).length > 0 && (

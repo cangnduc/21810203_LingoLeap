@@ -15,7 +15,7 @@ const SectionSchema = z
   .object({
     name: z.enum(sections),
     sectionScore: z.number().int().min(0),
-    instruction: z.string().max(500).optional(),
+    instructions: z.string().max(500).optional(),
     duration: z.number().int().min(1),
     questions: z.array(QuestionSchema).optional(),
     passages: z.array(PassageSchema).optional(),

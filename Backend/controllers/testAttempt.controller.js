@@ -1,4 +1,4 @@
-const Test = require("../model/test.model");
+const Test = require("../model/test.model.v1");
 const TestAttempt = require("../model/testAttempt.model");
 const TestAttemptService = require("../services/testAttempt.service");
 const {

@@ -43,7 +43,7 @@ const testSchema = new mongoose.Schema(
             enum: sections,
             required: true,
           },
-          instruction: {
+          instructions: {
             type: String,
             maxlength: [
               500,

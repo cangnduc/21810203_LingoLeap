@@ -1,8 +1,8 @@
 import React from "react";
 
-const Selection = ({ children, className, label, options, ...props }) => {
+const Select = ({ children, className, label, options, ...props }) => {
   return (
-    <div className="relative min-w-[150px]">
+    <div className="relative min-w-[200px]">
       <select
         id={label}
         {...props}
@@ -43,4 +43,4 @@ const Selection = ({ children, className, label, options, ...props }) => {
   );
 };
 
-export default Selection;
+export default Select;

@@ -11,7 +11,7 @@ import AiAssisstant from "./pages/AiAssisstant";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddQuestion from "./pages/AddQuestion";
-import TestCreation from "./pages/TestCreation";
+import TestCreation from "./pages/TestCreationV1";
 import TestDetail from "./pages/Tests/test.detail";
 import TestAttempt from "./pages/TestAttempt";
 import Contact from "./pages/Contact";
@@ -35,6 +35,11 @@ function App() {
       path: "/tests/:id",
       element: <TestDetail />,
       roles: ["admin", "teacher", "user"],
+    },
+    {
+      path: "/tests/:id/edit",
+      element: <TestCreation mode="edit" />,
+      roles: ["admin", "teacher"],
     },
     { path: "/courses", element: <Courses />, roles: ["admin", "user"] },
 
