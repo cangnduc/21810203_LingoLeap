@@ -3,7 +3,48 @@ const TestResult = require("../testResult.model");
 const { BaseQuestion } = require("../question.model.v1");
 const Test = require("../test.model.v1");
 const { generateCompletion } = require("../../helpers/openaiApi");
+
 class TestAttemptFunction {
+  sanitizeJsonString(jsonString) {
+    if (typeof jsonString !== "string") {
+      console.error("Input is not a string:", jsonString);
+      return "{}";
+    }
+
+    try {
+      // First attempt to detect if it's already a valid JSON
+      JSON.parse(jsonString);
+      return jsonString;
+    } catch (e) {
+      // If it's not valid JSON, proceed with cleaning
+      const cleaned = jsonString
+        .replace(/^\uFEFF/, "")
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r")
+        .replace(/\t/g, "\\t")
+        // Additional safety replacements
+        .replace(/\\/g, "\\\\") // Escape backslashes
+        .replace(/\b/g, "\\b") // Replace word boundaries
+        .replace(/\f/g, "\\f") // Replace form feeds
+        .trim();
+
+      // Ensure the string starts and ends with curly braces
+      if (!cleaned.startsWith("{")) {
+        const firstBrace = cleaned.indexOf("{");
+        if (firstBrace !== -1) {
+          return cleaned.slice(firstBrace);
+        }
+        return "{}";
+      }
+
+      return cleaned;
+    }
+  }
+
   async calculateResult(testAttempt) {
     // Load the test with populated sections and questions
     const test = await Test.findById(testAttempt.test)
@@ -95,13 +136,13 @@ class TestAttemptFunction {
             }
 
             questionScores.push({
-              question: question._id,
+              _id: question._id,
               score: score,
             });
             sectionScore += score;
           } else {
             questionScores.push({
-              question: question._id,
+              _id: question._id,
               score: 0,
             });
           }
@@ -233,15 +274,33 @@ class TestAttemptFunction {
         const orderingScore = (correctPositions / correctOrder.length) * point;
         return Math.round(orderingScore * 100) / 100;
       case "essay":
-        console.log("test type", testType);
-        // const essayEvaluation = await generateCompletion(
-        //   "essay",
-        //   questionData.questionText,
-        //   answer.answer,
-        //   testType
-        // );
-        // const essayEvaluationJson = JSON.parse(essayEvaluation);
-        const essayEvaluationJson = {
+        const essayEvaluation = await generateCompletion(
+          answer.answer,
+          questionData.questionText,
+          point,
+          testType
+        );
+        let essayEvaluationJson = null;
+        console.log("essayEvaluation", essayEvaluation);
+        try {
+          const sanitizedJson = this.sanitizeJsonString(essayEvaluation);
+          essayEvaluationJson = JSON.parse(sanitizedJson);
+
+          // Check if we got an empty object
+          if (Object.keys(essayEvaluationJson).length === 0) {
+            console.error("Received empty JSON after sanitization");
+            return 0;
+          }
+        } catch (error) {
+          console.error("Error parsing essayEvaluation", error);
+          console.error("Original string:", essayEvaluation);
+          console.error(
+            "Sanitized string:",
+            this.sanitizeJsonString(essayEvaluation)
+          );
+          return 0;
+        }
+        const sampleEssayEvaluationJson = {
           aspects: [
             {
               aspect: "Content & Relevance",
@@ -277,7 +336,6 @@ class TestAttemptFunction {
           summary_feedback:
             "The essay is well-written regarding grammar and language but fails to address the provided prompt about technology's impact on interpersonal relationships. The content is significantly off-topic, and restructuring is required to meet the assignment objectives. Interesting scientific discussion, but inappropriately focused for this task.",
         };
-        console.log("essayEvaluationJson", essayEvaluationJson);
         if (!essayEvaluationJson || !essayEvaluationJson.aspects) {
           return 0;
         }

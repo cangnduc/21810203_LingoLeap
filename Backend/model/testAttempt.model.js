@@ -71,7 +71,9 @@ testAttemptSchema.methods.complete = async function () {
 
 testAttemptSchema.methods.calculateResult = async function () {
   const TestAttemptFunction = require("./function/testAttempt.function");
-  return TestAttemptFunction.calculateResult(this);
+  await TestAttemptFunction.calculateResult(this);
+  
+  return this;
 };
 
 testAttemptSchema.methods.calculateScore = function (

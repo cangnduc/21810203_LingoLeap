@@ -12,29 +12,15 @@ const seedDummyData = require("./model/seed/question.seed");
 //zip the response
 const compression = require("compression");
 const swagger = require("./docs/swagger/index");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-const ip = 5;
+const handleError = require("./middleware/error.middleware");
+const ip = 9;
 const sslOptions = {
   key: fs.readFileSync(`../localhost+${ip}-key.pem`),
   cert: fs.readFileSync(`../localhost+${ip}.pem`),
 };
-const {
-  Question,
-  ReadingPassage,
-  ListeningPassage,
-} = require("./model/question.model");
+
 const app = express();
-const {
-  AppError,
-  NotFoundError,
-  BadRequestError,
-  InternalServerError,
-  UnauthorizedError,
-  ForbiddenError,
-  ErrorRedirect,
-} = require("./helpers/error");
-const { ZodError } = require("zod");
+const { NotFoundError } = require("./helpers/error");
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -92,81 +78,7 @@ const PORT = process.env.PORT || 3000;
 swagger(app, PORT);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.log(err);
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad Request",
-      code: 400,
-      errors: err.errors,
-    });
-  }
-  if (err instanceof BadRequestError) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad Request",
-      code: 400,
-      errors: err.message,
-    });
-  }
-  if (err instanceof ErrorRedirect) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad Request",
-      code: 400,
-      errors: err.message,
-      redirect: err.redirect,
-    });
-  }
-  if (err instanceof SyntaxError) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad Request",
-      code: 400,
-      errors: err.message,
-    });
-  }
-  if (!(err instanceof AppError)) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      code: 500,
-      errors: err.message,
-    });
-  }
-  if (err instanceof ForbiddenError) {
-    return res.status(403).json({
-      success: false,
-      message: "Forbidden",
-      code: 403,
-      errors: err.message,
-    });
-  }
-  if (err instanceof UnauthorizedError) {
-    return res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-      code: 401,
-      errors: err.message,
-    });
-  }
-  if (err instanceof MongoServerError) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad Request",
-      code: 400,
-      errors: err.message,
-    });
-  }
-
-  res.status(err.statusCode).json({
-    success: false,
-    message: err.message,
-    code: err.statusCode,
-    errors: err.errors,
-  });
-});
+app.use(handleError);
 
 // 404 handler for undefined routes
 app.use((req, res, next) => {

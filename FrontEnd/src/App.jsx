@@ -15,10 +15,13 @@ import TestCreation from "./pages/TestCreationV1";
 import TestDetail from "./pages/Tests/test.detail";
 import TestAttempt from "./pages/TestAttempt";
 import Contact from "./pages/Contact";
+import ViewTestAttempt from "./pages/viewTestAttempt";
+import TestResult from "./pages/TestResult";
+
 function App() {
   const location = useLocation();
   const isDarkMode = useSelector((state) => state.app.isDarkMode);
-
+  const { user } = useSelector((state) => state.auth);
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
@@ -42,7 +45,11 @@ function App() {
       roles: ["admin", "teacher"],
     },
     { path: "/courses", element: <Courses />, roles: ["admin", "user"] },
-
+    {
+      path: `/view-test-attempts/${user?._id}`,
+      element: <ViewTestAttempt />,
+      roles: ["admin", "teacher", "user"],
+    },
     {
       path: "/chat",
       element: <AiAssisstant />,
@@ -67,6 +74,10 @@ function App() {
       path: "/contact",
       element: <Contact />,
       roles: ["admin", "teacher", "user"],
+    },
+    {
+      path: "/test-results/:attemptId",
+      element: <TestResult />,
     },
   ];
   return (

@@ -49,7 +49,7 @@ const SectionNavigation = ({ sections }) => {
 
       {/* Navigation Links - Responsive */}
       <nav className={`${isExpanded ? "block" : "hidden"} lg:block`}>
-        {sections.map((section) => (
+        {sections?.map((section) => (
           <a
             key={section._id}
             href={`#section-${section._id}`}
@@ -70,7 +70,7 @@ const SectionNavigation = ({ sections }) => {
                   ? `${section.passages?.length || 0} passages / ${(
                       section.passages || []
                     ).reduce(
-                      (acc, curr) => acc + (curr._id.questions?.length || 0),
+                      (acc, curr) => acc + (curr._id?.questions?.length || 0),
                       0
                     )} questions`
                   : `${section.questions?.length || 0} questions`}

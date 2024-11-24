@@ -184,6 +184,7 @@ class TestAttemptController {
     await testAttempt.save();
     Response.sendSuccess(res, "Answers saved successfully");
   }
+
   async completeTestAttempt(req, res) {
     const { testAttemptId } = req.params;
 
@@ -192,10 +193,26 @@ class TestAttemptController {
       throw new BadRequestError("Test attempt not found");
     }
 
-    const result = await testAttempt.complete();
-    await testAttempt.calculateResult();
-    //await testAttempt.calculateScore();
+    await testAttempt.complete();
+    const result = await testAttempt.calculateResult();
+    const test = await Test.findById(result.test).select("totalAttempts");
+    test.totalAttempts += 1;
+    await test.save();
     Response.sendSuccess(res, "Test completed successfully", result);
+  }
+
+  // Get all test attempts by user
+  async getAllTestAttemptsByUser(req, res) {
+    const { user } = req;
+    const testAttempts = await TestAttempt.find({ user: user._id })
+      .populate("test", "title")
+      .select("status startTime endTime test maxEndTime result")
+      .lean();
+    Response.sendSuccess(
+      res,
+      "Test attempts fetched successfully",
+      testAttempts
+    );
   }
 }
 

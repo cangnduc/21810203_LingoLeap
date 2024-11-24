@@ -1,0 +1,10 @@
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y
+
+### Get test results by user
+GET {{baseUrl}}/test-result
+Authorization: Bearer {{accessToken}}
+
+### Get test result by attempt id
+GET {{baseUrl}}/test-result/672a27bd045493efb15ece72
+Authorization: Bearer {{accessToken}}

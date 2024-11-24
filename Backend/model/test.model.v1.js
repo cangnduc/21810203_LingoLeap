@@ -85,6 +85,10 @@ const testSchema = new mongoose.Schema(
           passages: {
             type: [
               {
+                _id: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "BasePassage",
+                },
                 points: {
                   type: Number,
                   required: true,

@@ -46,7 +46,6 @@
 - TestAttempt reference is required and unique
 - User reference is required
 - Test reference is required
-- Total score must be between 0 and 100
 - Total questions must be at least 1
 - Section scores must have a valid type, non-negative score, and at least 1 question
 - Question scores must reference a valid Question and have a non-negative score

@@ -4,7 +4,11 @@
 ### Test Attempt API
 
 #### Get a test attempt
-GET {{baseUrl}}/test-attempt/:id
+GET {{baseUrl}}/test-attempt/672a1458ba4a7d94165fc972
+Authorization: Bearer {{accessToken}}
+
+#### Get all test attempts by user
+GET {{baseUrl}}/test-attempt/
 Authorization: Bearer {{accessToken}}
 
 #### Create a test attempt

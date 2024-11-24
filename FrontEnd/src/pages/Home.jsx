@@ -8,7 +8,7 @@ import CourseHighlights from "../components/HomeComponent/CourseHighlights";
 import Testimonials from "../components/HomeComponent/Testimonials";
 import CallToAction from "../components/HomeComponent/CallToAction";
 import Footer from "../components/HomeComponent/Footer";
-import ScrollToTopButton from "../components/HomeComponent/ScrollToTopBtn";
+import ScrollToTopButton from "../components/ScrollToTopBtn";
 const FadeInSection = ({ children, delay = 0 }) => {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });

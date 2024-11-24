@@ -38,6 +38,7 @@ const TestAttempt = () => {
   } = useInitializeTestAttemptQuery(testAttemptId, {
     refetchOnMountOrArgChange: true,
   });
+  console.log("testAttemptData", testAttemptData);
   const { test, testAttempt: savedAttempt } = testAttemptData || {};
   const debouncedAnswers = useDebounce(answers, 15000);
   const [saveAnswer, { isLoading: isSaving }] = useSaveAnswerMutation();

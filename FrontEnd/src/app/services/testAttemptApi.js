@@ -38,6 +38,13 @@ export const testAttemptApi = createApi({
     getTestAttempt: builder.query({
       query: (testId) => `/test-attempts/${testId}`,
     }),
+    getAllTestAttemptsByUser: builder.query({
+      query: () => `/test-attempt/`,
+      providesTags: ["TestAttempt"],
+      transformResponse: (response) => {
+        return response.data;
+      },
+    }),
     saveAnswer: builder.mutation({
       query: (data) => ({
         url: `/test-attempt/${data.testAttemptId}/answers`,
@@ -68,4 +75,5 @@ export const {
   useGetTestAttemptQuery,
   useCompleteTestAttemptMutation,
   useCheckTestAttemptMutation,
+  useGetAllTestAttemptsByUserQuery,
 } = testAttemptApi;

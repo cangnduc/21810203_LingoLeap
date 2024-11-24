@@ -11,6 +11,7 @@ router.use("/question", require("./question.route"));
 router.use("/tests", require("./test.route"));
 router.use("/review", require("./review.route"));
 router.use("/test-attempt", require("./testAttempt.route"));
+router.use("/test-result", require("./testResult.route"));
 router.use(
   "/voice",
   asyncHandler(async (req, res, next) => {

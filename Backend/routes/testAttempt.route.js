@@ -11,6 +11,11 @@ const { asyncHandler } = require("../helpers/asyncHandler");
 //   authMiddleware(["admin", "teacher", "user"]),
 //   asyncHandler(TestAttemptController.getTestAttempt)
 // );
+router.get(
+  "/",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(TestAttemptController.getAllTestAttemptsByUser)
+);
 router.post(
   "/:testAttemptId/initialize",
   authMiddleware(["admin", "teacher", "user"]),
@@ -37,14 +42,15 @@ router.post(
   authMiddleware(["admin", "teacher", "user"]),
   asyncHandler(TestAttemptController.completeTestAttempt)
 );
-router.post(
-  "/:testAttemptId/result",
-  authMiddleware(["admin", "teacher", "user"]),
-  asyncHandler(async (req, res) => {
-    const { testAttemptId } = req.params;
-    const testAttempt = await TestAttempt.findById(testAttemptId);
-    const result = await testAttempt.calculateResult();
-    Response.sendSuccess(res, "Result calculated successfully", result);
-  })
-);
+
+// router.post(
+//   "/:testAttemptId/result",
+//   authMiddleware(["admin", "teacher", "user"]),
+//   asyncHandler(async (req, res) => {
+//     const { testAttemptId } = req.params;
+//     const testAttempt = await TestAttempt.findById(testAttemptId);
+//     const result = await testAttempt.calculateResult();
+//     Response.sendSuccess(res, "Result calculated successfully", result);
+//   })
+// );
 module.exports = router;

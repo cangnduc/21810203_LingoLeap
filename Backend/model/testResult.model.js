@@ -19,6 +19,11 @@ const sectionScoreSchema = new mongoose.Schema({
 });
 
 const questionScoreSchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BaseQuestion",
+    required: true,
+  },
   score: {
     type: Number,
     required: [true, "Question score is required"],

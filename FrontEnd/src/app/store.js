@@ -12,7 +12,7 @@ import { questionApi } from "./services/questionApi";
 import { testApi } from "./services/testApi";
 import { reviewApi } from "./services/reviewApi";
 import { testAttemptApi } from "./services/testAttemptApi";
-
+import { testResultApi } from "./services/testResultApi";
 const persistConfig = {
   key: "root",
   storage,
@@ -38,6 +38,7 @@ const rootReducer = combineReducers({
   [testApi.reducerPath]: testApi.reducer,
   [reviewApi.reducerPath]: reviewApi.reducer,
   [testAttemptApi.reducerPath]: testAttemptApi.reducer,
+  [testResultApi.reducerPath]: testResultApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -53,6 +54,7 @@ export const store = configureStore({
       testApi.middleware,
       reviewApi.middleware,
       testAttemptApi.middleware,
+      testResultApi.middleware,
     ]),
   devTools: process.env.NODE_ENV !== "production",
 });

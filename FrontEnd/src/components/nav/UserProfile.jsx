@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-
+import { Link } from "react-router-dom";
 import Logout from "./Logout";
 const UserProfile = () => {
   const user = useSelector((state) => state.auth.user);
@@ -19,6 +19,9 @@ const UserProfile = () => {
         <p className="text-white text-sm font-bold">
           Welcome, {user ? user.username : "Guest"}
         </p>
+      </div>
+      <div className="">
+        <Link to={`/view-test-attempts/${user?._id}`}>View Test Attempts</Link>
       </div>
       <div className="">
         <Logout />

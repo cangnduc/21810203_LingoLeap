@@ -13,13 +13,43 @@ import {
 } from "react-icons/fa";
 import { GiChoice } from "react-icons/gi";
 const sectionList = [
-  { name: "reading", label: "Reading", icon: <FaBook /> },
-  { name: "listening", label: "Listening", icon: <FaHeadphones /> },
-  { name: "speaking", label: "Speaking", icon: <FaMicrophone /> },
-  { name: "writing", label: "Writing", icon: <FaPen /> },
-  { name: "general", label: "General", icon: <FaBookOpen /> },
-  { name: "vocabulary", label: "Vocabulary", icon: <FaFont /> },
-  { name: "grammar", label: "Grammar", icon: <FaPuzzlePiece /> },
+  { name: "reading", label: "Reading", icon: <FaBook />, color: "bg-blue-500" },
+  {
+    name: "listening",
+    label: "Listening",
+    icon: <FaHeadphones />,
+    color: "bg-green-500",
+  },
+  {
+    name: "speaking",
+    label: "Speaking",
+    icon: <FaMicrophone />,
+    color: "bg-yellow-500",
+  },
+  {
+    name: "writing",
+    label: "Writing",
+    icon: <FaPen />,
+    color: "bg-purple-500",
+  },
+  {
+    name: "general",
+    label: "General",
+    icon: <FaBookOpen />,
+    color: "bg-orange-500",
+  },
+  {
+    name: "vocabulary",
+    label: "Vocabulary",
+    icon: <FaFont />,
+    color: "bg-pink-500",
+  },
+  {
+    name: "grammar",
+    label: "Grammar",
+    icon: <FaPuzzlePiece />,
+    color: "bg-blue-500",
+  },
 ];
 
 const typeList = [
