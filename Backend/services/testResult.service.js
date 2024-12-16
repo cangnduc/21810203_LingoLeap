@@ -84,14 +84,14 @@ class TestResultService {
       .populate({
         path: "questionScores._id",
         model: "Question",
-        select: "questionText",
+        select: "questionText type",
       })
       .lean();
 
     if (!testResult) {
       throw new Error("Test result not found");
     }
-
+    console.log("testResult", testResult);
     // Transform the data into a simpler format
     return {
       testInfo: {
@@ -112,15 +112,30 @@ class TestResultService {
 
       questions: testResult.questionScores
         .filter((q) => q._id) // Filter out null questions
-        .map((q, index) => ({
-          number: index + 1,
-          text: q._id.questionText,
-          score: Number(q.score.toFixed(1)),
-          points: TestResultService.getQuestionPoints(
-            testResult.test.sections,
-            q._id._id
-          ),
-        })),
+        .map((q, index) => {
+          if (q._id.type === "open_ended") {
+            return {
+              number: index + 1,
+              text: q._id.questionText,
+              score: Number(q.score.toFixed(1)),
+              speakingResult: testResult.speakingResult,
+              points: TestResultService.getQuestionPoints(
+                testResult.test.sections,
+                q._id._id
+              ),
+            };
+          } else {
+            return {
+              number: index + 1,
+              text: q._id.questionText,
+              score: Number(q.score.toFixed(1)),
+              points: TestResultService.getQuestionPoints(
+                testResult.test.sections,
+                q._id._id
+              ),
+            };
+          }
+        }),
 
       writingAssessments: testResult.writingQuestionResults.map((result) => ({
         aspects: result.aspects.map((aspect) => ({

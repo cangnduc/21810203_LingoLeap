@@ -5,10 +5,11 @@
    • Install: Node.js, npm/yarn, and MongoDB
    • Initialize a new Node.js project: npm init -y
    • Install necessary backend dependencies:
-    - Express.js for server creation: npm install express
-    - Mongoose for MongoDB: npm install mongoose
-    - dotenv for environment variables: npm install dotenv
-    - Nodemon for automatic server restarts: npm install --save-dev nodemon
+
+   - Express.js for server creation: npm install express
+   - Mongoose for MongoDB: npm install mongoose
+   - dotenv for environment variables: npm install dotenv
+   - Nodemon for automatic server restarts: npm install --save-dev nodemon
 
    1.2 Configure the database connection
    • Create MongoDB connection file in Backend/config/mongoose.db.js with environment variables for DB URIs (development/production)
@@ -16,28 +17,30 @@
 
    1.3 Set up project structure
    • Folder structure:
-    - /models: For Mongoose models
-    - /controllers: For route logic
-    - /routes: For Express routes
-    - /middleware: For middleware (authentication, validation)
-    - /services: External services (email, notifications)
-    - /config: For configuration files (DB, server, etc.)
+
+   - /models: For Mongoose models
+   - /controllers: For route logic
+   - /routes: For Express routes
+   - /middleware: For middleware (authentication, validation)
+   - /services: External services (email, notifications)
+   - /config: For configuration files (DB, server, etc.)
 
 2. Implement User Management
    2.1 User model and controller
    • Libraries to use:
-    - Mongoose: Define User schema/model
-    - bcrypt: For password hashing (npm install bcrypt)
-    - joi: For validation (npm install joi)
-    - jsonwebtoken: For JWTs (npm install jsonwebtoken)
-    - express-validator: For request validation
-   • Key implementations:
-    - Pre-save hooks in Mongoose for password hashing
-    - Tokens: Generate JWT tokens for authentication
-    - Error handling: Use middleware like express-async-errors for cleaner error management
-   • Enhancements:
-    - Account activation via email confirmation (using nodemailer)
-    - Role-based access control (RBAC) for different user types
+
+   - Mongoose: Define User schema/model
+   - bcrypt: For password hashing (npm install bcrypt)
+   - joi: For validation (npm install joi)
+   - jsonwebtoken: For JWTs (npm install jsonwebtoken)
+   - express-validator: For request validation
+     • Key implementations:
+   - Pre-save hooks in Mongoose for password hashing
+   - Tokens: Generate JWT tokens for authentication
+   - Error handling: Use middleware like express-async-errors for cleaner error management
+     • Enhancements:
+   - Account activation via email confirmation (using nodemailer)
+   - Role-based access control (RBAC) for different user types
 
    2.2 UserProfile model and controller
    • Implement logic for updating user profiles
@@ -278,5 +281,3 @@ This detailed breakdown provides a comprehensive approach to developing the fron
 12.3. Monitor application performance and gather user feedback
 
 12.4. Plan for future updates and feature enhancements
-
-This step-by-step guide provides a detailed roadmap for implementing the English testing application. Each major section can be broken down into smaller tasks and distributed among team members. Remember to iterate on these steps as needed and continuously test and refine the application throughout the development process.

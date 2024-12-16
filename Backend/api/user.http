@@ -1,0 +1,27 @@
+
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y  
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjE2NDEyMDM3YTU1ZDJlMjRjMjZlMiIsImlhdCI6MTczMzY3MDMwNywiZXhwIjoxNzU1MjcwMzA3fQ.SK2Xnlnts-y4BoXKQVAG3qckWN9k413QSQfWyvRaQxk
+
+### Get current user
+GET {{baseUrl}}/user/me
+Authorization: Bearer {{accessToken}}
+
+### Get full current user data
+GET {{baseUrl}}/user/full/me
+Authorization: Bearer {{adminToken}}
+
+### Get user by id (admin) 
+GET {{baseUrl}}/user/66eda220f1577aa9a314ab30
+Authorization: Bearer {{adminToken}}
+
+
+### Get current user profile
+GET {{baseUrl}}/user/profile/me
+Authorization: Bearer {{adminToken}}
+
+
+### get user profile by userId for admin
+GET {{baseUrl}}/user/profile/66f16412037a55d2e24c26e2
+Authorization: Bearer {{adminToken}}
+

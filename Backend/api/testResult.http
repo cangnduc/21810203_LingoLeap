@@ -6,5 +6,5 @@ GET {{baseUrl}}/test-result
 Authorization: Bearer {{accessToken}}
 
 ### Get test result by attempt id
-GET {{baseUrl}}/test-result/672a27bd045493efb15ece72
+GET {{baseUrl}}/test-result/6753d786c3c964e72f8b354c
 Authorization: Bearer {{accessToken}}

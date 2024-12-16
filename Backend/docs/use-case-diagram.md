@@ -1,12 +1,74 @@
 # Detailed Use Case Diagram
 
+## System Overview
+
+The English Testing Application is a comprehensive platform designed to facilitate English language assessment through various test types, including reading, writing, listening, and speaking sections. The system supports multiple user roles with different privileges and responsibilities.
+
 ## Actors
 
-1. Guest
-2. Student
-3. Teacher
-4. Admin
-5. System
+### 1. Guest
+
+- **Characteristics:**
+  - Unauthenticated user
+  - Limited access to system features
+  - Can preview public content
+- **Responsibilities:**
+  - Browse available tests
+  - View public test information
+  - Register for an account
+  - Access free sample tests
+
+### 2. Student (inherits from Guest)
+
+- **Characteristics:**
+  - Authenticated user
+  - Has a valid profile
+  - May have an active subscription
+- **Responsibilities:**
+  - Take tests
+  - View personal results
+  - Track progress
+  - Manage profile
+  - Access learning resources
+  - Manage subscription
+
+### 3. Teacher (inherits from Student)
+
+- **Characteristics:**
+  - Advanced user privileges
+  - Content creation capabilities
+  - Access to grading system
+- **Responsibilities:**
+  - Create and manage tests
+  - Grade subjective questions
+  - Review student performance
+  - Manage question bank
+  - Provide feedback
+  - Create and manage courses
+
+### 4. Admin (inherits from Teacher)
+
+- **Characteristics:**
+  - Highest level of system access
+  - System management capabilities
+  - Content oversight responsibilities
+- **Responsibilities:**
+  - Manage user accounts
+  - Monitor system performance
+  - Configure system settings
+  - Generate reports
+  - Manage content quality
+
+### 5. System
+
+- **Responsibilities:**
+  - Handle authentication
+  - Process test submissions
+  - Auto-grade objective questions
+  - Generate reports
+  - Manage sessions
+  - Send notifications
+  - Process payments
 
 ## Use Cases
 
@@ -17,111 +79,214 @@
 - Logout
 - Update Profile
 - Manage Subscription
+- Reset Password
+- Verify Email
+- Update Settings
+- Manage Notifications
 
-### 2. Course Management
-
-- Create Course
-- Edit Course
-- Publish Course
-- Unpublish Course
-- Add Lessons to Course
-- Remove Lessons from Course
-- Add Tests to Course
-- Remove Tests from Course
-
-### 3. Test Management
+### 2. Test Management
 
 - Create Test
+  - Set test parameters
+  - Add sections
+  - Configure scoring
+  - Set time limits
 - Edit Test
 - Publish Test
 - Unpublish Test
-- Add Questions to Test
-- Remove Questions from Test
+- Delete Test
+- Clone Test
+- Import/Export Test
+- Preview Test
+- Archive Test
 
-### 4. Question Management
+### 3. Question Management
 
 - Create Question
 - Edit Question
 - Delete Question
+- Import Questions
+- Export Questions
+- Categorize Questions
+- Set Question Difficulty
+- Add Media to Questions
+- Archive Questions
+- Manage Question Bank
 
-### 5. Learning
+### 4. Test Taking
 
-- Browse Courses
-- Enroll in Course
-- View Course Content
-- Complete Lessons
-- Take Test
-- View Test Results
+- Start Test
+- Submit Answers
 - Track Progress
+- Save Test Progress
+- Resume Test
+- Submit Test
+- View Results
+- Review Answers
+- Request Review
+- Download Certificate
 
-### 6. Teaching
+### 5. Grading and Assessment
 
-- Grade Tests
+- Auto-grade Objective Questions
+- Manual Grade Subjective Questions
 - Provide Feedback
-- View Student Progress
+- Review Grades
+- Process Appeals
+- Calculate Scores
+- Generate Reports
+- Track Performance
+
+### 6. Learning Management
+
+- View Course Materials
+- Track Progress
+- Set Learning Goals
+- Access Resources
+- View Performance Analytics
+- Generate Study Plans
+- Track Achievements
+- Join Study Groups
 
 ### 7. Administration
 
 - Manage Users
-- Manage Courses
-- Manage Tests
-- View System Analytics
+- Configure System
+- Monitor Performance
+- Generate Reports
+- Manage Content
+- Handle Support
+- Audit Activities
+- Manage Permissions
 
 ## Relationships and Associations
 
 ### Guest
 
 - Can perform:
-  - Browse Courses
-  - Register Account (extends to User Management)
+  - View public tests
+  - Register Account
+  - Access sample tests
+  - View public resources
 
 ### Student
 
 - Inherits all Guest actions
-- Can perform all User Management actions
-- Can perform all Learning actions
+- Can perform:
+  - All User Management actions
+  - All Test Taking actions
+  - All Learning Management actions
+  - Basic progress tracking
 
 ### Teacher
 
 - Inherits all Student actions
 - Can perform:
-  - All Course Management actions
   - All Test Management actions
   - All Question Management actions
-  - All Teaching actions
+  - All Grading actions
+  - Course management
+  - Student performance review
 
 ### Admin
 
 - Inherits all Teacher actions
-- Can perform all Administration actions
-
-### System
-
-- Performs:
-  - Auto-grade multiple-choice questions (included in Grade Tests)
-  - Send notifications (included in various actions like Enroll in Course, Publish Course, etc.)
-  - Generate reports (included in View System Analytics)
+- Can perform:
+  - All Administration actions
+  - System configuration
+  - User management
+  - Content oversight
 
 ## Include Relationships
 
-- Login (includes Authenticate User)
-- Register Account (includes Verify Email)
-- Take Test (includes Record Test Attempt)
-- Grade Tests (includes Calculate Score)
-- Manage Subscription (includes Process Payment)
+### Test Management
+
+- Create Test includes:
+  - Validate Structure
+  - Process Media
+  - Set Parameters
+  - Configure Sections
+
+### Test Taking
+
+- Take Test includes:
+  - Initialize Session
+  - Record Responses
+  - Track Time
+  - Calculate Score
+  - Save Progress
+
+### Grading
+
+- Grade Test includes:
+  - Apply Rubric
+  - Calculate Section Scores
+  - Generate Feedback
+  - Update Results
 
 ## Extend Relationships
 
-- Browse Courses extends to Enroll in Course (for registered users)
-- View Test Results extends to Review Mistakes (for completed tests)
-- Create Course extends to Add Lessons to Course and Add Tests to Course
-- Create Test extends to Add Questions to Test
+### Test Management
 
-## Constraints
+- Create Test extends to:
+  - Template Creation
+  - Question Bank Integration
+  - Test Preview
 
-- Only Teachers and Admins can access Course Management, Test Management, and Question Management
-- Only Admins can access Administration functions
-- Students can only View Test Results for tests they have taken
-- Teachers can only Grade Tests and View Student Progress for their own courses
+### Results Management
 
-This detailed use case diagram provides a comprehensive view of the system's functionality, clearly defining the roles of each actor and the relationships between different actions. The include and extend relationships show how certain actions are composed of or build upon others, giving a more nuanced understanding of the system's behavior.
+- View Results extends to:
+  - Generate Analytics
+  - Performance Reports
+  - Progress Tracking
+
+### Test Taking
+
+- Take Test extends to:
+  - Practice Mode
+  - Timed Mode
+  - Accessibility Mode
+
+## Business Rules and Constraints
+
+### Test Creation
+
+- Minimum questions per section: 1
+- Maximum test duration: 180 minutes
+- Required sections: At least one
+- Question types must match section type
+- Media file size limits:
+  - Audio: 10MB
+  - Images: 5MB
+
+### Test Taking
+
+- Maximum attempts: Configurable (1-5)
+- Time extensions: Based on accessibility needs
+- Auto-submit: On time expiration
+- Answer changes: Allowed within section time
+- Progress save: Every 30 seconds
+
+### Grading
+
+- Auto-grading: Immediate for objective questions
+- Manual grading window: 72 hours
+- Minimum passing score: Configurable (default 60%)
+- Review period: 14 days
+- Appeal window: 7 days after results
+
+## Technical Requirements
+
+### Performance
+
+- Maximum users: 10,000 concurrent
+- Response time: < 2 seconds
+- Availability: 99.9%
+- Data backup: Daily
+
+### Security
+
+- Authentication: JWT with refresh tokens
+- Session timeout: 30 minutes
+- Password policy: Strong
+- Data encryption: At rest and in transit

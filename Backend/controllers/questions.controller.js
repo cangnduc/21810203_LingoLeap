@@ -32,15 +32,27 @@ class QuestionsController {
       order = "desc",
       sortBy = "createdAt",
       limit = 10,
+      section = "",
+      type = "",
+      text = "",
     } = req.query;
     const validSortFields = ["createdAt", "type", "difficulty"];
 
     const sortField = validSortFields.includes(sortBy) ? sortBy : "createdAt";
     const sortOrder = order === "asc" ? 1 : -1;
+
     const filter = {
       createdBy: user._id,
     };
-
+    if (section) {
+      filter.section = section;
+    }
+    if (type) {
+      filter.type = type;
+    }
+    if (text) {
+      filter.questionText = { $regex: text, $options: "i" };
+    }
     const totalQuestions = await BaseQuestion.countDocuments(filter);
     const questions = await BaseQuestion.find(filter)
       .skip((page - 1) * limit)
@@ -406,6 +418,7 @@ class QuestionsController {
   getQuestionsBySection = async (req, res) => {
     const { user } = req;
     const { section } = req.params;
+    console.log("section", section);
     const {
       type,
       text,

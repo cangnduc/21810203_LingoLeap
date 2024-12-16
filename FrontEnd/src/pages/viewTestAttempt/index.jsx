@@ -8,7 +8,7 @@ const ViewTestAttempt = () => {
     isLoading,
     isError,
   } = useGetAllTestAttemptsByUserQuery();
-  console.log(testAttempts);
+  //console.log(testAttempts);
   if (isLoading) return <Loader />;
   if (isError) return <div>Error loading test attempts</div>;
   if (testAttempts && testAttempts.length === 0)

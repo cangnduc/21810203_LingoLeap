@@ -33,7 +33,7 @@ const baseQuestionSchema = new mongoose.Schema(
     },
     isPublic: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     points: {
       type: Number,
@@ -119,6 +119,11 @@ const trueFalseSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  statement: {
+    type: String,
+    required: true,
+    maxlength: [1000, "Statement cannot exceed 1000 characters"],
+  },
 });
 
 const TrueFalseQuestion = BaseQuestion.discriminator(
@@ -137,6 +142,19 @@ const fillInTheBlankSchema = new mongoose.Schema({
     {
       index: Number,
       correctAnswer: String,
+      options: {
+        type: [String],
+        optional: true,
+        validate: {
+          validator: function (v) {
+            if (v.options) {
+              return v.length >= 2 && v.length <= 6;
+            }
+            return true;
+          },
+          message: "Options must have between 2 and 5 answer options.",
+        },
+      },
     },
   ],
 });

@@ -1,18 +1,51 @@
 const express = require("express");
 const router = express.Router();
 const { authMiddleware } = require("../middleware/auth.middleware");
-const { wrapAsyncRoutes, asyncHandler } = require("../helpers/asyncHandler");
-const dummyUser = [
-  { name: "John Doe", email: "john@gmail.com", role: "user" },
-  { name: "Jane Doe", email: "jane@gmail.com", role: "teacher" },
-  { name: "John Smith", email: "johnsmith@gmail.com", role: "admin" },
-];
+const UserController = require("../controllers/user.controller");
+const { asyncHandler } = require("../helpers/asyncHandler");
+
+// Get current user
 router.get(
-  "/",
-  authMiddleware(["admin", "user"]),
-  asyncHandler(async (req, res) => {
-    res.status(200).json(dummyUser);
-  })
+  "/me",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(UserController.getCurrentUser)
 );
 
+// Get full current user data
+router.get(
+  "/full/me",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(UserController.getFullCurrentUser)
+);
+
+// Keep these for admin routes
+router.get(
+  "/:id",
+  authMiddleware(["admin"]),
+  asyncHandler(UserController.getUserById)
+);
+
+router.get(
+  "/full/:id",
+  authMiddleware(["admin"]),
+  asyncHandler(UserController.getFullUser)
+);
+
+router.patch(
+  "/me",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(UserController.updateCurrentUser)
+);
+
+router.get(
+  "/profile/me",
+  authMiddleware(["admin", "teacher", "user"]),
+  asyncHandler(UserController.getCurrentUserProfile)
+);
+
+router.get(
+  "/profile/:id",
+  authMiddleware(["admin"]),
+  asyncHandler(UserController.getProfileByUserId)
+);
 module.exports = router;

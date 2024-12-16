@@ -4,12 +4,15 @@ export const chatApi = createApi({
   reducerPath: "chatApi",
   baseQuery: baseApiWithReauth,
   endpoints: (builder) => ({
-    getChat: builder.query({
-      query: () => "/voice",
+    getChat: builder.mutation({
+      query: (data) => ({
+        url: `/voice`,
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response.data,
     }),
   }),
-  transformErrorResponse: (response) => response.data,
-  tagTypes: ["Chat"],
 });
 
-export const { useGetChatQuery } = chatApi;
+export const { useGetChatMutation } = chatApi;

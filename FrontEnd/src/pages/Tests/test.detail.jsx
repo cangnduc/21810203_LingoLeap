@@ -4,10 +4,12 @@ import { format } from "date-fns";
 import { useGetTestQuery } from "@/app/services/testApi";
 import { difficultyLevels } from "@/constant";
 import ReviewContainer from "@/components/reviews";
+//import useSelector
+import { useSelector } from "react-redux";
 const TestDetail = () => {
   const { id } = useParams();
   const { data: test, isLoading, isError, error } = useGetTestQuery(id);
-
+  const { user } = useSelector((state) => state.auth);
   const formatDate = (date) => {
     return format(new Date(date), "MMM dd, yyyy");
   };
@@ -21,7 +23,9 @@ const TestDetail = () => {
   const calculatePassingPercentage = () => {
     return (test.passingScore / test.totalPossibleScore) * 100;
   };
-
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     test && (
       <div className="container mx-auto px-4 py-8">
@@ -37,12 +41,14 @@ const TestDetail = () => {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-end gap-2">
-              <Link
-                to={`/tests/${id}/edit`}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-full text-sm transition-colors"
-              >
-                Edit Test
-              </Link>
+              {test.createdBy._id === user._id && (
+                <Link
+                  to={`/tests/${id}/edit`}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-full text-sm transition-colors"
+                >
+                  Edit Test
+                </Link>
+              )}
               <div className="flex gap-2">
                 <span
                   className={`${getDifficultyColor(
@@ -78,13 +84,15 @@ const TestDetail = () => {
               Attempts Allowed
             </h6>
             <h3 className="text-xl font-bold mt-2 dark:text-white">
-              {test.attemptsAllowed}
+              {test.totalAttempts}/{test.attemptsAllowed}
             </h3>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center">
-            <h6 className="text-gray-600 dark:text-gray-300">Total Attempts</h6>
+            <h6 className="text-gray-600 dark:text-gray-300">
+              Total participants
+            </h6>
             <h3 className="text-xl font-bold mt-2 dark:text-white">
-              {test.totalAttempts}
+              {test.participantCount || 0}
             </h3>
           </div>
         </div>

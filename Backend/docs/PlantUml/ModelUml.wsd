@@ -1,0 +1,142 @@
+@startuml Database Relationships
+
+' Styling
+skinparam class {
+    BackgroundColor LightBlue
+    ArrowColor Black
+    BorderColor DarkBlue
+}
+
+' User-related collections
+class User {
+    +_id: ObjectId
+    +email: String
+    +username: String
+    +password: String
+    +role: String
+    +isVerified: Boolean
+    +isDeleted: Boolean
+    +createdAt: Date
+    +updatedAt: Date
+}
+
+class UserProfile {
+    +_id: ObjectId
+    +user: ObjectId
+    +testTaken: ObjectId[]
+    +achievements: String[]
+    +preferences: Object
+    +learningGoals: String[]
+    +progressTracking: Object
+    +socialConnections: Object
+}
+
+class UserStatistics {
+    +_id: ObjectId
+    +user: ObjectId
+    +testsCompleted: Object
+    +averageScores: Object
+    +questionStats: Object
+    +timeStats: Object
+    +progressOverTime: Array
+}
+
+class LoginSession {
+    +_id: ObjectId
+    +user: ObjectId
+    +deviceInfo: String
+    +refreshToken: String
+    +isActive: Boolean
+    +expiresAt: Date
+}
+
+class Subscription {
+    +_id: ObjectId
+    +user: ObjectId
+    +plan: Object
+    +isActive: Boolean
+    +paymentHistory: Array
+}
+
+' Test-related collections
+class Test {
+    +_id: ObjectId
+    +title: String
+    +description: String
+    +duration: Number
+    +sections: Array
+    +createdBy: ObjectId
+    +isPublished: Boolean
+    +averageRating: Number
+}
+
+class Question {
+    +_id: ObjectId
+    +section: String
+    +questionText: String
+    +type: String
+    +difficulty: Number
+    +points: Number
+    +createdBy: ObjectId
+}
+
+class TestAttempt {
+    +_id: ObjectId
+    +user: ObjectId
+    +test: ObjectId
+    +startTime: Date
+    +endTime: Date
+    +status: String
+    +answers: Array
+}
+
+class TestResult {
+    +_id: ObjectId
+    +testAttempt: ObjectId
+    +totalScore: Number
+    +sectionScores: Array
+    +feedback: String
+}
+
+class Review {
+    +_id: ObjectId
+    +test: ObjectId
+    +user: ObjectId
+    +rating: Number
+    +comment: String
+}
+
+' Relationships
+User "1" -- "1" UserProfile : has
+User "1" -- "1" UserStatistics : has
+User "1" -- "1" Subscription : has
+User "1" -- "*" LoginSession : manages
+
+User "1" -- "*" TestAttempt : takes
+User "1" -- "*" Review : writes
+User "1" -- "*" Test : creates
+
+Test "1" -- "*" Question : contains
+Test "1" -- "*" TestAttempt : has
+Test "1" -- "*" Review : receives
+
+TestAttempt "1" -- "1" TestResult : produces
+
+' Inheritance for Question types
+class MultipleChoiceQuestion extends Question {
+    +answers: String[]
+    +correctAnswers: String[]
+}
+
+class SingleChoiceQuestion extends Question {
+    +answers: String[]
+    +correctAnswer: String
+}
+
+class EssayQuestion extends Question {
+    +minWords: Number
+    +maxWords: Number
+    +rubric: String
+}
+
+@enduml

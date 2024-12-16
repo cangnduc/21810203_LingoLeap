@@ -4,7 +4,11 @@
 ### Question API
 
 #### Get all questions
-GET {{baseUrl}}/question
+GET {{baseUrl}}/question?section=speaking
+Authorization: Bearer {{accessToken}}   
+
+#### Get all user questions
+GET {{baseUrl}}/question/my-questions?page=1&limit=10&section=reading
 Authorization: Bearer {{accessToken}}   
 
 #### Create a new question
@@ -21,6 +25,12 @@ Content-Type: application/json
       "difficulty": 5
     }
 }
+
+### get the speaking questions
+GET {{baseUrl}}/question/speaking
+Authorization: Bearer {{accessToken}}
+
+
 
 ###
 POST {{baseUrl}}/question
@@ -68,7 +78,7 @@ Content-Type: application/json
       "text": "If I _____ (know) about the party, I _____ (bring) a gift.",
       "blanks": [
         { "index": 0, "correctAnswer": "had known" },
-        { "index" : 1, "correctAnswer": "would have brought" }
+        { "index" : 1, "correctAnswer": "would have brought", "options": ["would have brought", "would have brought", "would have brought", "would have brought"] }
       ]
     },
     {

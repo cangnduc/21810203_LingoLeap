@@ -1,4 +1,11 @@
 export const sectionColors = {
+  default: {
+    bg: "bg-gray-50/80 dark:bg-slate-800/50",
+    text: "text-gray-700 dark:text-gray-200",
+    border: "border-gray-100 dark:border-slate-600",
+    hover:
+      "hover:bg-gray-100/80 dark:hover:bg-slate-700/50 hover:border-gray-200 dark:hover:border-slate-500 hover:shadow-md transition-all duration-200",
+  },
   general: {
     bg: "bg-blue-50/80 dark:bg-slate-800/50",
     text: "text-blue-700 dark:text-blue-200",

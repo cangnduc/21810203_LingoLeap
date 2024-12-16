@@ -207,12 +207,12 @@ const TestCreation = ({ mode }) => {
           toast.success("Test created successfully!");
         }
 
-        // Reset form only for creation mode
-        // if (!id) {
-        //   setTestInfo(INITIAL_TEST_INFO);
-        //   setSections(INITIAL_SECTIONS);
-        //   setStep(1);
-        // }
+        if (!id) {
+          setTestInfo(INITIAL_TEST_INFO);
+          setSections(INITIAL_SECTIONS);
+          await addTest(finalTestData);
+          setStep(1);
+        }
       } catch (error) {
         toast.error(error.message || "An error occurred");
       }

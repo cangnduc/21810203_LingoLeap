@@ -1,22 +1,23 @@
 import express from "express";
 import { AccessToken } from "livekit-server-sdk";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import Response from "../helpers/response.js";
 const router = express.Router();
 
-router.get(
+router.post(
   "/",
   authMiddleware(["admin", "teacher", "user"]),
   async (req, res) => {
-    // Ensure user identity is provided
     const user = req.user || "anonymous-user";
-    console.log("User:", user);
+    const { question, duration, testAttemptId } = req.body;
+
+    const durationInSeconds = duration * 60;
+
     const roomid = Math.floor(Math.random() * 1000000);
     const roomName = `Exam Room ${roomid}`;
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
-    console.log("API Key:", apiKey);
-    console.log("url:", process.env.LIVEKIT_URL);
-    console.log("API Secret:", apiSecret);
+
     if (!apiKey || !apiSecret) {
       return res
         .status(500)
@@ -25,6 +26,12 @@ router.get(
 
     const at = new AccessToken(apiKey, apiSecret, {
       identity: user.username || "anonymous-user",
+      ttl: (durationInSeconds + 30) * 1000,
+      metadata: JSON.stringify({
+        question,
+        duration,
+        testAttemptId,
+      }),
     });
 
     at.addGrant({
@@ -33,14 +40,15 @@ router.get(
       canPublish: true,
       canPublishData: true,
       canSubscribe: true,
+      roomDuration: durationInSeconds * 1000,
     });
+
     try {
       const token = await at.toJwt();
-      console.log("Generated token:", token);
-      //res.set("Cache-Control", "public, max-age=300"); // Cache for 5 minutes
-      res.json({
+      Response.sendSuccess(res, "Voice generated successfully", {
         token: token,
         url: process.env.LIVEKIT_URL,
+        expiresIn: durationInSeconds + 30,
       });
     } catch (error) {
       console.error("Error generating token:", error);

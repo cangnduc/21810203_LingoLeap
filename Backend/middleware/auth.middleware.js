@@ -35,7 +35,11 @@ const authMiddleware = (allowedRoles = []) =>
       }
     }
 
-    const user = await UserFunctions.getUserById(decoded.id, true);
+    const user = await UserFunctions.getUserById(
+      decoded.id,
+      "role _id email",
+      true
+    );
 
     req.user = user;
 

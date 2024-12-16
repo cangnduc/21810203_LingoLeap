@@ -96,6 +96,13 @@ export const testApi = createApi({
       }),
       invalidatesTags: ["Test"],
     }),
+    togglePublished: builder.mutation({
+      query: (id) => ({
+        url: `/tests/${id}/publish`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Test"],
+    }),
   }),
 });
 
@@ -107,4 +114,5 @@ export const {
   useGetTestForAttemptQuery,
   useGetTestByIdQuery,
   useUpdateTestMutation,
+  useTogglePublishedMutation,
 } = testApi;

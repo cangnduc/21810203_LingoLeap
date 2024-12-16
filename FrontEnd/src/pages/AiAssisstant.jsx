@@ -5,48 +5,38 @@ import {
   ParticipantTile,
   RoomAudioRenderer,
   useTracks,
-  Chat,
-  AudioVisualizer,
   useLocalParticipant,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { Track, ConnectionState } from "livekit-client";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useSelector } from "react-redux";
-import { useGetChatQuery } from "../app/services/chatApi";
-export default function AiAssisstant() {
-  const user = useSelector((state) => state.auth.user);
-  const [token, setToken] = useState(null);
-  const [url, setUrl] = useState(null);
-  const { data, isLoading, error } = useGetChatQuery();
-  //set token and url
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-      setToken(data.token);
-      setUrl(data.url);
-    }
-  }, [data]);
+import { Track } from "livekit-client";
 
-  if (!token || !url) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-
+export default function AiAssisstant({
+  token,
+  url,
+  onTokenChange,
+  onUrlChange,
+}) {
+  console.log("token", token);
+  console.log("url", url);
   return (
     <div>
       <LiveKitRoom
-        className="mt-14"
+        className="mt-3"
         video={true}
         audio={true}
         token={token}
         serverUrl={url}
         data-lk-theme="default"
-        style={{ height: "100vh" }}
         connect={true}
+        style={{ height: "40vh" }}
+        onConnected={() => {
+          console.log("Connected to the room");
+        }}
+        onDisconnected={() => {
+          onTokenChange(null);
+          onUrlChange(null);
+          console.log("Disconnected from the room");
+        }}
       >
         {/* Your custom component with basic video conferencing functionality. */}
         <MyVideoConference />

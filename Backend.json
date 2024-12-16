@@ -1,0 +1,364 @@
+{
+  "Backend": {
+    "api": [
+      "auth.http",
+      "question.http",
+      "review.http",
+      "seed.http",
+      "test.http",
+      "testAttempt.http",
+      "testResult.http",
+      "user.http",
+      "voice.http"
+    ],
+    "Audio": {},
+    "config": ["mongoose.db.js"],
+    "constant": ["codeStatus.js", "value.js"],
+    "controllers": [
+      "auth.controller.js",
+      "questions.controller.js",
+      "questions.controller.v1.js",
+      "review.controller.js",
+      "test.controller.js",
+      "testAttempt.controller.js",
+      "testResult.controller.js",
+      "user.controller.js"
+    ],
+    "docs": {
+      "app-overview.md": "app-overview.md",
+      "class-diagrams-overview.md": "class-diagrams-overview.md",
+      "Database": ["user.md"],
+      "implementation-steps-v1.md": "implementation-steps-v1.md",
+      "implementation-steps.md": "implementation-steps.md",
+      "models": [
+        "Course.md",
+        "Question.md",
+        "Subscription.md",
+        "Test.md",
+        "TestAttempt.md",
+        "TestResult.md",
+        "User.md",
+        "UserProfile.md"
+      ],
+      "PlantUml": ["ModelUml.wsd"],
+      "question-schema.md": "question-schema.md",
+      "swagger": {
+        "examples": ["questionExamples.js"],
+        "index.js": "index.js"
+      },
+      "use-case-diagram.md": "use-case-diagram.md",
+      "use-cases": [
+        "admin-usecase.md",
+        "guest-usecases.md",
+        "Overview.md",
+        "student-usecase.md",
+        "system-usecase.md",
+        "teacher-usecase.md"
+      ]
+    },
+    "example.env": "example.env",
+    "google-credentials.json": "google-credentials.json",
+    "helpers": [
+      "asyncHandler.js",
+      "error.js",
+      "filechange.js",
+      "openaiApi.js",
+      "response.js",
+      "server_watch.log"
+    ],
+    "middleware": [
+      "audio.middleware.js",
+      "auth.middleware.js",
+      "clientInfo.middleware.js",
+      "error.middleware.js"
+    ],
+    "model": {
+      "course.model.js": "course.model.js",
+      "dummy.data": ["questions.js"],
+      "function": [
+        "loginSession.function.js",
+        "profile.function.js",
+        "question.function.js",
+        "review.function.js",
+        "testAttempt.function.js",
+        "user.function.js"
+      ],
+      "loginSession.model.js": "loginSession.model.js",
+      "question.model.js": "question.model.js",
+      "question.model.v1.js": "question.model.v1.js",
+      "questionStatistic.model.js": "questionStatistic.model.js",
+      "review.model.js": "review.model.js",
+      "review.model.v1.js": "review.model.v1.js",
+      "seed": [
+        "fill.in.the.blanks.js",
+        "matching.js",
+        "multiple.choice.js",
+        "opended.seed.js",
+        "question.seed.js",
+        "reading.js",
+        "reading.passage.js",
+        "review.js",
+        "single.choice.js",
+        "speaking.seed.js",
+        "true_false.seed.jsx",
+        "userprofile.js",
+        "userstatistic.js",
+        "wrting.essay.js"
+      ],
+      "subscription.model.js": "subscription.model.js",
+      "test.model.js": "test.model.js",
+      "test.model.v1.js": "test.model.v1.js",
+      "testAttempt.model.js": "testAttempt.model.js",
+      "testResult.model.js": "testResult.model.js",
+      "testStatistics.model.js": "testStatistics.model.js",
+      "user.model.js": "user.model.js",
+      "userProfile.model.js": "userProfile.model.js",
+      "userStatistic.model.js": "userStatistic.model.js",
+      "writingQuestionResult.model.js": "writingQuestionResult.model.js"
+    },
+    "ob.json": "ob.json",
+    "package-lock.json": "package-lock.json",
+    "package.json": "package.json",
+    "public": ["index.html"],
+    "README.md": "README.md",
+    "routes": [
+      "auth.route.js",
+      "index.route.js",
+      "question.route.js",
+      "review.route.js",
+      "seed.route.js",
+      "test.route.js",
+      "testAttempt.route.js",
+      "testResult.route.js",
+      "user.route.js",
+      "voice.route.mjs"
+    ],
+    "server.js": "server.js",
+    "services": [
+      "questions.service.js",
+      "testAttempt.service.js",
+      "testResult.service.js"
+    ],
+    "uploads": {
+      "audio": {}
+    },
+    "utils": {
+      "similarity.js": "similarity.js"
+    },
+    "validator": [
+      "auth.validator.js",
+      "question.validator.js",
+      "question.validator.v1.js",
+      "review.validator.js",
+      "test.validator.js",
+      "user.validator.js"
+    ]
+  },
+  "Frontend": {
+    "eslint.config.js": "eslint.config.js",
+    "index.html": "index.html",
+    "package-lock.json": "package-lock.json",
+    "package.json": "package.json",
+    "postcss.config.js": "postcss.config.js",
+    "public": {
+      "images": ["image1.jpg"]
+    },
+    "README.md": "README.md",
+    "src": {
+      "Redux": {
+        "features": ["appSlice.js", "authSlice.js", "testAnswerSlice.js"],
+        "services": [
+          "authApi.js",
+          "baseApi.js",
+          "chatApi.js",
+          "questionApi.js",
+          "reviewApi.js",
+          "testApi.js",
+          "testAttemptApi.js",
+          "testResultApi.js",
+          "userApi.js"
+        ],
+        "store.js": "store.js",
+        "view.json": "view.json"
+      },
+      "App.css": "App.css",
+      "App.jsx": "App.jsx",
+      "assets": [],
+      "components": {
+        "button": ["delete.jsx", "test.attempt.jsx", "view.jsx"],
+        "Container.jsx": "Container.jsx",
+        "form": ["Input.jsx", "Select.jsx"],
+        "HomeComponent": [
+          "CallToAction.jsx",
+          "CourseHighlights.jsx",
+          "FeaturedTests.jsx",
+          "FeaturesOverview.jsx",
+          "Footer.jsx",
+          "Hero.jsx",
+          "TestCard.jsx",
+          "Testimonials.jsx"
+        ],
+        "loader.jsx": "loader.jsx",
+        "logo.jsx": "logo.jsx",
+        "nav": [
+          "Logout.jsx",
+          "MenuPanel.jsx",
+          "Navigation.jsx",
+          "NavLinks.jsx",
+          "userIcon.jsx",
+          "UserProfile.jsx"
+        ],
+        "PageTransition.jsx": "PageTransition.jsx",
+        "ProtectedRoute.jsx": "ProtectedRoute.jsx",
+        "QuestionDisplay.jsx": "QuestionDisplay.jsx",
+        "QuestionForm": ["QuestionForm.jsx"],
+        "Questions": ["index.jsx"],
+        "reviews": [
+          "add.comment.jsx",
+          "add.rating.jsx",
+          "add.review.jsx",
+          "comment.card.jsx",
+          "index.jsx",
+          "rating.summary.jsx",
+          "review.card.jsx",
+          "review.container.jsx"
+        ],
+        "ScrollToTopBtn.jsx": "ScrollToTopBtn.jsx",
+        "Sidebar.jsx": "Sidebar.jsx",
+        "ui": ["avatar.jsx", "button.jsx", "input.jsx"]
+      },
+      "constant": {
+        "colors.js": "colors.js",
+        "index.js": "index.js",
+        "Samples.jsx": "Samples.jsx"
+      },
+      "hooks": {
+        "useDebounce.js": "useDebounce.js"
+      },
+      "index.css": "index.css",
+      "main.jsx": "main.jsx",
+      "pages": {
+        "AddQuestion": [
+          "BaseQuestion.jsx",
+          "BaseQuestionForm.jsx",
+          "ChoiceFields.jsx",
+          "ChoiceFields.tsx",
+          "EssayFields.jsx",
+          "FillInTheBlankFields.jsx",
+          "FormField.jsx",
+          "index.jsx",
+          "InputField.jsx",
+          "MatchingFields.jsx",
+          "OpenEndedFields.jsx",
+          "OrderingFields.jsx",
+          "PassageForm.jsx",
+          "QuestionTypeFields.jsx",
+          "SelectField.jsx",
+          "TextareaField.jsx",
+          "TrueFalseFields.jsx"
+        ],
+        "AddQuestion - Copy": [
+          "BaseQuestion.jsx",
+          "BaseQuestionForm.jsx",
+          "ChoiceFields.jsx",
+          "ChoiceFields.tsx",
+          "EssayFields.jsx",
+          "FillInTheBlankFields.jsx",
+          "FormField.jsx",
+          "index.jsx",
+          "InputField.jsx",
+          "MatchingFields.jsx",
+          "OpenEndedFields.jsx",
+          "OrderingFields.jsx",
+          "PassageForm.jsx",
+          "QuestionTypeFields.jsx",
+          "SelectField.jsx",
+          "TextareaField.jsx",
+          "TrueFalseFields.jsx"
+        ],
+        "AiAssisstant.jsx": "AiAssisstant.jsx",
+        "Auth.jsx": "Auth.jsx",
+        "chat": ["chat.css", "Chat.jsx"],
+        "Contact.jsx": "Contact.jsx",
+        "Courses.jsx": "Courses.jsx",
+        "Home.jsx": "Home.jsx",
+        "Login.jsx": "Login.jsx",
+        "MyQuestions": [
+          "EditQuestion.jsx",
+          "FilterBar.jsx",
+          "index.jsx",
+          "QuestionModal.jsx",
+          "QuestionTable.jsx",
+          "TruncatedText.jsx"
+        ],
+        "NotFound.jsx": "NotFound.jsx",
+        "Profile": ["index.jsx", "user.display.jsx", "UserProfileDetails.jsx"],
+        "Register.jsx": "Register.jsx",
+        "TestAttempt": {
+          "display": ["index.js", "ordering.jsx"],
+          "index.jsx": "index.jsx",
+          "PassageDisplay.jsx": "PassageDisplay.jsx",
+          "QuestionDisplay.jsx": "QuestionDisplay.jsx",
+          "questions": [
+            "Essay.jsx",
+            "FillInTheBlank.jsx",
+            "index.jsx",
+            "Matching.jsx",
+            "MatchingV1.jsx",
+            "MultipleChoice.jsx",
+            "OpenEnded.jsx",
+            "Ordering.jsx",
+            "SingleChoice.jsx",
+            "TrueFalse.jsx"
+          ],
+          "SectionNavigation.jsx": "SectionNavigation.jsx",
+          "TestHeader.jsx": "TestHeader.jsx",
+          "TestTimer.jsx": "TestTimer.jsx"
+        },
+        "TestCreation": [
+          "index.jsx",
+          "PassageDisplay.jsx",
+          "PreviewDisplay.jsx",
+          "QuestionDisplay.jsx",
+          "Section.jsx",
+          "Section.module.css",
+          "SectionItem.jsx",
+          "TestInfo.jsx"
+        ],
+        "TestCreationV1": [
+          "index.jsx",
+          "PassageDisplay.jsx",
+          "PreviewDisplay.jsx",
+          "QuestionDisplay.jsx",
+          "Section.jsx",
+          "Section.module.css",
+          "SectionItem.jsx",
+          "TestInfo.jsx"
+        ],
+        "TestResult": ["index.jsx", "TestResultPage.jsx"],
+        "Tests": [
+          "index.jsx",
+          "test.card.jsx",
+          "test.container.jsx",
+          "test.detail.jsx",
+          "test.model.jsx"
+        ],
+        "viewTestAttempt": [
+          "detailAttempt.jsx",
+          "displayTestAttempt.jsx",
+          "index.jsx",
+          "TestAttemptModal.jsx"
+        ]
+      },
+      "styles": ["global.css"],
+      "ultils": ["getAudioUrl.js"],
+      "validator": [
+        "auth.validator.js",
+        "question.validator.js",
+        "updateUserSchema.validator.js"
+      ]
+    },
+    "tailwind.config.js": "tailwind.config.js",
+    "vite.config.js": "vite.config.js"
+  }
+}

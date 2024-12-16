@@ -25,7 +25,7 @@ const TestAttempt = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const answers = useSelector(selectAnswers);
-  console.log("answers", answers);
+  //console.log("answers", answers);
   const [
     completeTestAttempt,
     { isLoading: isCompleting, error: completeError },
@@ -38,9 +38,10 @@ const TestAttempt = () => {
   } = useInitializeTestAttemptQuery(testAttemptId, {
     refetchOnMountOrArgChange: true,
   });
-  console.log("testAttemptData", testAttemptData);
+  //console.log("testAttemptData", testAttemptData);
   const { test, testAttempt: savedAttempt } = testAttemptData || {};
-  const debouncedAnswers = useDebounce(answers, 15000);
+  console.log("savedAttempt", savedAttempt);
+
   const [saveAnswer, { isLoading: isSaving }] = useSaveAnswerMutation();
   // Handle error and navigation
   useEffect(() => {
@@ -188,6 +189,16 @@ const TestAttempt = () => {
     };
   }, [refetch, test?.status]);
 
+  const sortSections = (sections) => {
+    // Create a copy of sections to avoid mutating the original
+    return [...sections].sort((a, b) => {
+      // If it's a speaking section, move it to the end
+      if (a.name === "speaking") return 1;
+      if (b.name === "speaking") return -1;
+      return 0;
+    });
+  };
+
   if (isAttemptLoading || !testAttemptData) {
     return <div>Loading...</div>;
   }
@@ -195,7 +206,7 @@ const TestAttempt = () => {
   if (!test || !savedAttempt) {
     return <div>Test not found or not properly initialized</div>;
   }
-  console.log("test", test);
+  //console.log("test", test);
   return (
     <div className="container mx-auto p-4">
       <TestHeader title={test.title} description={test.description} />
@@ -228,7 +239,7 @@ const TestAttempt = () => {
         </div>
 
         <div className="lg:col-span-9">
-          {test.sections?.map((section, index) => (
+          {sortSections(test.sections || []).map((section, index) => (
             <div
               key={section._id}
               id={`section-${section._id}`}
@@ -243,11 +254,11 @@ const TestAttempt = () => {
               {/* For reading/listening sections with passages */}
               {(section.name === "reading" || section.name === "listening") &&
                 section.passages?.map((passage, index) => (
-                  <div key={passage._id?._id || passage._id}>
+                  <div key={passage._id?._id || passage._id || index}>
                     <PassageDisplay passage={passage._id} index={index} />
                     {passage._id?.questions?.map((question, index) => (
                       <QuestionDisplay
-                        key={question._id}
+                        key={question._id?._id || question._id || index}
                         question={question}
                         onAnswerChange={(answer) =>
                           handleAnswerChange(question._id, answer)
@@ -261,22 +272,26 @@ const TestAttempt = () => {
 
               {/* For sections without passages */}
               {!section.passages &&
-                section.questions?.map((question, index) => (
-                  <QuestionDisplay
-                    key={question._id?._id || question._id}
-                    question={question._id}
-                    onAnswerChange={(answer) =>
-                      handleAnswerChange(
-                        question._id?._id || question._id,
-                        answer
-                      )
-                    }
-                    currentAnswer={getCurrentAnswer(
-                      question._id?._id || question._id
-                    )}
-                    index={index}
-                  />
-                ))}
+                section.questions?.map((question, index) => {
+                  return (
+                    <QuestionDisplay
+                      key={question._id?._id || question._id || index}
+                      question={question._id}
+                      onAnswerChange={(answer) =>
+                        handleAnswerChange(
+                          question._id?._id || question._id,
+                          answer
+                        )
+                      }
+                      currentAnswer={getCurrentAnswer(
+                        question._id?._id || question._id
+                      )}
+                      index={index}
+                      duration={section.duration}
+                      testAttemptId={savedAttempt._id}
+                    />
+                  );
+                })}
             </div>
           ))}
         </div>

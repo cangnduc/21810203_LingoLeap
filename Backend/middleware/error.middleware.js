@@ -5,6 +5,7 @@ const {
   UnauthorizedError,
   ForbiddenError,
   ErrorRedirect,
+  NotFoundError,
 } = require("../helpers/error");
 const { MongoServerError } = require("mongodb");
 const handleError = (err, req, res, next) => {
@@ -66,6 +67,14 @@ const handleError = (err, req, res, next) => {
       errors: err.message,
     });
   }
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({
+      success: false,
+      message: "Not Found",
+      code: 404,
+      errors: err.message,
+    });
+  }
   if (err instanceof MongoServerError) {
     return res.status(400).json({
       success: false,
@@ -74,11 +83,11 @@ const handleError = (err, req, res, next) => {
       errors: err.message,
     });
   }
-
-  res.status(err.statusCode).json({
+  console.log(err);
+  res.status(err.code).json({
     success: false,
     message: err.message,
-    code: err.statusCode,
+    code: err.code,
     errors: err.errors,
   });
 };

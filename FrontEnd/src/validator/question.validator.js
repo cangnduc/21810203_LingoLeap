@@ -38,12 +38,19 @@ const SingleChoiceValidator = BaseQuestionValidator.extend({
 const FillInTheBlankValidator = BaseQuestionValidator.extend({
   type: z.literal("fill_in_the_blank"),
   text: z.string().max(1000),
-  blanks: z.array(
-    z.object({
-      index: z.number().int().nonnegative(),
-      correctAnswer: z.string(),
-    })
-  ),
+  blanks: z
+    .array(
+      z.object({
+        index: z.number().int().nonnegative(),
+        correctAnswer: z.string(),
+        options: z
+          .array(z.string().min(1, "Option cannot be empty"))
+          .max(6, "Maximum 6 options allowed")
+          .optional()
+          .default([]),
+      })
+    )
+    .min(1, "At least one blank is required"),
 });
 
 // Matching Question Schema
@@ -79,8 +86,7 @@ const TrueFalseValidator = BaseQuestionValidator.extend({
 // Open-Ended Question Schema
 const OpenEndedValidator = BaseQuestionValidator.extend({
   type: z.literal("open_ended"),
-  maxWords: z.number().int().positive().max(1000),
-  sampleAnswer: z.string().max(1000),
+  prompt: z.string().max(1000),
 });
 
 // Essay Question Schema
@@ -125,6 +131,63 @@ const QuestionValidator = z
             path: ["correctAnswers"],
           });
         }
+        break;
+
+      case "fill_in_the_blank":
+        const blankCount = (question.text.match(/_____/g) || []).length;
+
+        if (blankCount === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Text must contain at least one blank marked with '_____'",
+            path: ["text"],
+          });
+        }
+        if (
+          blankCount !== question.blanks.length &&
+          question.text.includes("_____") &&
+          question.text !== ""
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "Number of blanks must match the number of blanks provided.",
+            path: ["blanks"],
+          });
+        }
+        question.blanks.forEach((blank, index) => {
+          if (
+            blank.options.length > 0 &&
+            !blank.options.includes(blank.correctAnswer)
+          ) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `The correct answer must be in the options at index ${
+                index + 1
+              }`,
+              path: ["blanks", index, "options"],
+            });
+          }
+          if (blank.options.length > 6) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `At most 6 options are allowed per blank at index ${
+                index + 1
+              }`,
+              path: ["blanks", index, "options"],
+            });
+          }
+          if (blank.correctAnswer === "") {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `The correct answer cannot be empty at index ${
+                index + 1
+              }`,
+              path: ["blanks", index, "correctAnswer"],
+            });
+          }
+        });
+
         break;
       case "single_choice":
         // remove empty string from answers

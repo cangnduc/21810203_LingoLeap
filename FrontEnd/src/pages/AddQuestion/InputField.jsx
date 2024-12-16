@@ -7,6 +7,7 @@ export default function InputField({
   className,
   placeholder,
   required,
+  disabled = false,
 }) {
   return (
     <input
@@ -16,6 +17,7 @@ export default function InputField({
       className={className}
       placeholder={placeholder}
       required={required}
+      disabled={disabled}
     />
   );
 }

@@ -149,7 +149,7 @@ const testSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Test creator is required"],
     },
-    isPublished: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: true },
     attemptsAllowed: {
       type: Number,
       default: 1,
@@ -176,7 +176,12 @@ const testSchema = new mongoose.Schema(
       default: 0,
     },
 
-    totalAttempts: {
+    // Some possible names for tracking test attempts:
+    // testTakerCount
+    // completedAttempts
+    // submissionCount
+    // participantCount
+    participantCount: {
       type: Number,
       default: 0,
       min: 0,
@@ -196,12 +201,16 @@ testSchema.methods.updateAverageRating = async function () {
     {
       $group: {
         _id: null,
-        averageRating: { $avg: "$rating" },
-        count: { $sum: 1 },
+        averageRating: { $avg: "$rating.value" },
+        count: {
+          $sum: {
+            $cond: [{ $ifNull: ["$rating.value", false] }, 1, 0],
+          },
+        },
       },
     },
   ]);
-  console.log("result", result);
+
   if (result.length > 0) {
     this.averageRating = result[0].averageRating;
     this.totalReviews = result[0].count;

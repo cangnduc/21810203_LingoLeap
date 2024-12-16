@@ -35,6 +35,7 @@ const FillInTheBlankValidator = BaseQuestionValidator.extend({
     z.object({
       index: z.number().int().nonnegative(),
       correctAnswer: z.string().min(1),
+      options: z.array(z.string()).optional(),
     })
   ),
 });
@@ -163,6 +164,22 @@ const QuestionValidator = z
           });
         }
         break;
+      case "fill_in_the_blank":
+        const blanksCount = question.blanks.length;
+
+        // count the number of "_____" in the text
+        const blankCount = question.text.split("_____").length - 1;
+        if (blankCount !== blanksCount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              "The number of blanks must match the number of _____ in the text.",
+            path: ["blanks"],
+          });
+        }
+
+        break;
+
       default:
         break;
     }

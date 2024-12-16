@@ -4,7 +4,7 @@
 ### Test Attempt API
 
 #### Get a test attempt
-GET {{baseUrl}}/test-attempt/672a1458ba4a7d94165fc972
+POST {{baseUrl}}/test-attempt/675d5f0129c1280e35c21a09/initialize
 Authorization: Bearer {{accessToken}}
 
 #### Get all test attempts by user
@@ -37,3 +37,9 @@ Authorization: Bearer {{accessToken}}
 #### Calculate result
 POST {{baseUrl}}/test-attempt/6728b4da2ab71823e2b9b4fd/result
 Authorization: Bearer {{accessToken}}
+
+
+#### Calculate result
+POST {{baseUrl}}/calculate-result
+Authorization: Bearer {{accessToken}}
+

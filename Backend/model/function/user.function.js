@@ -5,31 +5,33 @@ const { accessTokenTime, refreshTokenTime } = require("../../constant/value");
 const jwt = require("jsonwebtoken");
 class UserFunctions {
   // Get a user by id
-  async getUserById(id, clean = false) {
+  async getUserById(id, select = "", clean = false) {
     if (clean) {
-      return await User.findById(id).lean();
+      return await User.findById(id, select).lean();
     }
     return await User.findById(id);
   }
-  //get full user
 
-  async getFullUser(id, clean = false) {
-    const user = await User.findById(id, "name email role");
-    const userProfile = await UserProfile.findOne({ user: id });
+  async getProfileByUserId(id, select = "", clean = false) {
     if (clean) {
-      return { user: user.lean(), userProfile: userProfile.lean() };
+      return await UserProfile.findById(id, select).lean();
     }
-    return { user, userProfile };
+    return await UserProfile.findById(id);
+  }
+
+  //get full user
+  async getFullUser(id, userOptions = "", profileOptions = "", clean = false) {
+    const query = User.findById(id, userOptions).populate(
+      "userProfile",
+      profileOptions
+    );
+    if (clean) {
+      return await query.lean();
+    }
+    return await query;
   }
   // Get a user by email
-  async getUserByEmail(email) {
-    const user = await User.findOne({ email });
-    if (user) {
-      const userProfile = await UserProfile.findOne({ user: user._id });
-      return { user, userProfile };
-    }
-    return null;
-  }
+
   async loginUser(email, password) {
     const user = await User.findOne({ email }).populate("userProfile");
     if (!user) {

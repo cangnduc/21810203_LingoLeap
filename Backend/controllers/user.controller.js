@@ -1,26 +1,37 @@
-const z = require("zod");
 const UserFunctions = require("../model/function/user.function");
+const UserProfileFunctions = require("../model/function/profile.function");
+const { UnauthorizedError } = require("../helpers/error");
 const { wrapAsyncRoutes } = require("../helpers/asyncHandler");
-
-// Define schemas
-const updateProfileSchema = z.object({
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  dateOfBirth: z.string().optional(), // You might want to use a more specific date validation
-  phoneNumber: z.string().optional(),
-  // ... other fields
-});
-
-const changePasswordSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string().min(8),
-});
+const Response = require("../helpers/response");
+const {
+  updateProfileSchema,
+  changePasswordSchema,
+  updateUserSchema,
+} = require("../validator/user.validator");
 
 class UserController {
-  async getProfile(req, res) {
-    // Implementation
+  // Get user profile by userId for admin
+  async getProfileByUserId(req, res) {
+    const userProfile = await UserProfileFunctions.getUserProfile(
+      req.params.id,
+      "-_id -__v -createdAt -updatedAt",
+      true
+    );
+    Response.sendSuccess(res, "User profile fetched successfully", userProfile);
   }
 
+  // get current user profile
+  async getCurrentUserProfile(req, res) {
+    console.log("userid", req.user._id.toString());
+    const userProfile = await UserProfileFunctions.getUserProfile(
+      req.user._id.toString(),
+      "-_id -__v -createdAt -updatedAt",
+      true
+    );
+    Response.sendSuccess(res, "User profile fetched successfully", userProfile);
+  }
+
+  // update user profile
   async updateProfile(req, res) {
     const validatedData = updateProfileSchema.parse(req.body);
     const updatedProfile = await UserFunctions.updateUserProfile(
@@ -44,8 +55,51 @@ class UserController {
     // Implementation (admin only)
   }
 
+  async getCurrentUser(req, res) {
+    const user = await UserFunctions.getUserById(
+      req.user._id,
+      "_id username email avatar firstName lastName phoneNumber address",
+      true
+    );
+    Response.sendSuccess(res, "User fetched successfully", user);
+  }
+
+  async getFullCurrentUser(req, res) {
+    const user = await UserFunctions.getFullUser(
+      req.user._id,
+      "-_id -__v -isDeleted -isVerified -password -createdAt -updatedAt",
+      "-_id -__v -createdAt -updatedAt",
+      true
+    );
+    Response.sendSuccess(res, "User fetched successfully", user);
+  }
+
+  // Keep these for admin access
   async getUserById(req, res) {
-    // Implementation (admin only)
+    const { id } = req.params;
+    if (req.user.role !== "admin") {
+      throw new UnauthorizedError("Admin access required");
+    }
+    const user = await UserFunctions.getUserById(
+      id,
+      "_id username email avatar firstName lastName phoneNumber address",
+      true
+    );
+    Response.sendSuccess(res, "User fetched successfully", user);
+  }
+
+  async getFullUser(req, res) {
+    const { id } = req.params;
+    if (req.user.role !== "admin") {
+      throw new UnauthorizedError("Admin access required");
+    }
+    const user = await UserFunctions.getFullUser(
+      id,
+      "-_id -__v -createdAt -updatedAt",
+      "-_id -__v -createdAt -updatedAt",
+      true
+    );
+    Response.sendSuccess(res, "User fetched successfully", user);
   }
 
   async updateUserRole(req, res) {
@@ -78,6 +132,15 @@ class UserController {
 
   async removeSocialConnection(req, res) {
     // Implementation
+  }
+
+  async updateCurrentUser(req, res) {
+    const validatedData = updateUserSchema.parse(req.body);
+    const updatedUser = await UserFunctions.updateUser(
+      req.user._id,
+      validatedData
+    );
+    Response.sendSuccess(res, "User updated successfully", updatedUser);
   }
 }
 

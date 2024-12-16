@@ -67,7 +67,14 @@ const writingQuestionResultSchema = new mongoose.Schema({
     required: true,
   },
 });
-
+const SpeakingResultSchema = new mongoose.Schema({
+  fluency: { type: Number },
+  pronunciation: { type: Number },
+  vocabulary: { type: Number },
+  overallCommunication: { type: Number },
+  totalScore: { type: Number },
+  feedback: { type: String },
+});
 const testResultSchema = new mongoose.Schema(
   {
     testAttempt: {
@@ -79,12 +86,12 @@ const testResultSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "User reference is required"],
+      //required: [true, "User reference is required"],
     },
     test: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Test",
-      required: [true, "Test reference is required"],
+      //required: [true, "Test reference is required"],
     },
     totalScore: {
       type: Number,
@@ -109,6 +116,7 @@ const testResultSchema = new mongoose.Schema(
     sectionScores: [sectionScoreSchema],
     questionScores: [questionScoreSchema],
     writingQuestionResults: [writingQuestionResultSchema],
+    speakingResult: SpeakingResultSchema,
     feedback: { type: String },
     gradedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -120,6 +128,13 @@ const testResultSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+// Fluency: 80
+// Pronunciation: 75
+// Vocabulary: 70
+// Overall communication: 75
+// Total score: 75
+
+// Feedback: johndoe, you demonstrated good fluency throughout the conversation and were able to express your thoughts reasonably well. However, there were some moments where hesitation affected the overall flow. Your pronunciation was generally clear, but there were instances where some words could have been articulated better. In terms of vocabulary, you used a range of terms related to technology and education, but incorporating more advanced vocabulary could enhance your responses. Overall, you communicated your ideas effectively, but working on those areas mentioned would improve your performance. Keep practicing, and you'll see great progress!
 
 // Indexing
 testResultSchema.index({ user: 1 });

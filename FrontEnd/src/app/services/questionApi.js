@@ -19,7 +19,7 @@ export const questionApi = createApi({
         return `/question/search?${params.toString()}`;
       },
       transformResponse: (response) => {
-        console.log("Raw API response:", JSON.stringify(response, null, 2));
+        //console.log("Raw API response:", JSON.stringify(response, null, 2));
         if (response && response.data) {
           return response.data;
         }
@@ -43,7 +43,7 @@ export const questionApi = createApi({
             }
           }
           return {
-            url: "/question",
+            url: "/question/add",
             method: "POST",
             body: jsonBody,
             headers: {
@@ -52,12 +52,148 @@ export const questionApi = createApi({
           };
         } else {
           return {
-            url: "/question",
+            url: "/question/add",
             method: "POST",
             body: formData,
           };
         }
       },
+      invalidatesTags: ["Questions"],
+    }),
+    getMyQuestions: builder.query({
+      query: (args) => {
+        const {
+          sections,
+          types,
+          page = 1,
+          limit = 10,
+          search = "",
+          sortBy = "createdAt",
+          order = "desc",
+        } = args;
+
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+          ...(sections && { sections }),
+          ...(types && { types }),
+          ...(search && { search }),
+          ...(sortBy && { sortBy }),
+          ...(order && { order }),
+        });
+
+        return `/question/my-questions?${params.toString()}`;
+      },
+      refetchOnMountOrArgChange: 30, // refetch after 30 seconds
+      refetchOnFocus: false, // don't refetch when window regains focus
+      refetchOnReconnect: true, // refetch when internet reconnects
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.questions.map(({ _id }) => ({
+                type: "Questions",
+                id: _id,
+              })),
+              { type: "Questions", id: "LIST" },
+            ]
+          : [{ type: "Questions", id: "LIST" }],
+      transformResponse: (response) => {
+        if (response && response.data) {
+          return response.data;
+        }
+        return response;
+      },
+    }),
+    deleteQuestion: builder.mutation({
+      query: ({ id }) => ({
+        url: `/question/id/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted({ id, filters }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          questionApi.util.updateQueryData(
+            "getMyQuestions",
+            filters,
+            (draft) => {
+              if (Array.isArray(draft?.questions)) {
+                const index = draft.questions.findIndex((q) => q._id === id);
+                if (index !== -1) {
+                  draft.questions.splice(index, 1);
+                  if (typeof draft.total === "number") {
+                    draft.total -= 1;
+                  }
+                }
+              }
+
+              // Delete the question from the passages
+              if (Array.isArray(draft?.passages)) {
+                draft.passages.forEach((passage) => {
+                  if (Array.isArray(passage.questions)) {
+                    const questionIndex = passage.questions.findIndex(
+                      (q) => q._id === id
+                    );
+                    if (questionIndex !== -1) {
+                      passage.questions.splice(questionIndex, 1);
+                      if (typeof draft.total === "number") {
+                        draft.total -= 1;
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          patchResult.undo();
+
+          throw error;
+        }
+      },
+    }),
+    deletePassage: builder.mutation({
+      query: ({ id }) => ({
+        url: `/question/passage/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted({ id, filters }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          questionApi.util.updateQueryData(
+            "getMyQuestions",
+            filters,
+            (draft) => {
+              draft.passages = draft.passages.filter((p) => p._id !== id);
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          patchResult.undo();
+          throw error;
+        }
+      },
+    }),
+    editQuestion: builder.mutation({
+      query: ({ id, data }) => {
+        console.log("data", data);
+        return {
+          url: `/question/my-question/${id}`,
+          method: "PUT",
+          body: data,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+      },
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Questions", id: "LIST" },
+        { type: "Questions", id },
+      ],
     }),
     getPassagesWithQuestions: builder.query({
       query: (args) => {
@@ -114,16 +250,40 @@ export const questionApi = createApi({
         };
       },
     }),
+    getMyQuestionById: builder.query({
+      query: (id) => `/question/my-question/${id}`,
+      transformResponse: (response) => {
+        if (response && response.data) {
+          return response.data;
+        }
+        return response;
+      },
+      invalidatesTags: ["Questions"],
+      providesTags: (result, error, id) => [{ type: "Questions", id }],
+    }),
+    getQuestionById: builder.query({
+      query: (id) => `/question/${id}`,
+      transformResponse: (response) => {
+        if (response && response.data) {
+          return response.data;
+        }
+        return response;
+      },
+      invalidatesTags: ["Questions"],
+    }),
   }),
-
-  tagTypes: ["Question"],
 });
 
 export const {
-  useGetQuestionQuery,
+  useGetMyQuestionByIdQuery,
   useAddQuestionMutation,
+  useDeleteQuestionMutation,
   useSearchQuestionsQuery,
   useGetPassagesWithQuestionsQuery,
   useGetQuestionsBySectionQuery,
   useUploadSoundFileMutation,
+  useGetMyQuestionsQuery,
+  useEditQuestionMutation,
+  useDeletePassageMutation,
+  useGetQuestionByIdQuery,
 } = questionApi;

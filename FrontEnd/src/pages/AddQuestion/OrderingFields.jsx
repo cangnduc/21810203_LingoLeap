@@ -3,51 +3,32 @@ import FormField from "./FormField";
 import { FaTrash, FaPlus } from "react-icons/fa";
 import { useFieldArray } from "react-hook-form";
 
-const orderingInput = {
-  type: "ordering",
-
-  questionText: "Arrange the following sentences to form a coherent paragraph.",
-  instruction: "Drag and drop the sentences into the correct order.",
-  difficulty: 4,
-  items: [
-    {
-      id: "1",
-      text: "However, with proper planning and execution, these challenges can be overcome.",
-    },
-    {
-      id: "2",
-      text: "Urban gardening is becoming increasingly popular in cities around the world.",
-    },
-    {
-      id: "3",
-      text: "It offers numerous benefits, including fresh produce and improved air quality.",
-    },
-    {
-      id: "4",
-      text: "Space constraints and pollution are common obstacles faced by urban gardeners.",
-    },
-  ],
-  correctOrder: ["2", "3", "4", "1"],
-};
-
-export default function OrderingFields({ control, register, errors, prefix }) {
+export default function OrderingFields({
+  control,
+  register,
+  errors,
+  prefix,
+  getValues,
+}) {
   const { fields, remove, append } = useFieldArray({
     control,
     name: `${prefix}.items`,
   });
-
+  console.log("fields", fields);
   const addItem = () => {
     if (fields.length < 8) {
-      append({ id: "", text: "" });
+      append({ id: fields.length + 1, text: "" });
     }
   };
-
+  console.log("errors", errors);
   const removeItem = (index) => {
     if (fields.length > 3) {
       remove(index);
+      //reset the index of the items
 
       // Update the correctOrder array
-      const currentCorrectOrder = register(`${prefix}.correctOrder`).value;
+      const currentCorrectOrder = getValues(`${prefix}.correctOrder`);
+      console.log("currentCorrectOrder", currentCorrectOrder);
       if (Array.isArray(currentCorrectOrder)) {
         const updatedCorrectOrder = currentCorrectOrder
           .filter((id) => id !== fields[index].id)
@@ -58,6 +39,7 @@ export default function OrderingFields({ control, register, errors, prefix }) {
         register(`${prefix}.correctOrder`).onChange({
           target: { value: updatedCorrectOrder.join(",") },
         });
+        console.log("updatedCorrectOrder", updatedCorrectOrder);
       }
     }
   };
@@ -76,8 +58,9 @@ export default function OrderingFields({ control, register, errors, prefix }) {
                 register={register}
                 errors={errors}
                 className="w-full text-center"
-                placeholder={(index + 1).toString()}
+                placeholder={field.id}
                 required={true}
+                disabled={true}
               />
             </div>
             <div className="flex-grow">
@@ -86,7 +69,7 @@ export default function OrderingFields({ control, register, errors, prefix }) {
                 register={register}
                 errors={errors}
                 className="w-full"
-                placeholder={orderingInput.items[index]?.text}
+                placeholder={`Item ${index + 1}`}
                 required={true}
               />
             </div>
@@ -126,7 +109,7 @@ export default function OrderingFields({ control, register, errors, prefix }) {
               typeof value === "string" ? value.split(",") : [],
           }}
           required={true}
-          placeholder={orderingInput.correctOrder.join(",")}
+          placeholder={`2,1,3,4`}
         />
       </div>
     </>

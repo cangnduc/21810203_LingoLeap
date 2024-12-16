@@ -34,7 +34,8 @@ class AuthController {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: refreshTokenTime, // 7 days
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     Response.sendSuccess(
@@ -57,9 +58,9 @@ class AuthController {
   async login(req, res) {
     const { email, password } = loginSchema.parse(req.body);
     const user = await UserFunctions.loginUser(email, password);
-
-    const deviceInfo = req.deviceInfo;
-    console.log(user);
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
     const { accessToken, refreshToken } = await UserFunctions.generateToken(
       user
     );
@@ -70,7 +71,6 @@ class AuthController {
       deviceInfo: req.deviceInfo.device,
       ipAddress: req.ipAddress,
     });
-    console.log("refreshToken Time", refreshTokenTime);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -144,6 +144,7 @@ class AuthController {
   async logout(req, res) {
     const userId = req.user._id;
     const refreshToken = req.cookies.refreshToken;
+    console.log("refreshToken", refreshToken);
     if (!userId || !refreshToken) {
       throw new BadRequestError("User not logged in");
     }

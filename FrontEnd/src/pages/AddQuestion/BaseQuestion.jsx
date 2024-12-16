@@ -4,19 +4,24 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { FaPlusCircle } from "react-icons/fa";
 import { SectionBasedValidator } from "@/validator/question.validator";
-import { sectionList, sectionToTypeMap } from "../../constant/Samples";
+import { sectionList, sectionToTypeMap } from "@/constant/Samples";
 import PassageForm from "./PassageForm";
 import BaseQuestionForm from "./BaseQuestionForm";
-import { useAddQuestionMutation } from "@/app/services/questionApi";
-import { ToastContainer, toast } from "react-toastify";
-import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  useAddQuestionMutation,
+  useEditQuestionMutation,
+} from "@/app/services/questionApi";
+import { toast } from "react-toastify";
 
-export default function BaseQuestion() {
+export default function BaseQuestion({ mode = "add", initialData = null }) {
   const [addQuestion, { isLoading }] = useAddQuestionMutation();
-  const dispatch = useDispatch();
+  const [editQuestion, { isLoading: isEditLoading }] =
+    useEditQuestionMutation();
+
   const [audioPreviewUrl, setAudioPreviewUrl] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -31,44 +36,80 @@ export default function BaseQuestion() {
   } = useForm({
     resolver: zodResolver(SectionBasedValidator),
     mode: "onChange",
-    defaultValues: {
-      section: "reading",
-      data: {
-        passage: {
-          passageType: "reading",
-          title: "",
-          text: "",
-          url: "",
-        },
-        questions: [
-          {
-            type: "single_choice",
-            questionText: "",
-            instruction: "",
-            difficulty: 1,
-            answers: ["", "", "", ""],
-            correctAnswer: "",
-            section: "reading",
+    defaultValues: initialData
+      ? {
+          section: initialData.section || "reading",
+          type: initialData.type || "single_choice",
+          data:
+            initialData.section === "reading" ||
+            initialData.section === "listening"
+              ? {
+                  passage: {
+                    passageType: initialData.section,
+                    title: initialData.title || "",
+                    text: initialData.text || "",
+                    url: initialData.url || "",
+                    ...(initialData.section === "listening"
+                      ? { audioUrl: initialData.audioUrl || "" }
+                      : {}),
+                  },
+                  questions: [
+                    {
+                      type: initialData.type,
+                      ...initialData,
+                    },
+                  ],
+                }
+              : {
+                  question: {
+                    type: initialData.type,
+                    ...initialData,
+                  },
+                },
+        }
+      : {
+          section: "reading",
+          type: "single_choice",
+          data: {
+            passage: {
+              passageType: "reading",
+              title: "",
+              text: "",
+              url: "",
+            },
+            questions: [
+              {
+                type: "single_choice",
+                questionText: "",
+                instruction: "",
+                difficulty: 1,
+                answers: ["", "", "", ""],
+                correctAnswer: "",
+                section: "reading",
+              },
+            ],
           },
-        ],
-      },
-    },
+        },
   });
   const section = watch("section");
   const questionsData = watch("data.questions") || [];
+
   const singleQuestionData = watch("data.question");
   const setQuestions = () =>
     section === "reading" || section === "listening"
       ? [{ id: Date.now() }]
       : [];
 
-  useEffect(() => {
-    console.log("errors", errors);
-  }, [errors, isValid]);
+  useEffect(() => {}, [errors, isValid]);
 
   useEffect(() => {
+    if (mode === "edit") {
+      return;
+    }
+
     const newDefaultValues = {
       section: section,
+      type: sectionToTypeMap[section][0],
       data:
         section === "reading" || section === "listening"
           ? {
@@ -103,7 +144,7 @@ export default function BaseQuestion() {
     };
 
     reset(newDefaultValues);
-  }, [section, reset]);
+  }, [section, reset, mode]);
 
   const resetForm = () => {
     const defaultValues = {
@@ -162,45 +203,66 @@ export default function BaseQuestion() {
     };
 
     try {
-      if (section === "reading" || section === "listening") {
-        if (section === "listening") {
-          formData.append("soundFile", data.data?.passage?.soundFile);
-        }
-        const processedQuestions = data.data.questions.map(processQuestion);
-        formData.append("questions", JSON.stringify(processedQuestions));
-        const { soundFile, ...passage } = data.data.passage;
-        formData.append("passage", JSON.stringify(passage));
+      if (mode === "edit" && initialData?._id) {
+        //print form data
+        const questionData = {
+          ...data.data.question,
+        };
 
-        setUploadProgress(0);
-
-        const result = await addQuestion(formData).unwrap();
-        console.log("Result from addQuestion:", result);
-
-        if (result.error) {
-          throw new Error(result.error.message || "Unknown error occurred");
-        }
+        const result = await editQuestion({
+          id: initialData._id,
+          data: questionData,
+        }).unwrap();
 
         if (result.data) {
-          console.log("Question added successfully. Result:", result.data);
-          //resetForm();
-          toast.success("Question added successfully!");
-        } else {
-          console.warn("Unexpected response format:", result);
-          toast.warn(
-            "Question may have been added, but the response was unexpected."
-          );
+          //redirect to question list
+          navigate("/my-questions");
+          toast.success("Question updated successfully!");
         }
       } else {
-        const processedQuestion = processQuestion(data.data.question);
-        formData.append("question", JSON.stringify(processedQuestion));
-        const result = await addQuestion(formData).unwrap();
-        console.log("Question added successfully. Result:", result);
-        resetForm();
-        toast.success("Question added successfully!");
+        // Existing add logic
+        if (section === "reading" || section === "listening") {
+          if (section === "listening") {
+            formData.append("soundFile", data.data?.passage?.soundFile);
+          }
+          const processedQuestions = data.data.questions.map(processQuestion);
+          formData.append("questions", JSON.stringify(processedQuestions));
+          const { soundFile, ...passage } = data.data.passage;
+          formData.append("passage", JSON.stringify(passage));
+
+          setUploadProgress(0);
+
+          const result = await addQuestion(formData).unwrap();
+          console.log("Result from addQuestion:", result);
+
+          if (result.error) {
+            throw new Error(result.error.message || "Unknown error occurred");
+          }
+
+          if (result.data) {
+            console.log("Question added successfully. Result:", result.data);
+            //resetForm();
+            toast.success("Question added successfully!");
+          } else {
+            console.warn("Unexpected response format:", result);
+            toast.warn(
+              "Question may have been added, but the response was unexpected."
+            );
+          }
+        } else {
+          const processedQuestion = processQuestion(data.data.question);
+
+          formData.append("question", JSON.stringify(processedQuestion));
+          const result = await addQuestion(formData).unwrap();
+          console.log("Question added successfully. Result:", result);
+
+          resetForm();
+          toast.success("Question added successfully!");
+        }
       }
     } catch (error) {
       console.error("Error in onSubmit:", error);
-      toast.error(error.message || "Failed to add question");
+      toast.error(error.message || `Failed to ${mode} question`);
       setUploadProgress(0);
     }
   };
@@ -245,32 +307,48 @@ export default function BaseQuestion() {
   const updateSection = (newSection) => {
     setValue("section", newSection);
 
-    if (newSection === "reading" || newSection === "listening") {
-      // For reading and listening, update all questions in the array
-      const updatedQuestions =
-        questionsData.length > 0
-          ? questionsData.map((question) => ({
-              ...question,
-              section: newSection,
-              type: sectionToTypeMap[newSection][0], // Set default type for the new section
-            }))
-          : [
-              {
-                ...singleQuestionData,
-                section: newSection, // Add section here
-              },
-            ];
-      setValue("data.questions", updatedQuestions);
+    if (mode === "edit") {
+      if (newSection === "reading" || newSection === "listening") {
+        const updatedQuestions = questionsData.map((question) => ({
+          ...question,
+          section: newSection,
+        }));
+        setValue("data.questions", updatedQuestions);
+      } else {
+        setValue("data.question", {
+          ...singleQuestionData,
+          section: newSection,
+        });
+      }
     } else {
-      // For other sections, update the single question
-      setValue("data.question", {
-        ...singleQuestionData,
-        section: newSection,
-        type: sectionToTypeMap[newSection][0], // Set default type for the new section
-      });
+      if (newSection === "reading" || newSection === "listening") {
+        const updatedQuestions =
+          questionsData.length > 0
+            ? questionsData.map((question) => ({
+                ...question,
+                section: newSection,
+                type: sectionToTypeMap[newSection][0],
+              }))
+            : [
+                {
+                  ...singleQuestionData,
+                  section: newSection,
+                  type: sectionToTypeMap[newSection][0],
+                },
+              ];
+        setValue("data.questions", updatedQuestions);
+      } else {
+        setValue("data.question", {
+          ...singleQuestionData,
+          section: newSection,
+          type: sectionToTypeMap[newSection][0],
+        });
+      }
     }
   };
-
+  useEffect(() => {
+    console.log("errors", errors);
+  }, [errors]);
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -282,13 +360,18 @@ export default function BaseQuestion() {
               <button
                 key={s.name}
                 type="button"
+                disabled={mode === "edit"}
                 className={`p-2 rounded-md ${
                   section === s.name
                     ? "bg-blue-500 text-white dark:bg-blue-700 dark:text-gray-300"
+                    : mode === "edit"
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                 }`}
                 onClick={() => {
-                  setValue("section", s.name);
+                  if (mode !== "edit") {
+                    setValue("section", s.name);
+                  }
                 }}
               >
                 <div className="flex items-center gap-2">
@@ -349,9 +432,14 @@ export default function BaseQuestion() {
                   prefix={`data.questions.${index}`}
                   setQuestionType={(type) => setQuestionType(index, type)}
                   questionTypes={sectionToTypeMap[section]}
-                  control={control} // Add this line
+                  control={control}
+                  watch={watch}
+                  setValue={setValue}
+                  getValues={getValues}
+                  trigger={trigger}
+                  isEditMode={mode === "edit"}
                 />
-                {questionsData.length > 1 && (
+                {questionsData.length > 1 && mode !== "edit" && (
                   <button
                     type="button"
                     onClick={() => removeQuestion(index)}
@@ -378,20 +466,26 @@ export default function BaseQuestion() {
                 prefix="data.question"
                 setQuestionType={(type) => setQuestionType(0, type)}
                 questionTypes={sectionToTypeMap[section]}
-                control={control} // Add this line
+                control={control}
+                watch={watch}
+                setValue={setValue}
+                getValues={getValues}
+                trigger={trigger}
+                isEditMode={mode === "edit"}
               />
             </motion.div>
           )}
-          {(section === "reading" || section === "listening") && (
-            <button
-              type="button"
-              onClick={appendQuestion}
-              className="flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              <FaPlusCircle className="w-5 h-5 mr-2" />
-              Add Question
-            </button>
-          )}
+          {(section === "reading" || section === "listening") &&
+            mode !== "edit" && (
+              <button
+                type="button"
+                onClick={appendQuestion}
+                className="flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                <FaPlusCircle className="w-5 h-5 mr-2" />
+                Add Question
+              </button>
+            )}
         </div>
 
         {/* Submit and Reset buttons */}
@@ -403,18 +497,20 @@ export default function BaseQuestion() {
                 ? "bg-blue-500 text-white hover:bg-blue-600"
                 : "bg-gray-300 text-gray-500"
             }`}
-            disabled={isLoading || !isValid}
+            disabled={isLoading || !isValid || isEditLoading}
           >
-            Submit
+            {mode === "edit" ? "Update" : "Submit"}
           </button>
-          <button
-            type="button"
-            onClick={resetForm}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            disabled={isLoading}
-          >
-            Reset
-          </button>
+          {mode !== "edit" && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              disabled={isLoading}
+            >
+              Reset
+            </button>
+          )}
         </div>
       </form>
     </>

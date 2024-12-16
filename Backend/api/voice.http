@@ -1,0 +1,8 @@
+@baseUrl = https://localhost:3000/api/v1
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWRhMjIwZjE1NzdhYTlhMzE0YWIzMCIsImlhdCI6MTcyOTUyMDU3NCwiZXhwIjoxNzUxMTIwNTc0fQ.lIgTInBGJjGRJXhRn1TMfQmGoDBhtLay-Vu-zlUw57Y
+
+
+
+### get voice info
+GET {{baseUrl}}/voice?testAttemptId=672
+Authorization: Bearer {{accessToken}}

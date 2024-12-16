@@ -21,6 +21,27 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters long"],
     },
+    dateOfBirth: {
+      type: Date,
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      street: String,
+      city: String,
+
+      country: String,
+    },
     avatar: {
       type: String,
       default: undefined,
@@ -41,6 +62,10 @@ const userSchema = new mongoose.Schema(
     userProfile: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserProfile",
+    },
+    userStatistics: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserStatistics",
     },
   },
   {

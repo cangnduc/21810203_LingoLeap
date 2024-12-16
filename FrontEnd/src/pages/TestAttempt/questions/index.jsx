@@ -6,3 +6,4 @@ export { default as Matching } from "./Matching";
 export { default as Ordering } from "./Ordering";
 export { default as Essay } from "./Essay";
 export { default as MatchingV1 } from "./MatchingV1";
+export { default as OpenEnded } from "./OpenEnded";

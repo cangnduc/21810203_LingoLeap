@@ -15,6 +15,8 @@ export default function FormField({
   transform = { input: (v) => v, output: (v) => v },
   required = false,
   placeholder = " ",
+  defaultValue = "",
+  disabled = false,
 }) {
   const registerOptions = {
     ...register(id, {
@@ -37,6 +39,8 @@ export default function FormField({
             className={baseInputClass}
             placeholder={placeholder}
             required={required}
+            defaultValue={defaultValue}
+            disabled={disabled}
           />
         );
       case "select":
@@ -48,6 +52,7 @@ export default function FormField({
             placeholder={placeholder}
             options={options}
             transform={transform}
+            disabled={disabled}
           />
         );
       default:
@@ -59,6 +64,8 @@ export default function FormField({
             className={baseInputClass}
             placeholder={placeholder}
             required={required}
+            defaultValue={defaultValue}
+            disabled={disabled}
           />
         );
     }

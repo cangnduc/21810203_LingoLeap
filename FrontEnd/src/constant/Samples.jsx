@@ -78,8 +78,8 @@ const sectionToTypeMap = {
     "true_false",
     "matching",
   ],
-  speaking: ["open_ended", "essay"],
-  writing: ["essay", "open_ended"],
+  speaking: ["open_ended"],
+  writing: ["essay"],
   general: [
     "single_choice",
     "multiple_choice",

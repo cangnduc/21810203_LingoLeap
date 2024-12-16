@@ -89,19 +89,31 @@ const TestResultPage = ({ testResult = {} }) => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {sectionScores?.map((section) => {
-                const colors = sectionColors[section.name];
+                // Convert section name to lowercase for consistent matching
+                const sectionName = section.name?.toLowerCase();
+                // Use the section colors or fall back to default if not found
+                const colors =
+                  sectionColors[sectionName] || sectionColors.default;
                 const icon = sectionList.find(
-                  (item) => item.name === section.name
+                  (item) => item.name.toLowerCase() === sectionName
                 )?.icon;
                 return (
                   <div
                     key={section.name}
-                    className={`p-4 rounded-lg border shadow-sm cursor-pointer ${colors.bg} ${colors.border} ${colors.hover}`}
+                    className={`p-4 rounded-lg border shadow-sm cursor-pointer ${
+                      colors?.bg || ""
+                    } ${colors?.border || ""} ${colors?.hover || ""}`}
                   >
                     <div className="flex items-center space-x-7 md:space-x-5 sm:px-2">
-                      <div className={`text-4xl ${colors.text}`}>{icon}</div>
+                      <div className={`text-4xl ${colors?.text || ""}`}>
+                        {icon}
+                      </div>
                       <div>
-                        <h3 className={`text-sm font-medium ${colors.text}`}>
+                        <h3
+                          className={`text-sm font-medium ${
+                            colors?.text || ""
+                          }`}
+                        >
                           {capitalizeFirst(section.name)}
                         </h3>
                         <p
@@ -109,7 +121,7 @@ const TestResultPage = ({ testResult = {} }) => {
                         >
                           {section.score.toFixed(1)}
                         </p>
-                        <p className={`text-sm ${colors.text}`}>
+                        <p className={`text-sm ${colors?.text || ""}`}>
                           {section.totalQuestions} questions
                         </p>
                       </div>
@@ -150,6 +162,82 @@ const TestResultPage = ({ testResult = {} }) => {
                   <p className={resultPageColors.text.secondary}>
                     {question.text}
                   </p>
+                  <div>
+                    {question.speakingResult && (
+                      <div className="mt-4 space-y-3">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          <div
+                            className={`${resultPageColors.cardBg} p-3 rounded-lg border ${resultPageColors.header.border} hover:border-blue-500 transition-colors duration-200`}
+                          >
+                            <h4
+                              className={`text-sm font-medium ${resultPageColors.text.muted}`}
+                            >
+                              Fluency
+                            </h4>
+                            <p
+                              className={`text-lg font-semibold ${resultPageColors.text.primary}`}
+                            >
+                              {question.speakingResult.fluency}%
+                            </p>
+                          </div>
+                          <div
+                            className={`${resultPageColors.cardBg} p-3 rounded-lg border ${resultPageColors.header.border} hover:border-blue-500 transition-colors duration-200`}
+                          >
+                            <h4
+                              className={`text-sm font-medium ${resultPageColors.text.muted}`}
+                            >
+                              Pronunciation
+                            </h4>
+                            <p
+                              className={`text-lg font-semibold ${resultPageColors.text.primary}`}
+                            >
+                              {question.speakingResult.pronunciation}%
+                            </p>
+                          </div>
+                          <div
+                            className={`${resultPageColors.cardBg} p-3 rounded-lg border ${resultPageColors.header.border} hover:border-blue-500 transition-colors duration-200`}
+                          >
+                            <h4
+                              className={`text-sm font-medium ${resultPageColors.text.muted}`}
+                            >
+                              Vocabulary
+                            </h4>
+                            <p
+                              className={`text-lg font-semibold ${resultPageColors.text.primary}`}
+                            >
+                              {question.speakingResult.vocabulary}%
+                            </p>
+                          </div>
+                          <div
+                            className={`${resultPageColors.cardBg} p-3 rounded-lg border ${resultPageColors.header.border} hover:border-blue-500 transition-colors duration-200`}
+                          >
+                            <h4
+                              className={`text-sm font-medium ${resultPageColors.text.muted}`}
+                            >
+                              Communication
+                            </h4>
+                            <p
+                              className={`text-lg font-semibold ${resultPageColors.text.primary}`}
+                            >
+                              {question.speakingResult.overallCommunication}%
+                            </p>
+                          </div>
+                        </div>
+                        <div
+                          className={`${resultPageColors.cardBg} p-4 rounded-lg border ${resultPageColors.header.border} hover:border-blue-500 transition-colors duration-200`}
+                        >
+                          <h4
+                            className={`font-medium ${resultPageColors.text.primary} mb-2`}
+                          >
+                            Feedback
+                          </h4>
+                          <p className={resultPageColors.text.secondary}>
+                            {question.speakingResult.feedback}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

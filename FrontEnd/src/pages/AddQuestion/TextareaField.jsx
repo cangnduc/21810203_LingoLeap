@@ -6,6 +6,7 @@ export default function TextareaField({
   className,
   placeholder,
   required,
+  defaultValue,
 }) {
   return (
     <textarea
@@ -14,6 +15,7 @@ export default function TextareaField({
       className={className}
       placeholder={placeholder}
       required={required}
+      defaultValue={defaultValue}
     />
   );
 }

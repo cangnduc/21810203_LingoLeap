@@ -2,11 +2,8 @@ import React, { useState, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import Sidebar from "../Sidebar";
-import {
-  toggleDarkMode,
-  setIsMenuOpen,
-  finishClosingMenu,
-} from "../../app/features/appSlice";
+import UserIcon from "./userIcon";
+import { toggleDarkMode } from "@/app/features/appSlice";
 import { Link } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import MenuPanel from "./MenuPanel";
@@ -32,8 +29,8 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className=" backdrop-blur-lg bg-theme/95 sticky top-0 left-0 right-0 z-50 transition-colors duration-300 ">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 left-0 right-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 transition-colors duration-300 shadow-md">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-full overflow-x-hidden">
           <button
             onClick={toggleMenu}
             aria-label="Toggle menu"
@@ -60,9 +57,7 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-2">
             {" "}
             <button onClick={toggleProfile}>
-              <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                {user ? user.username.slice(0, 2).toUpperCase() : "U"}
-              </div>
+              {user && <UserIcon user={user} />}
             </button>
             <button
               onClick={handleToggleDarkMode}
@@ -75,9 +70,7 @@ export default function Navigation() {
           <div className="md:hidden flex items-center space-x-4">
             {/* User Profile */}
             <button onClick={toggleProfile}>
-              <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                {user ? user.username.slice(0, 2).toUpperCase() : "U"}
-              </div>
+              <UserIcon user={user} />
             </button>
             <button
               onClick={handleToggleDarkMode}
@@ -94,7 +87,7 @@ export default function Navigation() {
       <AnimatePresence>
         {isProfileOpen && user && (
           <Sidebar toggleClose={toggleProfile} position="right">
-            <UserProfile />
+            <UserProfile toggleClose={toggleProfile} />
           </Sidebar>
         )}
       </AnimatePresence>{" "}

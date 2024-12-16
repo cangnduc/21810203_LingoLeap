@@ -12,6 +12,18 @@ const {
   ReadingPassage,
   ListeningPassage,
 } = require("../model/question.model.v1");
+const {
+  QuestionValidator,
+  MultipleChoiceValidator,
+  SingleChoiceValidator,
+  FillInTheBlankValidator,
+  MatchingValidator,
+  TrueFalseValidator,
+  OpenEndedValidator,
+  EssayValidator,
+  OrderingValidator,
+} = require("../validator/question.validator.v1");
+
 const { BadRequestError } = require("../helpers/error");
 const {
   SingleQuestionValidator,
@@ -24,7 +36,19 @@ class QuestionsService {
       ? CombinedQuestionPassageValidator
       : SingleQuestionValidator;
   }
-
+  getValidatorByType(type) {
+    const validators = {
+      multiple_choice: MultipleChoiceValidator,
+      single_choice: SingleChoiceValidator,
+      true_false: TrueFalseValidator,
+      fill_in_the_blank: FillInTheBlankValidator,
+      matching: MatchingValidator,
+      ordering: OrderingValidator,
+      open_ended: OpenEndedValidator,
+      essay: EssayValidator,
+    };
+    return validators[type] || QuestionValidator;
+  }
   prepareQuestionData(reqBody, user, file) {
     const { section } = reqBody;
 
@@ -127,6 +151,185 @@ class QuestionsService {
   formatQuestionResponse(question) {
     const { _id, __v, updatedAt, createdAt, ...rest } = question._doc;
     return rest;
+  }
+
+  async updateQuestion(type, id, data) {
+    const updateMethod = this.getUpdateMethod(type);
+    if (!updateMethod) {
+      throw new BadRequestError(`Unsupported question type: ${type}`);
+    }
+    return await updateMethod.call(this, id, data);
+  }
+
+  getUpdateMethod(type) {
+    const updateMethods = {
+      fill_in_the_blank: this.updateFillInBlankQuestion,
+      multiple_choice: this.updateMultipleChoiceQuestion,
+      single_choice: this.updateSingleChoiceQuestion,
+      true_false: this.updateTrueFalseQuestion,
+      matching: this.updateMatchingQuestion,
+      ordering: this.updateOrderingQuestion,
+      open_ended: this.updateOpenEndedQuestion,
+      essay: this.updateEssayQuestion,
+    };
+    return updateMethods[type];
+  }
+
+  async updateFillInBlankQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      text: data.text,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      blanks: data.blanks.map((blank) => ({
+        index: blank.index,
+        correctAnswer: blank.correctAnswer,
+        options: blank.options || [],
+      })),
+    };
+
+    return await FillInTheBlankQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateMultipleChoiceQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      answers: data.answers,
+      correctAnswers: data.correctAnswers,
+    };
+
+    return await MultipleChoiceQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateSingleChoiceQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      answers: data.answers,
+      correctAnswer: data.correctAnswer,
+    };
+
+    return await SingleChoiceQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateTrueFalseQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      statement: data.statement,
+      correctAnswer: data.correctAnswer,
+    };
+
+    return await TrueFalseQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateMatchingQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      leftColumn: data.leftColumn,
+      rightColumn: data.rightColumn,
+      correctPairs: data.correctPairs,
+    };
+
+    return await MatchingQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateOrderingQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      items: data.items,
+      correctOrder: data.correctOrder,
+    };
+
+    return await OrderingQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateOpenEndedQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      prompt: data.prompt,
+    };
+
+    return await OpenEndedQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
+  }
+
+  async updateEssayQuestion(id, data) {
+    const updateData = {
+      questionText: data.questionText,
+      instruction: data.instruction,
+      difficulty: data.difficulty,
+      isPublic: data.isPublic,
+      section: data.section,
+      points: data.points,
+      minWords: data.minWords,
+      maxWords: data.maxWords,
+      rubric: data.rubric,
+    };
+
+    return await EssayQuestion.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).lean();
   }
 }
 

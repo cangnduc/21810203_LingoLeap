@@ -25,9 +25,9 @@ const Sidebar = ({ className, toggleClose, children, position }) => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: position === "left" ? -300 : 300 }}
       transition={{ duration: 0.3 }}
-      className={`p-5 w-[300px] h-[98vh] bg-gray-900 fixed rounded-lg ${
-        position === "left" ? "left-[1vh] top-[1vh]" : "right-[1vh] top-[1vh]"
-      } z-50 justify-between ${className}`}
+      className={`fixed top-0 ${
+        position === "left" ? "left-0" : "right-0"
+      } h-full w-[280px] max-w-[80vw] bg-white dark:bg-gray-900 shadow-xl z-50 ${className}`}
     >
       {children}
       <div className="absolute top-[2vh] right-[2vh]">

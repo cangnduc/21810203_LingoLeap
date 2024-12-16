@@ -7,7 +7,6 @@ const { generateCompletion } = require("../../helpers/openaiApi");
 class TestAttemptFunction {
   sanitizeJsonString(jsonString) {
     if (typeof jsonString !== "string") {
-      console.error("Input is not a string:", jsonString);
       return "{}";
     }
 
@@ -48,13 +47,12 @@ class TestAttemptFunction {
   async calculateResult(testAttempt) {
     // Load the test with populated sections and questions
     const test = await Test.findById(testAttempt.test)
-      .select("sections totalPossibleScore testType")
+      .select("sections totalPossibleScore testType participantCount")
       .populate({
         path: "sections.passages._id",
         model: "BasePassage",
         select: "questions points -_id",
-      })
-      .lean();
+      });
 
     // Load all questions in test.sections.questions and test.sections.passages.questions
     const questionIds = [
@@ -98,7 +96,19 @@ class TestAttemptFunction {
       });
     });
 
-    const testResult = new TestResult();
+    let testResult = await TestResult.findOne({ testAttempt: testAttempt._id });
+    if (!testResult) {
+      testResult = new TestResult({
+        speakingResult: {
+          fluency: 0,
+          pronunciation: 0,
+          vocabulary: 0,
+          overallCommunication: 0,
+          totalScore: 0,
+          feedback: "",
+        },
+      });
+    }
     testResult.writingQuestionResults = [];
     let totalScore = 0;
     let totalQuestions = 0;
@@ -115,11 +125,12 @@ class TestAttemptFunction {
           const answer = testAttempt.answers.find(
             (a) => a.question.toString() === question._id.toString()
           );
+
           const points = questionPointsMap.get(question._id.toString());
           let score = 0;
+          const questionData = questionMap.get(question._id.toString());
 
           if (answer) {
-            const questionData = questionMap.get(question._id.toString());
             score = await this.calculateScore(
               questionData,
               answer,
@@ -133,6 +144,16 @@ class TestAttemptFunction {
                 question: question._id,
                 ...answer.evaluation,
               });
+            }
+            if (questionData.type === "open_ended") {
+              console.log("points", points);
+              const tempScore =
+                (testResult.speakingResult.fluency +
+                  testResult.speakingResult.pronunciation +
+                  testResult.speakingResult.vocabulary +
+                  testResult.speakingResult.overallCommunication) /
+                4;
+              score = (tempScore / 100) * points;
             }
 
             questionScores.push({
@@ -198,27 +219,55 @@ class TestAttemptFunction {
     testResult.user = testAttempt.user;
     testResult.test = testAttempt.test;
     // Round total score to 2 decimal places
-    testResult.totalScore = totalScore.toFixed(2);
-    testResult.maxTotalScore = test.totalPossibleScore;
-    testResult.scorePercentage = (
-      (totalScore / test.totalPossibleScore) *
-      100
-    ).toFixed(2);
+    testResult.totalScore = Number(totalScore || 0).toFixed(2);
+    testResult.maxTotalScore = test.totalPossibleScore || 0;
+    // Add safety check for division by zero
+    const scorePercentage =
+      test.totalPossibleScore > 0
+        ? ((totalScore || 0) / test.totalPossibleScore) * 100
+        : 0;
+    testResult.scorePercentage = scorePercentage.toFixed(2);
     testResult.totalQuestions = totalQuestions;
-    testResult.sectionScores = sectionScores;
-    testResult.questionScores = questionScores;
+    testResult.sectionScores = sectionScores.map((section) => ({
+      ...section,
+      score: Number(section.score || 0),
+      totalQuestions: Number(section.totalQuestions || 0),
+    }));
+    testResult.questionScores = questionScores.map((question) => ({
+      _id: question._id,
+      score: Number(question.score || 0),
+    }));
 
     await testResult.save();
 
     testAttempt.result = testResult._id;
-    testAttempt.totalScore = totalScore;
+    testAttempt.totalScore = Number(totalScore || 0);
     await testAttempt.save();
+    //update the test.participantCount
 
+    test.participantCount = (test.participantCount || 0) + 1;
+    await test.save();
     return testResult;
   }
 
   async calculateScore(questionData, answer, point, testType) {
+    // Add safety check for point parameter
+    point = Number(point || 0);
+
     switch (questionData.type) {
+      case "fill_in_the_blank":
+        console.log("answer", answer);
+        console.log("questionData", questionData);
+        const pointPerBlank = point / questionData.blanks.length;
+        let totalPoints = 0;
+        for (let i = 0; i < questionData.blanks.length; i++) {
+          const blank = questionData.blanks[i];
+          const userAnswer = answer.answer[i];
+          if (blank.correctAnswer === userAnswer) {
+            totalPoints += pointPerBlank;
+          }
+        }
+        return Math.round(totalPoints * 100) / 100;
       case "single_choice":
         return answer.answer === questionData.correctAnswer ? point : 0;
       case "true_false":
@@ -281,7 +330,6 @@ class TestAttemptFunction {
           testType
         );
         let essayEvaluationJson = null;
-        console.log("essayEvaluation", essayEvaluation);
         try {
           const sanitizedJson = this.sanitizeJsonString(essayEvaluation);
           essayEvaluationJson = JSON.parse(sanitizedJson);
@@ -361,6 +409,9 @@ class TestAttemptFunction {
         };
 
         return finalScore;
+      case "open_ended":
+        // Ensure we return a valid number for open_ended questions
+        return 0;
       default:
         return 0;
     }

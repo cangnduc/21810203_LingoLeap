@@ -32,6 +32,12 @@ router.get(
     res.status(200).json({ message: "Deleted" });
   })
 );
+router.get(
+  "/my-questions",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.getAllUserContent)
+);
+
 /**
  * @swagger
  * /question:
@@ -53,10 +59,19 @@ router.get(
  */
 router.get(
   "/",
-  authMiddleware(["admin", "user", "teacher"]),
-  QuestionsController.getAllQuestions
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsController.getAllQuestions)
 );
-
+router.get(
+  "/id/:id",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.getQuestionById)
+);
+router.get(
+  "/my-question/:id",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.getMyQuestionById)
+);
 /**
  * @swagger
  * /question:
@@ -113,8 +128,10 @@ router.get(
  *       400:
  *         description: Invalid input
  */
+
+// add question
 router.post(
-  "/",
+  "/add",
   authMiddleware(["admin", "user", "teacher"]),
   (req, res, next) => {
     try {
@@ -163,12 +180,12 @@ router.get(
 router.get(
   "/passages/:section",
   authMiddleware(["admin", "user", "teacher"]),
-  QuestionsController.getPassagesWithQuestions
+  asyncHandler(QuestionsController.getPassagesWithQuestions)
 );
 router.get(
   "/:section",
   authMiddleware(["admin", "user", "teacher"]),
-  QuestionsController.getQuestionsBySection
+  asyncHandler(QuestionsController.getQuestionsBySection)
 );
 router.post(
   "/upload/sound",
@@ -179,5 +196,19 @@ router.post(
     res.status(200).json({ message: "File uploaded successfully" });
   }
 );
-
+router.delete(
+  "/my-question/:id",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.deleteQuestionById)
+);
+router.delete(
+  "/passage/:id",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.deletePassageById)
+);
+router.put(
+  "/my-question/:id",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(QuestionsControllerV1.editQuestionById)
+);
 module.exports = router;

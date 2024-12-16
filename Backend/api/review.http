@@ -4,5 +4,5 @@
 ### Review API
 
 #### Get reviews by test id
-GET {{baseUrl}}/review/test/671bbc5d3e42879b0be78638
+GET {{baseUrl}}/review/test/674c612dfcdaa680fd8b6cb1/comments?page=1&limit=10
 Authorization: Bearer {{accessToken}}

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
-
-const AddReview = ({ testId, userId }) => {
-  const [rating, setRating] = useState(0);
+const AddReview = ({ testId }) => {
+  const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [hoveredRating, setHoveredRating] = useState(0);
 
@@ -13,11 +12,17 @@ const AddReview = ({ testId, userId }) => {
   const handleStarHover = (hoveredValue) => {
     setHoveredRating(hoveredValue);
   };
+  const clearForm = () => {
+    setRating(0);
+    setComment("");
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Handle form submission
-    console.log({ rating, comment });
+    const result = await createReview({ testId, rating, comment }).unwrap();
+    if (result) {
+      clearForm();
+    }
   };
 
   return (

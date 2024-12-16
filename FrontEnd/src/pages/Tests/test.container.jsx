@@ -21,7 +21,7 @@ const TestContainer = () => {
     limit,
     ...filters,
   });
-
+  console.log("data", data);
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -72,7 +72,7 @@ const TestContainer = () => {
       {/* Filters */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4">Filters</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Selection
             label="Difficulty"
             name="difficulty"
@@ -115,7 +115,7 @@ const TestContainer = () => {
         </div>
       </div>
 
-      {/* Test Cards - Updated grid layout */}
+      {/* Test Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
         {tests?.data.map((test, index) => (
           <TestCard

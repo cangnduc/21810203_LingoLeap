@@ -65,6 +65,9 @@ const customFetchWithProgress = async (url, options, onProgress) => {
 };
 
 export const baseApiWithReauth = async (args, api, extraOptions) => {
+  if (args.url === "/auth/login") {
+    return baseApi(args, api, extraOptions);
+  }
   try {
     let result = await baseApi(args, api, extraOptions);
 

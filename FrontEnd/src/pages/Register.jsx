@@ -1,113 +1,178 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useRegisterMutation } from "../app/services/authApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../app/features/authSlice";
 import { useNavigate } from "react-router-dom";
+import { signupSchema } from "../validator/auth.validator";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(false);
-  const [register, { isLoading, error }] = useRegisterMutation();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [register, { isLoading }] = useRegisterMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    setPasswordsMatch(password === confirmPassword && password !== "");
-  }, [password, confirmPassword]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
+    setErrors({});
 
     try {
+      // Validate form data
+      const validatedData = signupSchema.parse(formData);
+
+      // If validation passes, proceed with registration
       const result = await register({
-        username: name,
-        email,
-        password,
-        role,
+        username: validatedData.username,
+        email: validatedData.email,
+        password: validatedData.password,
+        role: validatedData.role,
       }).unwrap();
+
       dispatch(setCredentials({ ...result }));
       navigate("/");
-      // toast.success("Registration successful!");
     } catch (err) {
-      setErrorMessage(
-        err.data?.message ||
-          err.message ||
-          "An error occurred during registration"
-      );
-      console.error("Failed to register:", err);
+      if (err.errors) {
+        // Handle Zod validation errors
+        const newErrors = {};
+        err.errors.forEach((error) => {
+          newErrors[error.path[0]] = error.message;
+        });
+        setErrors(newErrors);
+      } else {
+        // Handle API errors
+        setErrors({
+          api: err.data?.message || "An error occurred during registration",
+        });
+      }
     }
   };
 
   return (
     <form onSubmit={submitHandler} className="space-y-4">
-      <input
-        onChange={(e) => setName(e.target.value)}
-        type="text"
-        placeholder="Full Name"
-        required
-        className="w-full p-3 rounded border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
-      />
-      <input
-        onChange={(e) => setEmail(e.target.value)}
-        type="email"
-        required
-        placeholder="Email"
-        className="w-full p-3 rounded border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
-      />
-      <div className="relative">
+      <div>
         <input
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          required
-          placeholder="Password"
-          className="w-full p-3 rounded border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
-        />
-      </div>
-      <div className="relative">
-        <input
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          type="password"
-          required
-          placeholder="Confirm Password"
+          name="username"
+          onChange={handleChange}
+          value={formData.username}
+          type="text"
+          placeholder="Full Name"
           className={`w-full p-3 rounded border ${
-            confirmPassword
-              ? passwordsMatch
-                ? "border-green-500"
-                : "border-red-500"
+            errors.username
+              ? "border-red-500"
               : "border-border-light dark:border-border-dark"
           } bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark`}
         />
-        {passwordsMatch && confirmPassword && (
-          <FaCheck className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" />
+        {errors.username && (
+          <p className="text-red-500 text-sm mt-1">{errors.username}</p>
         )}
       </div>
-      <select
-        onChange={(e) => setRole(e.target.value)}
-        required
-        className="w-full p-3 rounded border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark"
-      >
-        <option value="">Select Role</option>
-        <option value="user">Student</option>
-        <option value="teacher">Teacher</option>
-      </select>
-      {error && (
-        <p className="text-red-500 text-center">
-          {error?.data?.message || "An error occurred"}
-        </p>
-      )}
-      {errorMessage && (
-        <p className="text-red-500 text-center">{errorMessage}</p>
-      )}
+
+      <div>
+        <input
+          name="email"
+          onChange={handleChange}
+          value={formData.email}
+          type="email"
+          placeholder="Email"
+          className={`w-full p-3 rounded border ${
+            errors.email
+              ? "border-red-500"
+              : "border-border-light dark:border-border-dark"
+          } bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark`}
+        />
+        {errors.email && (
+          <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <input
+          name="password"
+          onChange={handleChange}
+          value={formData.password}
+          type="password"
+          placeholder="Password"
+          className={`w-full p-3 rounded border ${
+            errors.password
+              ? "border-red-500"
+              : "border-border-light dark:border-border-dark"
+          } bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark`}
+        />
+        {errors.password && (
+          <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+        )}
+      </div>
+
+      <div className="relative">
+        <input
+          name="confirmPassword"
+          onChange={handleChange}
+          value={formData.confirmPassword}
+          type="password"
+          placeholder="Confirm Password"
+          className={`w-full p-3 rounded border ${
+            errors.confirmPassword
+              ? "border-red-500"
+              : formData.confirmPassword && !errors.confirmPassword
+              ? "border-green-500"
+              : "border-border-light dark:border-border-dark"
+          } bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark`}
+        />
+        {formData.confirmPassword && !errors.confirmPassword && (
+          <FaCheck className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" />
+        )}
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+        )}
+      </div>
+
+      <div>
+        <select
+          name="role"
+          onChange={handleChange}
+          value={formData.role}
+          className={`w-full p-3 rounded border ${
+            errors.role
+              ? "border-red-500"
+              : "border-border-light dark:border-border-dark"
+          } bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark`}
+        >
+          <option value="">Select Role</option>
+          <option value="user">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+        {errors.role && (
+          <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+        )}
+      </div>
+
+      {errors.api && <p className="text-red-500 text-center">{errors.api}</p>}
+
       <button
         type="submit"
-        disabled={isLoading || !passwordsMatch}
+        disabled={isLoading}
         className="w-full bg-button-gradient-light dark:bg-button-gradient-dark text-white p-3 rounded transition duration-300 hover:opacity-90 disabled:opacity-50"
       >
         {isLoading ? "Loading..." : "Register"}

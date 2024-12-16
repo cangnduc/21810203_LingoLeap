@@ -21,7 +21,6 @@ class LoginSessionFunctions {
   }
 
   static async deleteLoginSession(userId, refreshToken) {
-    console.log(userId, refreshToken);
     const loginSessionFound = await LoginSession.findOne({
       user: userId,
 

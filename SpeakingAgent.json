@@ -1,0 +1,10 @@
+{
+  "SpeakingAgent": {
+    "functx.py": "functx.py",
+    "main.py": "main.py",
+
+    "mongo.py": "mongo.py",
+    "readme.md": "readme.md",
+    "requirements.txt": "requirements.txt"
+  }
+}

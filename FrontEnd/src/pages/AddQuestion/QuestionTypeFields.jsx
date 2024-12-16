@@ -6,14 +6,17 @@ import MatchingFields from "./MatchingFields";
 import OrderingFields from "./OrderingFields";
 import OpenEndedFields from "./OpenEndedFields";
 import EssayFields from "./EssayFields";
-import { motion } from "framer-motion";
 
 export default function QuestionTypeFields({
   type,
   register,
   errors,
   prefix,
-  control, // Add this line
+  control,
+  watch,
+  setValue,
+  trigger,
+  getValues,
 }) {
   switch (type) {
     case "multiple_choice":
@@ -36,6 +39,10 @@ export default function QuestionTypeFields({
           register={register}
           errors={errors}
           prefix={prefix}
+          control={control}
+          watch={watch}
+          setValue={setValue}
+          trigger={trigger}
         />
       );
     case "matching":
@@ -48,7 +55,8 @@ export default function QuestionTypeFields({
           register={register}
           errors={errors}
           prefix={prefix}
-          control={control} // Add this line
+          control={control}
+          getValues={getValues}
         />
       );
     case "open_ended":

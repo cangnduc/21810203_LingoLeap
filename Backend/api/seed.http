@@ -1,0 +1,3 @@
+### Seed Data
+
+GET https://localhost:3000/api/v1/seed

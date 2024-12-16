@@ -5,7 +5,6 @@ const {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
-  ErrorRedirect,
 } = require("../helpers/error");
 const Response = require("../helpers/response");
 class TestAttemptController {
@@ -40,7 +39,7 @@ class TestAttemptController {
       prompt
       minWords maxWords rubric
     `;
-    console.log("testId", testId);
+
     const test = await Test.findById(testId)
       .select("title duration description testType sections attemptsAllowed")
       .populate({

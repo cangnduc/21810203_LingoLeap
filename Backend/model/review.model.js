@@ -41,6 +41,6 @@ reviewSchema.post("save", async function (doc) {
 // Indexing (if any)
 
 // Create the model at the end
-const Review = mongoose.model("Review", reviewSchema);
+const Review = mongoose.model("Review_old", reviewSchema);
 
 module.exports = Review;

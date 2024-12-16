@@ -2,7 +2,7 @@ import React from "react";
 import FormField from "./FormField";
 import QuestionTypeFields from "./QuestionTypeFields";
 import { motion } from "framer-motion";
-import { typeList } from "../../constant/Samples";
+import { typeList } from "@/constant/Samples";
 
 export default function BaseQuestionForm({
   questionType,
@@ -12,7 +12,12 @@ export default function BaseQuestionForm({
   prefix,
   setQuestionType,
   questionTypes,
-  control, // Add this line
+  control,
+  watch,
+  setValue,
+  getValues,
+  isEditMode,
+  trigger,
 }) {
   return (
     <motion.div
@@ -29,6 +34,7 @@ export default function BaseQuestionForm({
             <button
               key={type}
               type="button"
+              disabled={isEditMode}
               onClick={() => setQuestionType(type)}
               className={`p-2 rounded-md ${
                 questionType === type
@@ -88,7 +94,11 @@ export default function BaseQuestionForm({
         register={register}
         errors={errors}
         prefix={prefix}
-        control={control} // Add this line
+        control={control}
+        watch={watch}
+        setValue={setValue}
+        getValues={getValues}
+        trigger={trigger}
       />
     </motion.div>
   );

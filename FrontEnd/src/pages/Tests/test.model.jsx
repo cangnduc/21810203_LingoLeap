@@ -6,15 +6,43 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDeleteTestMutation } from "@/app/services/testApi";
 import { format } from "date-fns";
+import { useTogglePublishedMutation } from "@/app/services/testApi";
+import { FaStar } from "react-icons/fa";
+
+const ToggleSwitch = ({ checked, onChange, disabled, label }) => {
+  return (
+    <button
+      onClick={onChange}
+      disabled={disabled}
+      className="flex items-center gap-2 focus:outline-none"
+    >
+      <div
+        className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${
+          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        } ${checked ? "bg-blue-600" : "bg-gray-300"}`}
+      >
+        <div
+          className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </div>
+      <span className="text-sm text-gray-500 dark:text-gray-400">
+        {disabled ? "Updating..." : checked ? "Published" : "Draft"}
+      </span>
+    </button>
+  );
+};
 
 const TestModel = ({ test, userId }) => {
   const navigate = useNavigate();
+  const [togglePublished, { isLoading: isToggling }] =
+    useTogglePublishedMutation();
   const [deleteTest, { isLoading: isDeleting }] = useDeleteTestMutation();
   const {
     title,
     description,
     testType,
-    isPublished,
     duration,
     totalPossibleScore,
     passingScore,
@@ -25,9 +53,19 @@ const TestModel = ({ test, userId }) => {
     availableUntil,
     totalAttempts,
     attemptsAllowed,
+    averageRating,
     difficulty,
+    isPublished,
+    participantCount,
   } = test;
-
+  const handleTogglePublished = async () => {
+    try {
+      await togglePublished(_id).unwrap();
+      toast.success("Test published successfully");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to publish test");
+    }
+  };
   const handleDelete = async () => {
     try {
       await deleteTest(_id).unwrap();
@@ -52,19 +90,23 @@ const TestModel = ({ test, userId }) => {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate pr-2">
           {title}
         </h3>
-        <div className="flex gap-2">
-          <span
-            className={`px-2 py-0.5 rounded-full text-xs flex-shrink-0 ${
-              isPublished
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-            }`}
-          >
-            {isPublished ? "Published" : "Draft"}
-          </span>
-          <span className="px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 rounded-full text-xs">
-            {difficulty}
-          </span>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {averageRating && averageRating.toFixed(1)}
+            </span>
+            <FaStar className="text-yellow-400" />
+          </div>
+          <div className="flex gap-2">
+            <span className="px-2 py-0.5 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 rounded-full text-xs">
+              {difficulty}
+            </span>
+            {isPublished && (
+              <span className="px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full text-xs">
+                Published
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -85,7 +127,7 @@ const TestModel = ({ test, userId }) => {
         </div>
         <div>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            Score:
+            Passing Score Required:
           </span>
           <p className="font-medium dark:text-white">
             {passingScore}/{totalPossibleScore}
@@ -136,22 +178,41 @@ const TestModel = ({ test, userId }) => {
       </div>
 
       {/* Created By */}
-      <div className="mb-4">
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          Created by:
-        </span>
+      <div className="mb-4 flex justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Created by:
+          </span>
 
-        <span className="text-sm font-medium dark:text-white">
-          {createdBy.username}
-        </span>
+          <span className="text-sm font-medium dark:text-white">
+            {createdBy.username}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Total Participants:
+          </span>
+
+          <span className="text-sm font-medium dark:text-white">
+            {participantCount || 0}
+          </span>
+        </div>
       </div>
 
       {/* Spacer */}
       <div className="flex-grow"></div>
 
-      {/* Footer */}
-      <div className="flex justify-end items-center mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-1">
+      {/* Footer - Updated with responsive classes */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+        {userId === createdBy._id && (
+          <ToggleSwitch
+            checked={isPublished}
+            onChange={handleTogglePublished}
+            disabled={isToggling}
+          />
+        )}
+
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {userId === createdBy._id && (
             <DeleteButton onClick={handleDelete} isLoading={isDeleting} />
           )}

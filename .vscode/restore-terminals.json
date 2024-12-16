@@ -16,6 +16,14 @@
           "commands": ["cd frontend", "npm run dev"]
         }
       ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "SpeakingAgent",
+          "commands": ["cd SpeakingAgent", ". ./EnglishExam/Scripts/activate"]
+        }
+      ]
     }
   ]
 }

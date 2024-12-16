@@ -3,7 +3,7 @@ import { Star, Clock } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 
 const ReviewCard = ({ review }) => {
-  const { user, comment, rating, createdAt } = review;
+  const { user, comments, rating, createdAt } = review;
 
   // Format the date
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
@@ -39,14 +39,30 @@ const ReviewCard = ({ review }) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-1">
-          <Star className="h-5 w-5 text-yellow-400" />
-          <span className="text-gray-600 dark:text-gray-300">{rating}/5</span>
-        </div>
+        {rating?.value && (
+          <div className="flex items-center space-x-1">
+            <Star className="h-5 w-5 text-yellow-400" />
+            <span className="text-gray-600 dark:text-gray-300">
+              {rating.value}/5
+            </span>
+          </div>
+        )}
       </div>
-      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-        {comment}
-      </p>
+      {comments && comments.length > 0 && (
+        <div className="space-y-2">
+          {comments.map((comment, index) => (
+            <p
+              key={index}
+              className="text-gray-600 dark:text-gray-300 leading-relaxed"
+            >
+              {comment.text}
+              <span className="text-xs text-gray-400 ml-2">
+                {new Date(comment.createdAt).toLocaleDateString()}
+              </span>
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

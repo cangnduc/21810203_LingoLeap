@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { RiSpeakFill } from "react-icons/ri";
 export const APP_NAME = "LingoLeap";
-export const BACKEND_URL = "https://192.168.1.9:3000";
+export const BACKEND_URL = "https://192.168.1.10:3000";
 
 export const siteLinks = {
   "/": FaHome,

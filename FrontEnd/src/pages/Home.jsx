@@ -1,6 +1,5 @@
 import React from "react";
 import { motion, useInView } from "framer-motion";
-import Navigation from "../components/nav/Navigation";
 import Hero from "../components/HomeComponent/Hero";
 import FeaturesOverview from "../components/HomeComponent/FeaturesOverview";
 import FeaturedTests from "../components/HomeComponent/FeaturedTests";

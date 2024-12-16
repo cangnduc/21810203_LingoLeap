@@ -6,7 +6,11 @@ from livekit.agents import (
     cli,
     llm,
 )
-# Import the get_products function from the mongo.py file
+import asyncio
+
+from livekit import agents, rtc
+from livekit.agents.voice_assistant import AssistantCallContext, VoiceAssistant
+
 from mongo import get_products
 from typing import Annotated
 import logging
@@ -14,6 +18,19 @@ import logging
 logger = logging.getLogger("product-price")
 logger.setLevel(logging.INFO)
 class AssistantFnc(llm.FunctionContext):
+    """This class is used to define functions that will be called by the assistant."""
+    @agents.llm.ai_callable(
+        description=(
+            "Use this function whenever asked to evaluate an image, video, or the webcam feed being shared with you"
+                 )
+    )
+    async def image(self, user_msg: Annotated[str, agents.llm.TypeInfo(description="The user message that triggered this function")],
+    ):
+        print(f"Message triggering vision capabilities: {user_msg}")
+        context = AssistantCallContext.get_current()
+        context.store_metadata("user_msg", user_msg)
+
+    
     """
     The class defines a set of LLM functions that the assistant can execute.
     """

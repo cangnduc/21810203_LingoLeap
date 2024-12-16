@@ -62,7 +62,7 @@ router.post("/login", AuthController.login);
  */
 router.post(
   "/logout",
-  authMiddleware(["admin", "user"]),
+  authMiddleware(["admin", "teacher", "user"]),
   AuthController.logout
 );
 

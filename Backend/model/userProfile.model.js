@@ -8,28 +8,6 @@ const userProfileSchema = new mongoose.Schema(
       required: [true, "User reference is required"],
       unique: true,
     },
-    firstName: {
-      type: String,
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      trim: true,
-    },
-    dateOfBirth: {
-      type: Date,
-    },
-    phoneNumber: {
-      type: String,
-      trim: true,
-    },
-    address: {
-      street: String,
-      city: String,
-      state: String,
-      country: String,
-      zipCode: String,
-    },
     testTaken: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
     testScore: [
       {
@@ -38,7 +16,7 @@ const userProfileSchema = new mongoose.Schema(
         max: [100, "Test score cannot exceed 100"],
       },
     ],
-    achievements: [{ type: String }],
+    achievements: [{ type: String, trim: true }],
     preferences: {
       notificationSettings: { type: Boolean, default: true },
       studyReminders: { type: Boolean, default: true },
@@ -47,9 +25,10 @@ const userProfileSchema = new mongoose.Schema(
       {
         type: String,
         maxlength: [200, "Learning goal cannot exceed 200 characters"],
+        trim: true,
       },
     ],
-    targetExams: [{ type: String }],
+    targetExams: [{ type: String, trim: true }],
     studyPlan: { type: mongoose.Schema.Types.ObjectId, ref: "StudyPlan" },
     progressTracking: {
       vocabularyMastered: { type: Number, default: 0, min: 0 },
@@ -60,10 +39,23 @@ const userProfileSchema = new mongoose.Schema(
     },
     deviceInfo: [
       {
-        deviceType: { type: String, required: true },
+        deviceType: { type: String, required: true, trim: true },
         lastUsed: { type: Date, default: Date.now },
       },
     ],
+    bio: {
+      type: String,
+      trim: true,
+    },
+    website: {
+      type: String,
+      trim: true,
+    },
+    socialLinks: {
+      twitter: { type: String, trim: true },
+      linkedin: { type: String, trim: true },
+      github: { type: String, trim: true },
+    },
     socialConnections: {
       studyBuddies: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

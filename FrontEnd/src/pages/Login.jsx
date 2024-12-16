@@ -26,8 +26,8 @@ const Login = () => {
       // toast.success("Login successful!");
     } catch (err) {
       setErrorMessage(
-        err.data?.message ||
-          err.message ||
+        err.data?.errors ||
+          err.errors ||
           "An error occurred during authentication"
       );
       console.error("Failed to login:", err);

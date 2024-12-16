@@ -36,7 +36,11 @@ router.post(
   authMiddleware(["admin", "teacher", "user"]),
   asyncHandler(TestController.addTest)
 );
-router.patch("/:id/publish", asyncHandler(TestController.publishTest));
+router.patch(
+  "/:id/publish",
+  authMiddleware(["admin", "teacher"]),
+  asyncHandler(TestController.togglePublished)
+);
 router.put(
   "/:id",
   authMiddleware(["admin", "teacher"]),

@@ -17,11 +17,20 @@ class TestController {
       createdBy,
     } = req.query;
 
-    // Build filter object based on query parameters
-    const filter = {};
+    // Build filter object using $or to combine conditions
+    const filter = {
+      $or: [
+        { isPublished: true }, // Get all published tests
+        { createdBy: req.user?._id }, // Get all tests created by current user
+      ],
+    };
+
+    // Add additional filters
     if (difficulty) filter.difficulty = difficulty;
     if (testType) filter.testType = testType;
     if (createdBy === "me" && req.user) {
+      // Override $or filter if specifically requesting user's tests
+      delete filter.$or;
       filter.createdBy = req.user._id;
     }
 
@@ -52,6 +61,19 @@ class TestController {
       })
       .lean();
 
+    const testAttempts = await TestAttempt.find({
+      test: { $in: tests.map((test) => test._id) },
+      user: req.user._id,
+    }).lean();
+
+    const attemptsByTest = testAttempts.reduce((acc, attempt) => {
+      acc[attempt.test] = (acc[attempt.test] || 0) + 1;
+      return acc;
+    }, {});
+
+    tests.forEach((test) => {
+      test.totalAttempts = attemptsByTest[test._id] || 0;
+    });
     // Send response with pagination metadata
     Response.sendSuccess(res, "Tests fetched successfully", {
       data: tests,
@@ -76,7 +98,6 @@ class TestController {
     }
 
     const testData = validatedTest.data;
-    console.log("testData", testData);
 
     const newTest = new Test({
       ...testData,
@@ -111,11 +132,17 @@ class TestController {
       })
       .select("-__v -createdAt -updatedAt") // Unselect these fields from the main document
       .lean();
-    console.log("test", test);
+
     if (!test) {
       throw new NotFoundError("Test not found");
     }
-
+    //count the test attempts of user
+    const testAttempts = await TestAttempt.countDocuments({
+      test: id,
+      user: req.user._id,
+    });
+    test.totalAttempts = testAttempts;
+    console.log("testAttempts", testAttempts);
     Response.sendSuccess(res, "Test fetched successfully", test);
   }
   async getTestById(req, res) {
@@ -125,6 +152,7 @@ class TestController {
         "-__v -createdAt -updatedAt -averageRating -totalReviews -totalAttempts"
       )
       .lean();
+
     Response.sendSuccess(res, "fetched test by id successfully", test);
   }
   async deleteTest(req, res) {
@@ -204,13 +232,13 @@ class TestController {
     Response.sendSuccess(res, "Test fetched successfully", test);
   }
 
-  async publishTest(req, res) {
+  async togglePublished(req, res) {
     const { id } = req.params;
     const { user } = req;
 
     // Only select fields we need for validation and updating
     const test = await Test.findById(id).select(
-      "isPublished sections createdBy"
+      "isPublished createdBy"
     );
     if (!test) {
       throw new NotFoundError("Test not found");
@@ -221,12 +249,7 @@ class TestController {
       throw new ForbiddenError("You are not authorized to publish this test");
     }
 
-    // Add any additional validation before publishing
-    if (test.sections.length === 0) {
-      throw new BadRequestError("Cannot publish a test without any sections");
-    }
-
-    test.isPublished = true;
+    test.isPublished = !test.isPublished;
     await test.save();
 
     Response.sendSuccess(res, "Test published successfully", test);
