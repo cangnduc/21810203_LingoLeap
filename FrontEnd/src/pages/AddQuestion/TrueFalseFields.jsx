@@ -4,7 +4,7 @@ import FormField from "./FormField";
 export default function TrueFalseFields({ register, errors, prefix }) {
   return (
     <>
-      {" "}
+      
       <FormField
         label="Statement"
         id={`${prefix}.statement`}

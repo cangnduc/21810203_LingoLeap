@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray } from "react-hook-form";
 
 const DEFAULT_TEXT =
-  "The Great Barrier Reef, located off the coast of _____, is the world's largest coral reef system. It is so vast that it can be seen from _____. The reef is home to an incredible diversity of marine life, including over 1,500 species of fish, 400 species of hard coral, and numerous other _____.";
+  "The Great Barrier Reef, located off the coast of _____, is the world's largest coral reef system. It is so vast that it can be seen from _____. The reef is _____ to an incredible diversity of marine life;";
 
 export default function FillInTheBlankFields({
   register,
@@ -98,7 +98,7 @@ export default function FillInTheBlankFields({
   return (
     <>
       <FormField
-        label="Text (Use _____ for blanks)"
+        label="Text (Use _____ (5 underscores) for blanks)"
         id={`${prefix}.text`}
         type="textarea"
         register={register}
@@ -145,7 +145,7 @@ export default function FillInTheBlankFields({
                            focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600
                            focus:border-blue-500 dark:focus:border-blue-600
                            placeholder-gray-400 dark:placeholder-gray-500"
-                  placeholder="Add an option"
+                  placeholder="Add an option (optional)"
                   value={optionInputs[index] || ""}
                   onChange={(e) =>
                     setOptionInputs((prev) => ({

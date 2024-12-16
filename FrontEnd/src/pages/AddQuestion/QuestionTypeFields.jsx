@@ -47,7 +47,12 @@ export default function QuestionTypeFields({
       );
     case "matching":
       return (
-        <MatchingFields register={register} errors={errors} prefix={prefix} />
+        <MatchingFields
+          register={register}
+          getValues={getValues}
+          errors={errors}
+          prefix={prefix}
+        />
       );
     case "ordering":
       return (
@@ -57,6 +62,7 @@ export default function QuestionTypeFields({
           prefix={prefix}
           control={control}
           getValues={getValues}
+          setValue={setValue}
         />
       );
     case "open_ended":

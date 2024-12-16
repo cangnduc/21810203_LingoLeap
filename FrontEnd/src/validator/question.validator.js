@@ -289,6 +289,16 @@ const QuestionValidator = z
             path: ["correctOrder"],
           });
         }
+        // check if the correctOrder has duplicates
+        if (
+          new Set(question.correctOrder).size !== question.correctOrder.length
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "The correct order must not have duplicates.",
+            path: ["correctOrder"],
+          });
+        }
         break;
       case "true_false":
         //check if the correctAnswer is either true or false

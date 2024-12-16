@@ -209,9 +209,6 @@ const orderingSchema = new mongoose.Schema({
   correctOrder: [String],
 });
 
-orderingSchema.path("correctOrder").validate(function (v) {
-  return v.every((id) => this.items.some((item) => item.id === id));
-}, "All items must be included in the provided list.");
 const OrderingQuestion = BaseQuestion.discriminator("ordering", orderingSchema);
 // Open-Ended Question Schema
 const openEndedSchema = new mongoose.Schema({

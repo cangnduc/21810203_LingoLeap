@@ -1,46 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormField from "./FormField";
 import { FaTrash, FaPlus } from "react-icons/fa";
-import { useFieldArray } from "react-hook-form";
+
+const orderingInput = {
+  type: "ordering",
+
+  questionText: "Arrange the following sentences to form a coherent paragraph.",
+  instruction: "Drag and drop the sentences into the correct order.",
+  difficulty: 4,
+  items: [
+    {
+      id: "1",
+      text: "However, with proper planning and execution, these challenges can be overcome.",
+    },
+    {
+      id: "2",
+      text: "Urban gardening is becoming increasingly popular in cities around the world.",
+    },
+    {
+      id: "3",
+      text: "It offers numerous benefits, including fresh produce and improved air quality.",
+    },
+    {
+      id: "4",
+      text: "Space constraints and pollution are common obstacles faced by urban gardeners.",
+    },
+  ],
+  correctOrder: ["2", "3", "4", "1"],
+};
 
 export default function OrderingFields({
-  control,
   register,
+  getValues,
   errors,
   prefix,
-  getValues,
+  setValue,
 }) {
-  const { fields, remove, append } = useFieldArray({
-    control,
-    name: `${prefix}.items`,
-  });
-  console.log("fields", fields);
+  const [fields, setFields] = useState([
+    { id: "1", text: "" },
+    { id: "2", text: "" },
+    { id: "3", text: "" },
+  ]);
+  useEffect(() => {
+    const items = getValues(`${prefix}.items`);
+    if (items.length > 0) {
+      setFields(items);
+    }
+  }, []);
   const addItem = () => {
     if (fields.length < 8) {
-      append({ id: fields.length + 1, text: "" });
+      const newId = (fields.length + 1).toString();
+      console.log("newId", newId);
+      setFields([...fields, { id: newId, text: "" }]);
     }
   };
-  console.log("errors", errors);
+  useEffect(() => {
+    setValue(`${prefix}.items`, fields);
+  }, [fields]);
+  //console.log("fields", fields);
   const removeItem = (index) => {
     if (fields.length > 3) {
-      remove(index);
-      //reset the index of the items
-
-      // Update the correctOrder array
-      const currentCorrectOrder = getValues(`${prefix}.correctOrder`);
-      console.log("currentCorrectOrder", currentCorrectOrder);
-      if (Array.isArray(currentCorrectOrder)) {
-        const updatedCorrectOrder = currentCorrectOrder
-          .filter((id) => id !== fields[index].id)
-          .map((id) => {
-            const idNumber = parseInt(id);
-            return idNumber > index ? (idNumber - 1).toString() : id;
-          });
-        register(`${prefix}.correctOrder`).onChange({
-          target: { value: updatedCorrectOrder.join(",") },
-        });
-        console.log("updatedCorrectOrder", updatedCorrectOrder);
-      }
+      const newFields = fields.filter((_, idx) => idx !== index);
+      setFields(
+        newFields.map((field, idx) => ({ ...field, id: (idx + 1).toString() }))
+      );
     }
   };
 
@@ -61,6 +84,7 @@ export default function OrderingFields({
                 placeholder={field.id}
                 required={true}
                 disabled={true}
+                value={field.id}
               />
             </div>
             <div className="flex-grow">
@@ -69,7 +93,7 @@ export default function OrderingFields({
                 register={register}
                 errors={errors}
                 className="w-full"
-                placeholder={`Item ${index + 1}`}
+                placeholder={`item ${index + 1}`}
                 required={true}
               />
             </div>
@@ -109,7 +133,7 @@ export default function OrderingFields({
               typeof value === "string" ? value.split(",") : [],
           }}
           required={true}
-          placeholder={`2,1,3,4`}
+          placeholder={orderingInput.correctOrder.join(",")}
         />
       </div>
     </>

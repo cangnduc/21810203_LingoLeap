@@ -338,7 +338,7 @@ class QuestionsControllerV1 {
     if (!validationResult.success) {
       throw new BadRequestError(validationResult.error.message);
     }
-
+    console.log("validationResult.data", validationResult.data);
     // Update the question using the appropriate service method
     const updatedQuestion = await QuestionsService.updateQuestion(
       question.type,

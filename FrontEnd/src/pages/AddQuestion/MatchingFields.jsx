@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormField from "./FormField";
 import { FaPlus, FaMinus } from "react-icons/fa";
 
@@ -26,9 +26,16 @@ const matchingInput = {
   ],
 };
 
-export default function MatchingFields({ register, errors, prefix }) {
+export default function MatchingFields({
+  register,
+  errors,
+  getValues,
+  prefix,
+}) {
   const [itemCount, setItemCount] = useState(3);
-
+  useEffect(() => {
+    setItemCount(getValues(`${prefix}.leftColumn`).length);
+  }, []);
   const addItem = () => {
     if (itemCount < 8) {
       setItemCount(itemCount + 1);
