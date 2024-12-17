@@ -11,7 +11,7 @@ import {
 import { RiSpeakFill } from "react-icons/ri";
 export const APP_NAME = "LingoLeap";
 export const BACKEND_URL = "https://192.168.1.10:3000";
-
+export const maxQuestionsPerSection = 200;
 export const siteLinks = {
   "/": FaHome,
   "/tests": FaClipboardCheck,

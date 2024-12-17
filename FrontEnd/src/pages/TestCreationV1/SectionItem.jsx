@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import Input from "../../components/form/Input";
+import Input from "@/components/form/Input";
 import { FaTrash } from "react-icons/fa";
 import styles from "./Section.module.css";
 import {
   useGetPassagesWithQuestionsQuery,
   useGetQuestionsBySectionQuery,
-} from "../../app/services/questionApi";
+} from "@/app/services/questionApi";
 import QuestionDisplay from "./QuestionDisplay";
 import PassageDisplay from "./PassageDisplay";
-
+import { maxQuestionsPerSection } from "@/constant";
 const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
   const isReadingOrListening = ["reading", "listening"].includes(section.name);
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +23,7 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
     sortBy: sortField,
     orderBy: sortOrder,
   };
-
+  console.log("section", section);
   const {
     data: passagesData,
     isLoading: isPassagesLoading,
@@ -51,13 +51,26 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
   };
 
   const handleAddQuestion = (questionId) => {
-    if (!section.questions.find((q) => q._id === questionId)) {
+    const maxQuestions =
+      section.name === "speaking"
+        ? 1
+        : section.name === "writing"
+        ? 1
+        : maxQuestionsPerSection;
+    if (
+      section.questions.length < maxQuestions &&
+      !section.questions.find((q) => q._id === questionId)
+    ) {
       const updatedSection = {
         ...section,
         sectionScore: section.sectionScore + 1,
         questions: [...section.questions, { _id: questionId, points: 1 }],
       };
       onUpdateSection(updatedSection);
+    } else {
+      console.log(
+        `you can't add more than ${maxQuestions} questions to a ${section.name} section`
+      );
     }
   };
 

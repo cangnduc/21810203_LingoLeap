@@ -140,11 +140,12 @@ async def entrypoint(ctx: JobContext):
                 f"""You are an English examiner a speaking test for {participant.identity}. Your role is to assess the speaker's fluency, pronunciation, and communication flow. You will ask questions and engage in conversation with the speaker based on topic {test_metadata['question']} remember to stay focused on the topic. Use clear and concise language, but feel free to use a range of vocabulary and structures appropriate for the test. After the conversation, provide a score and brief feedback on the speaker's performance. Remember to maintain a professional and encouraging demeanor throughout the test"""
             ),
         )
+    
     assistant = EnhancedVoiceAssistant(
         vad=silero.VAD.load(),
         stt=deepgram.STT(),
         llm=openai.LLM(model="gpt-4o-mini"),
-        tts=google.TTS(credentials_info=credentials, voice_name=f"{test_metadata['voice'] if test_metadata['voice'] else "en-US-News-N"}"),
+        tts=google.TTS(credentials_info=credentials, voice_name="en-US-News-N"),
         chat_ctx=initial_ctx,
         exam_duration=exam_duration,  # Set the exam duration to 60 seconds
         test_attempt_id=test_attempt_id,

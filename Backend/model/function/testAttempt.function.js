@@ -323,67 +323,44 @@ class TestAttemptFunction {
         const orderingScore = (correctPositions / correctOrder.length) * point;
         return Math.round(orderingScore * 100) / 100;
       case "essay":
-        const essayEvaluation = await generateCompletion(
-          answer.answer,
-          questionData.questionText,
-          point,
-          testType
-        );
+        const maxTries = 2;
         let essayEvaluationJson = null;
-        try {
-          const sanitizedJson = this.sanitizeJsonString(essayEvaluation);
-          essayEvaluationJson = JSON.parse(sanitizedJson);
 
-          // Check if we got an empty object
-          if (Object.keys(essayEvaluationJson).length === 0) {
-            console.error("Received empty JSON after sanitization");
-            return 0;
+        for (let attempt = 1; attempt <= maxTries; attempt++) {
+          try {
+            const essayEvaluation = await generateCompletion(
+              answer.answer,
+              questionData.questionText,
+              point,
+              testType
+            );
+
+            const sanitizedJson = this.sanitizeJsonString(essayEvaluation);
+            essayEvaluationJson = JSON.parse(sanitizedJson);
+
+            // Check if we got an empty object
+            if (Object.keys(essayEvaluationJson).length === 0) {
+              console.error(
+                `Attempt ${attempt}: Received empty JSON after sanitization`
+              );
+              if (attempt === maxTries) return 0;
+              continue; // Try again if we haven't reached max attempts
+            }
+
+            // If we get here, we have valid JSON - break the retry loop
+            break;
+          } catch (error) {
+            console.error(
+              `Attempt ${attempt}: Error parsing essayEvaluation`,
+              error
+            );
+            console.error("Original string:", essayEvaluation);
+            if (attempt === maxTries) return 0;
+            // If not last attempt, continue to next try
           }
-        } catch (error) {
-          console.error("Error parsing essayEvaluation", error);
-          console.error("Original string:", essayEvaluation);
-          console.error(
-            "Sanitized string:",
-            this.sanitizeJsonString(essayEvaluation)
-          );
-          return 0;
         }
-        const sampleEssayEvaluationJson = {
-          aspects: [
-            {
-              aspect: "Content & Relevance",
-              score: 1,
-              feedback:
-                "The essay does not address the prompt about the impact of technology on interpersonal relationships, focusing instead on marine biology and electroreception.",
-            },
-            {
-              aspect: "Structure & Organization",
-              score: 3,
-              feedback:
-                "While the essay has a clear opening and a focused subject, it does not follow the structure relevant to the prompt provided. It is well-organized for a different topic.",
-            },
-            {
-              aspect: "Language Use & Grammar",
-              score: 4,
-              feedback:
-                "The language use demonstrates good control of grammar and a varied vocabulary, fitting for a scientific discussion.",
-            },
-            {
-              aspect: "Clarity & Cohesion",
-              score: 2,
-              feedback:
-                "The essay presents a coherent discussion on electroreception, but lacks relevance and cohesion with the assigned topic, making it confusing in this context.",
-            },
-            {
-              aspect: "Creativity & Originality",
-              score: 2,
-              feedback:
-                "The topic of electroreception is intriguing and potentially creative, but its application is misplaced given the prompt's focus.",
-            },
-          ],
-          summary_feedback:
-            "The essay is well-written regarding grammar and language but fails to address the provided prompt about technology's impact on interpersonal relationships. The content is significantly off-topic, and restructuring is required to meet the assignment objectives. Interesting scientific discussion, but inappropriately focused for this task.",
-        };
+
+        // Rest of the essay evaluation logic remains the same
         if (!essayEvaluationJson || !essayEvaluationJson.aspects) {
           return 0;
         }
@@ -398,7 +375,8 @@ class TestAttemptFunction {
             scoreCount++;
           }
         }
-
+        console.log("totalScore", totalScore);
+        console.log("scoreCount", scoreCount);
         const finalScore = scoreCount > 0 ? totalScore / scoreCount : 0;
 
         // Store the evaluation data in the answer object

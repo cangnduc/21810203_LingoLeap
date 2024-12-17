@@ -106,7 +106,7 @@ export const questionApi = createApi({
     }),
     deleteQuestion: builder.mutation({
       query: ({ id }) => ({
-        url: `/question/id/${id}`,
+        url: `/question/my-question/${id}`,
         method: "DELETE",
       }),
       async onQueryStarted({ id, filters }, { dispatch, queryFulfilled }) {

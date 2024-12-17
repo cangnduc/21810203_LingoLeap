@@ -37,7 +37,7 @@ const authMiddleware = (allowedRoles = []) =>
 
     const user = await UserFunctions.getUserById(
       decoded.id,
-      "role _id email",
+      "role _id email username",
       true
     );
 

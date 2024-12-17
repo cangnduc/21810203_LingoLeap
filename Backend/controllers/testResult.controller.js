@@ -14,6 +14,7 @@ class TestResultController {
     const testResult = await TestResultService.getTestResultByAttemptId(
       attemptId
     );
+    console.log("testResult", testResult);
     Response.sendSuccess(res, "Test result fetched successfully", {
       testResult,
     });

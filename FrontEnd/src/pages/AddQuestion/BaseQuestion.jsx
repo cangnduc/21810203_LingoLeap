@@ -257,6 +257,7 @@ export default function BaseQuestion({ mode = "add", initialData = null }) {
           console.log("Question added successfully. Result:", result);
 
           resetForm();
+          navigate("/question");
           toast.success("Question added successfully!");
         }
       }

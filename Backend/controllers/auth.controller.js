@@ -24,13 +24,13 @@ class AuthController {
     const { accessToken, refreshToken } = await UserFunctions.generateToken(
       user
     );
-    await LoginSessionFunctions.createLoginSession({
-      user,
-      refreshToken,
-      clientId: req.clientId,
-      deviceInfo: req.deviceInfo.device,
-      ipAddress: req.ipAddress,
-    });
+    // await LoginSessionFunctions.createLoginSession({
+    //   user,
+    //   refreshToken,
+    //   clientId: req.clientId,
+    //   deviceInfo: req.deviceInfo.device,
+    //   ipAddress: req.ipAddress,
+    // });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -64,13 +64,13 @@ class AuthController {
     const { accessToken, refreshToken } = await UserFunctions.generateToken(
       user
     );
-    const loginSession = await LoginSessionFunctions.createLoginSession({
-      user,
-      refreshToken,
-      clientId: req.clientId,
-      deviceInfo: req.deviceInfo.device,
-      ipAddress: req.ipAddress,
-    });
+    // const loginSession = await LoginSessionFunctions.createLoginSession({
+    //   user,
+    //   refreshToken,
+    //   clientId: req.clientId,
+    //   deviceInfo: req.deviceInfo.device,
+    //   ipAddress: req.ipAddress,
+    // });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -115,12 +115,12 @@ class AuthController {
       user
     );
 
-    const result = await LoginSessionFunctions.updateRefreshToken(
-      user._id,
-      refreshToken,
-      oldRefreshToken,
-      req.clientId
-    );
+    // const result = await LoginSessionFunctions.updateRefreshToken(
+    //   user._id,
+    //   refreshToken,
+    //   oldRefreshToken,
+    //   req.clientId
+    // );
 
     if (!result.success) {
       res.clearCookie("refreshToken", {
@@ -148,10 +148,10 @@ class AuthController {
     if (!userId || !refreshToken) {
       throw new BadRequestError("User not logged in");
     }
-    const deleted = await LoginSessionFunctions.deleteLoginSession(
-      userId,
-      refreshToken
-    );
+    // const deleted = await LoginSessionFunctions.deleteLoginSession(
+    //   userId,
+    //   refreshToken
+    // );
 
     res.clearCookie("refreshToken", {
       httpOnly: true,

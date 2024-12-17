@@ -27,8 +27,8 @@ const { NotFoundError } = require("./helpers/error");
 const allowedOrigins = [
   "http://localhost:5173",
   "https://localhost:5173",
-  `http://192.168.1.${ip}:5173`,
-  `https://192.168.1.${ip}:5173`,
+  `http://192.168.1.${ip}:51699`,
+  `https://192.168.1.${ip}:51699`,
   //"https://62e8-2402-800-6343-af40-3c6a-6ede-4595-c0ab.ngrok-free.app",
 ];
 

@@ -10,7 +10,7 @@ router.post(
   async (req, res) => {
     const user = req.user || "anonymous-user";
     const { question, duration, testAttemptId } = req.body;
-
+    console.log("user", user);
     const durationInSeconds = duration * 60;
 
     const roomid = Math.floor(Math.random() * 1000000);

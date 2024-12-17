@@ -57,7 +57,7 @@ const QuestionDisplay = ({
   const handleQuestionScoreChange = (questionId, score) => {
     setQuestionScore((prev) => ({ ...prev, [questionId]: score }));
   };
-
+  console.log("questions", selectedQuestions);
   return (
     <div>
       <div className="relative overflow-x-auto mt-4 rounded-lg">
@@ -138,11 +138,14 @@ const QuestionDisplay = ({
                       required
                       min={0}
                       max={100}
-                      defaultValue={question.points || 1}
+                      defaultValue={
+                        selectedQuestions.find((q) => q._id === question._id)
+                          ?.points || 1
+                      }
                       onChange={(e) =>
                         onQuestionScoreChange(
                           question._id,
-                          parseInt(e.target.value)
+                          parseInt(e.target.value) || 1
                         )
                       }
                     />

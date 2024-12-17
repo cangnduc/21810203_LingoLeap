@@ -87,6 +87,8 @@ export const testApi = createApi({
     }),
     getTestById: builder.query({
       query: (id) => `/tests/edit/${id}`,
+
+      providesTags: (result, error, id) => [{ type: "Test", id }],
     }),
     updateTest: builder.mutation({
       query: ({ id, ...test }) => ({
@@ -94,7 +96,10 @@ export const testApi = createApi({
         method: "PUT",
         body: test,
       }),
-      invalidatesTags: ["Test"],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Test", id },
+        "Test",
+      ],
     }),
     togglePublished: builder.mutation({
       query: (id) => ({

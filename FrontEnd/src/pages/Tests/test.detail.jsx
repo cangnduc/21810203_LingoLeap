@@ -13,12 +13,14 @@ const TestDetail = () => {
   const formatDate = (date) => {
     return format(new Date(date), "MMM dd, yyyy");
   };
+
   const getDifficultyColor = (difficulty) => {
     const colors = difficultyLevels.find(
       (level) => level.value === difficulty
     )?.color;
     return colors || "bg-blue-500";
   };
+  console.log("test", test);
 
   const calculatePassingPercentage = () => {
     return (test.passingScore / test.totalPossibleScore) * 100;
@@ -26,6 +28,7 @@ const TestDetail = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   return (
     test && (
       <div className="container mx-auto px-4 py-8">
@@ -41,7 +44,7 @@ const TestDetail = () => {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-end gap-2">
-              {test.createdBy._id === user._id && (
+              {test.createdBy === user._id && (
                 <Link
                   to={`/tests/${id}/edit`}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1 rounded-full text-sm transition-colors"
@@ -49,6 +52,7 @@ const TestDetail = () => {
                   Edit Test
                 </Link>
               )}
+
               <div className="flex gap-2">
                 <span
                   className={`${getDifficultyColor(

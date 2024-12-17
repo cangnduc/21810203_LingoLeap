@@ -20,7 +20,7 @@ class TestController {
     // Build filter object using $or to combine conditions
     const filter = {
       $or: [
-        { isPublished: true }, // Get all published tests
+        { isPublished: true },
         { createdBy: req.user?._id }, // Get all tests created by current user
       ],
     };
@@ -33,7 +33,7 @@ class TestController {
       delete filter.$or;
       filter.createdBy = req.user._id;
     }
-
+    console.log("filter", filter);
     // Convert page and limit to numbers
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
@@ -44,7 +44,7 @@ class TestController {
 
     // Create the base query
     let query = Test.find(filter);
-
+    console.log("query", query);
     // Normal sorting for other fields
     query = query
       .sort({ [orderBy]: sortBy === "asc" ? 1 : -1 })
@@ -60,7 +60,7 @@ class TestController {
         select: "username",
       })
       .lean();
-
+    console.log("tests", tests);
     const testAttempts = await TestAttempt.find({
       test: { $in: tests.map((test) => test._id) },
       user: req.user._id,
@@ -237,9 +237,7 @@ class TestController {
     const { user } = req;
 
     // Only select fields we need for validation and updating
-    const test = await Test.findById(id).select(
-      "isPublished createdBy"
-    );
+    const test = await Test.findById(id).select("isPublished createdBy");
     if (!test) {
       throw new NotFoundError("Test not found");
     }

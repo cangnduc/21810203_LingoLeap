@@ -46,7 +46,7 @@ const TestCreation = ({ mode }) => {
       error: updateTestError,
     },
   ] = useUpdateTestMutation();
-  console.log("testinfo", testInfo);
+
   const {
     data: testData,
     isLoading: isLoadingTest,
@@ -139,6 +139,7 @@ const TestCreation = ({ mode }) => {
           condition: !section.duration || section.duration <= 0,
           message: "Section duration must be greater than 0",
         },
+
         {
           condition: !section.instructions,
           message: "Section instructions are required",

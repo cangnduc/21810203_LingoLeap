@@ -52,10 +52,13 @@ export default function NavLinks({ className = "", showIcons = false }) {
         <NavLink to="/test-creation">Tests Creation</NavLink>
       )}
       <NavLink to="/tests">Tests</NavLink>
-      <NavLink to="/my-questions">My Questions</NavLink>
+
       {user?.role.includes("admin") ||
         (user?.role.includes("teacher") && (
-          <NavLink to="/question">Questions</NavLink>
+          <>
+            <NavLink to="/question">Add Questions</NavLink>
+            <NavLink to="/my-questions">My Questions</NavLink>
+          </>
         ))}
       <NavLink to="/contact">Contact</NavLink>
       {!user && (

@@ -709,3 +709,101 @@
 2024-12-16T14:31:12.083Z: Server running on port 3000
 2024-12-16T14:36:40.795Z: Server running on port 3000
 2024-12-16T14:47:09.468Z: Server running on port 3000
+2024-12-16T15:17:09.505Z: Server running on port 3000
+2024-12-16T15:20:27.407Z: Server running on port 3000
+2024-12-16T15:21:35.144Z: Server running on port 3000
+2024-12-16T15:21:39.435Z: Server running on port 3000
+2024-12-16T15:27:12.037Z: Server running on port 3000
+2024-12-16T15:37:10.988Z: Server running on port 3000
+2024-12-16T15:47:09.479Z: Server running on port 3000
+2024-12-16T16:17:09.828Z: Server running on port 3000
+2024-12-16T16:27:12.227Z: Server running on port 3000
+2024-12-16T16:37:09.656Z: Server running on port 3000
+2024-12-16T16:47:10.046Z: Server running on port 3000
+2024-12-16T17:17:09.612Z: Server running on port 3000
+2024-12-16T17:27:12.085Z: Server running on port 3000
+2024-12-16T17:37:10.188Z: Server running on port 3000
+2024-12-16T17:47:10.673Z: Server running on port 3000
+2024-12-17T03:17:50.871Z: Server running on port 3000
+2024-12-17T03:20:36.448Z: Server running on port 3000
+2024-12-17T03:21:32.482Z: File added - model\seed\ordering.seed.js
+2024-12-17T03:21:32.482Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:21:59.714Z: File changed - model\seed\ordering.seed.js
+2024-12-17T03:21:59.714Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:22:48.510Z: File changed - model\seed\ordering.seed.js
+2024-12-17T03:22:48.511Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:23:34.298Z: File changed - model\seed\ordering.seed.js
+2024-12-17T03:23:34.299Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:24:30.565Z: File changed - model\seed\ordering.seed.js
+2024-12-17T03:24:30.566Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:25:38.312Z: File added - model\seed\orderingQuestions.seed.js
+2024-12-17T03:25:38.313Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:25:47.369Z: File changed - model\seed\orderingQuestions.seed.js
+2024-12-17T03:25:47.369Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:25:50.331Z: File deleted - model\seed\ordering.seed.js
+2024-12-17T03:25:50.332Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:28:33.321Z: File changed - model\seed\orderingQuestions.seed.js
+2024-12-17T03:28:33.322Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:28:56.412Z: File changed - model\seed\orderingQuestions.seed.js
+2024-12-17T03:28:56.413Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:30:35.247Z: File changed - model\seed\orderingQuestions.seed.js
+2024-12-17T03:30:35.249Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:31:27.588Z: File changed - model\seed\orderingQuestions.seed.js
+2024-12-17T03:31:27.588Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:31:50.907Z: Server running on port 3000
+2024-12-17T03:33:25.275Z: Server running on port 3000
+2024-12-17T03:35:54.329Z: Server running on port 3000
+2024-12-17T03:36:26.917Z: Server running on port 3000
+2024-12-17T03:51:09.367Z: Server running on port 3000
+2024-12-17T03:54:32.689Z: File changed - model\seed\opended.seed.js
+2024-12-17T03:54:32.689Z: JavaScript file changed - Consider restarting the server
+2024-12-17T03:55:20.893Z: Server running on port 3000
+2024-12-17T03:59:52.645Z: Server running on port 3000
+2024-12-17T04:00:40.773Z: File changed - model\seed\opended.seed.js
+2024-12-17T04:00:40.774Z: JavaScript file changed - Consider restarting the server
+2024-12-17T04:01:16.003Z: Server running on port 3000
+2024-12-17T04:02:09.800Z: Server running on port 3000
+2024-12-17T04:02:59.758Z: Server running on port 3000
+2024-12-17T04:03:47.873Z: File changed - model\seed\opended.seed.js
+2024-12-17T04:03:47.873Z: JavaScript file changed - Consider restarting the server
+2024-12-17T04:04:20.003Z: File changed - model\seed\opended.seed.js
+2024-12-17T04:04:20.004Z: JavaScript file changed - Consider restarting the server
+2024-12-17T04:04:24.344Z: Server running on port 3000
+2024-12-17T04:17:39.841Z: Server running on port 3000
+2024-12-17T04:39:53.446Z: Server running on port 3000
+2024-12-17T04:59:52.802Z: Server running on port 3000
+2024-12-17T05:09:52.758Z: Server running on port 3000
+2024-12-17T05:41:25.487Z: Server running on port 3000
+2024-12-17T06:01:25.180Z: Server running on port 3000
+2024-12-17T06:11:24.229Z: Server running on port 3000
+2024-12-17T06:16:37.145Z: Server running on port 3000
+2024-12-17T06:22:15.394Z: Server running on port 3000
+2024-12-17T06:22:55.601Z: Server running on port 3000
+2024-12-17T06:30:34.445Z: Server running on port 3000
+2024-12-17T06:31:00.113Z: Server running on port 3000
+2024-12-17T06:31:22.780Z: Server running on port 3000
+2024-12-17T06:32:41.129Z: Server running on port 3000
+2024-12-17T06:33:27.099Z: Server running on port 3000
+2024-12-17T06:35:22.444Z: Server running on port 3000
+2024-12-17T06:42:15.606Z: Server running on port 3000
+2024-12-17T06:49:05.352Z: Server running on port 3000
+2024-12-17T06:56:52.276Z: Server running on port 3000
+2024-12-17T07:00:26.839Z: File changed - model\function\testAttempt.function.js
+2024-12-17T07:00:26.840Z: JavaScript file changed - Consider restarting the server
+2024-12-17T07:01:49.710Z: Server running on port 3000
+2024-12-17T07:05:20.458Z: Server running on port 3000
+2024-12-17T07:07:05.528Z: Server running on port 3000
+2024-12-17T07:10:41.968Z: File changed - model\function\testAttempt.function.js
+2024-12-17T07:10:41.968Z: JavaScript file changed - Consider restarting the server
+2024-12-17T07:10:57.497Z: File changed - model\function\testAttempt.function.js
+2024-12-17T07:10:57.498Z: JavaScript file changed - Consider restarting the server
+2024-12-17T07:11:26.732Z: Server running on port 3000
+2024-12-17T07:39:35.861Z: Server running on port 3000
+2024-12-17T07:40:34.283Z: Server running on port 3000
+2024-12-17T07:40:39.590Z: Server running on port 3000
+2024-12-17T07:51:24.847Z: Server running on port 3000
+2024-12-17T08:01:24.844Z: Server running on port 3000
+2024-12-17T08:04:50.673Z: Server running on port 3000
+2024-12-17T08:11:24.266Z: Server running on port 3000
+2024-12-17T08:41:24.126Z: Server running on port 3000
+2024-12-17T08:51:24.922Z: Server running on port 3000
