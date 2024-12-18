@@ -41,7 +41,6 @@ const Section = ({
       setNewSectionInstructions("");
     }
   };
-  console.log("sections", sections);
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">Test Sections</h2>

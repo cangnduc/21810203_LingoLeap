@@ -66,7 +66,11 @@ const SectionItem = ({ section, index, onUpdateSection, onDeleteSection }) => {
       ...section,
       questions: section.questions.filter((q) => q._id !== questionId),
     };
-    onUpdateSection(updatedSection);
+    // subtract the points of the deleted question from the section score
+    const deletedQuestion = section.questions.find((q) => q._id === questionId);
+    const updatedSectionScore = section.sectionScore - deletedQuestion.points;
+   
+    onUpdateSection({ ...updatedSection, sectionScore: updatedSectionScore });
   };
 
   const handleAddPassage = (passageId, points) => {

@@ -14,21 +14,22 @@ const compression = require("compression");
 const swagger = require("./docs/swagger/index");
 const handleError = require("./middleware/error.middleware");
 const mongoose = require("mongoose");
-
+const PORT = process.env.PORT || 3000;
 const ip = 10; //ip of the local machine, find it in the ipconfig command
 const sslOptions = {
   key: fs.readFileSync(`../localhost+${ip}-key.pem`),
   cert: fs.readFileSync(`../localhost+${ip}.pem`),
 };
-
 const app = express();
 const { NotFoundError } = require("./helpers/error");
 
 const allowedOrigins = [
   "http://localhost:5173",
   "https://localhost:5173",
-  `http://192.168.1.${ip}:51699`,
-  `https://192.168.1.${ip}:51699`,
+  "http://localhost:3000",
+  "https://localhost:3000",
+  `http://192.168.1.${ip}:5173`,
+  `https://192.168.1.${ip}:5173`,
   //"https://62e8-2402-800-6343-af40-3c6a-6ede-4595-c0ab.ngrok-free.app",
 ];
 
@@ -58,25 +59,18 @@ app.options("*", cors());
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public/dist")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(clientInfoMiddleware);
 app.use(compression());
 // Routes
-app.get("/", (req, res) => {
-  res.sendFile("index.html");
-});
-
-app.get("/seed", (req, res) => {
-  seedDummyData();
-  res.status(200).json({ message: "Seeded" });
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "public/dist", "index.html")); // Serve index.html
+// });
 
 app.use("/api/v1", require("./routes/index.route"));
-
-const PORT = process.env.PORT || 3000;
 
 // Swagger setup
 swagger(app, PORT);

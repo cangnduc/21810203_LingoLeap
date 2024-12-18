@@ -134,7 +134,7 @@ const PassageDisplay = ({
                         onChange={(e) =>
                           onPassagePointChange(
                             passage._id,
-                            parseInt(e.target.value)
+                            parseInt(e.target.value) || 0
                           )
                         }
                       />

@@ -1,0 +1,5 @@
+import{j as e}from"./index-DVmOQZrp.js";const n=({children:d,className:l,label:r,options:a,...s})=>e.jsxs("div",{className:"relative min-w-[200px]",children:[e.jsx("select",{id:r,...s,className:`w-full
+        block px-3 py-2 text-sm text-gray-900 bg-white border rounded-lg border-gray-300 
+        appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+        dark:bg-black dark:text-white dark:border-gray-600 dark:focus:border-blue-500
+        ${l}`,children:a==null?void 0:a.map((t,c)=>e.jsx("option",{className:"dark:bg-black dark:text-gray-300",value:t.value,children:t.label},c))}),r&&e.jsx("label",{htmlFor:r,className:"absolute text-xs text-gray-500 dark:text-gray-400 -top-2 left-2 bg-white dark:bg-black px-1",children:r}),e.jsx("div",{className:"pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-400",children:e.jsx("svg",{className:"fill-current h-4 w-4",xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 20 20",children:e.jsx("path",{d:"M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"})})})]});export{n as S};
