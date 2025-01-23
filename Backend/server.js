@@ -9,7 +9,6 @@ const mongooseClient = require("./config/mongoose.db");
 const Response = require("./helpers/response");
 const https = require("https");
 const clientInfoMiddleware = require("./middleware/clientInfo.middleware");
-const seedDummyData = require("./model/seed/question.seed");
 const compression = require("compression");
 const swagger = require("./docs/swagger/index");
 const handleError = require("./middleware/error.middleware");

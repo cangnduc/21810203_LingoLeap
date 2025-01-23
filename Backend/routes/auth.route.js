@@ -101,5 +101,5 @@ router.post(
     });
   })
 );
-
+router.post("/google", AuthController.googleAuth);
 module.exports = router;

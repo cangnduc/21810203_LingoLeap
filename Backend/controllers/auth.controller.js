@@ -8,6 +8,7 @@ const { wrapAsyncRoutes } = require("../helpers/asyncHandler");
 const Response = require("../helpers/response");
 const jwt = require("jsonwebtoken");
 const LoginSessionFunctions = require("../model/function/loginSession.function");
+const axios = require("axios");
 // Define schemas
 const { signupSchema, loginSchema } = require("../validator/auth.validator");
 class AuthController {
@@ -163,7 +164,46 @@ class AuthController {
   }
 
   async googleAuth(req, res, next) {
-    // Implementation
+    const token = req.body.token;
+    const response = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`
+    );
+    const { email, name, picture } = response.data;
+    const user = await User.findOne({ email });
+    if (!user) {
+      const { user, userProfile } = await UserFunctions.createUser(
+        {
+          username: name,
+          email,
+          password: "",
+          role: "user",
+          avatar: picture,
+          loginMethod: "google",
+        },
+        {}
+      );
+    }
+
+    const { accessToken, refreshToken } = await UserFunctions.generateToken(
+      user
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    Response.sendSuccess(res, "User logged in successfully", {
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        userProfile: user.userProfile,
+      },
+      accessToken,
+    });
   }
 
   async googleAuthCallback(req, res, next) {

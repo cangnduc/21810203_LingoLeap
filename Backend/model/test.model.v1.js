@@ -1,18 +1,9 @@
 const mongoose = require("mongoose");
+const baseSchema = require("./base.model");
 const { difficultyLevels, sections, testTypes } = require("../constant/value");
 
 const testSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: [true, "Test title is required"],
-      trim: true,
-      maxlength: [100, "Test title cannot exceed 100 characters"],
-    },
-    description: {
-      type: String,
-      maxlength: [500, "Test description cannot exceed 500 characters"],
-    },
     duration: {
       type: Number,
       required: true,
@@ -34,7 +25,6 @@ const testSchema = new mongoose.Schema(
         message: "Test duration must equal the sum of all section durations",
       },
     },
-
     sections: {
       type: [
         {
@@ -126,7 +116,6 @@ const testSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Passing score is required"],
       min: [0, "Passing score cannot be negative"],
-
       validate: {
         validator: function (value) {
           return value <= this.totalPossibleScore;
@@ -143,11 +132,6 @@ const testSchema = new mongoose.Schema(
       type: String,
       enum: testTypes,
       required: [true, "Test type is required"],
-    },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "Test creator is required"],
     },
     isPublished: { type: Boolean, default: true },
     attemptsAllowed: {
@@ -175,19 +159,12 @@ const testSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
-    // Some possible names for tracking test attempts:
-    // testTakerCount
-    // completedAttempts
-    // submissionCount
-    // participantCount
     participantCount: {
       type: Number,
       default: 0,
       min: 0,
     },
   },
-
   {
     timestamps: true,
   }
@@ -237,6 +214,7 @@ testSchema.index({ createdBy: 1 });
 testSchema.index({ isPublished: 1 });
 
 // Create the model AFTER defining all methods
-const Test = mongoose.model("Test", testSchema);
+const BaseModel = mongoose.model("Base", baseSchema);
+const Test = BaseModel.discriminator("Test", testSchema);
 
 module.exports = Test;

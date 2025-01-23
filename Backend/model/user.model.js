@@ -18,8 +18,11 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: [8, "Password must be at least 8 characters long"],
+
+      //only required if loginMethod is email
+      required: function () {
+        return this.loginMethod === "email";
+      },
     },
     dateOfBirth: {
       type: Date,
@@ -41,6 +44,11 @@ const userSchema = new mongoose.Schema(
       city: String,
 
       country: String,
+    },
+    loginMethod: {
+      type: String,
+      enum: ["email", "google"],
+      default: "email",
     },
     avatar: {
       type: String,
@@ -67,6 +75,12 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserStatistics",
     },
+    classes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Class",
+      },
+    ],
   },
   {
     timestamps: true,

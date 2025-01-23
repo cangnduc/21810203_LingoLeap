@@ -7,9 +7,9 @@ Our English Testing App is a comprehensive platform designed to help students im
 ## Key Features
 
 1. User Management
-2. Course Management
+2. Class Management
 3. Test Creation and Management
-4. Question Bank
+4. Questions Bank
 5. Learning Progress Tracking
 6. Subscription Management
 7. Analytics and Reporting
@@ -17,7 +17,7 @@ Our English Testing App is a comprehensive platform designed to help students im
 ## User Roles
 
 1. **Student**: The primary users who enroll in courses, take tests, and track their progress.
-2. **Teacher**: Create and manage courses, tests, and questions. They also grade tests and provide feedback.
+2. **Teacher**: Create and manage tests, questions, and classes. They also grade tests and provide feedback.
 3. **Admin**: Oversee the entire system, manage users, and access analytics.
 4. **Guest**: Browse available courses and preview content before registering.
 
@@ -29,11 +29,12 @@ Our English Testing App is a comprehensive platform designed to help students im
 - To access full features, users must register an account.
 - Users can log in with their credentials.
 
-### 2. Course Enrollment (Students)
+### 2. Classes Management (Teachers)
 
-- Students can browse available courses.
-- They can enroll in courses that match their learning goals.
-- Each course contains multiple lessons and tests.
+- Teachers can create classes and add exercises to each class.
+- Teachers can add students to the class by email.
+- Students join the class and complete all the exercises assigned to the class.
+- Teachers can see the results of students taking the exercises inside the class.
 
 ### 3. Learning Process
 
@@ -43,15 +44,15 @@ Our English Testing App is a comprehensive platform designed to help students im
 
 ### 4. Test Taking
 
-- Students can attempt tests associated with their enrolled courses.
+- Students can attempt tests.
 - Tests may include various question types: multiple choice, writing, speaking, and listening comprehension.
 - Test attempts are timed and recorded.
 
 ### 5. Grading and Feedback
 
 - Multiple-choice questions are auto-graded.
-- Writing and speaking sections are manually graded by teachers.
-- Teachers provide detailed feedback on test performance.
+- Writing and speaking sections are graded by LLM.
+- Teachers can optionally provide detailed feedback on test performance.
 
 ### 6. Progress Tracking
 

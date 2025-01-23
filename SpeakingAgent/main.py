@@ -73,7 +73,7 @@ class EnhancedVoiceAssistant(VoiceAssistant):
         self.conversation.append({"role": message.role, "content": message.content})
         #print(self.conversation[-1])           
          
-    async def provide_feedback(self) -> None:
+    async def provfide_eedback(self) -> None:
         conversation_text = "\n".join([f"{message['role']}: {message['content']}" for message in self.conversation])
         print("Conversation transcript: " + conversation_text)
         feedback_prompt = (

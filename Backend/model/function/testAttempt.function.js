@@ -323,70 +323,53 @@ class TestAttemptFunction {
         const orderingScore = (correctPositions / correctOrder.length) * point;
         return Math.round(orderingScore * 100) / 100;
       case "essay":
-        const maxTries = 2;
-        let essayEvaluationJson = null;
-
-        for (let attempt = 1; attempt <= maxTries; attempt++) {
-          try {
-            const essayEvaluation = await generateCompletion(
-              answer.answer,
-              questionData.questionText,
-              point,
-              testType
-            );
-
-            const sanitizedJson = this.sanitizeJsonString(essayEvaluation);
-            essayEvaluationJson = JSON.parse(sanitizedJson);
-
-            // Check if we got an empty object
-            if (Object.keys(essayEvaluationJson).length === 0) {
-              console.error(
-                `Attempt ${attempt}: Received empty JSON after sanitization`
-              );
-              if (attempt === maxTries) return 0;
-              continue; // Try again if we haven't reached max attempts
-            }
-
-            // If we get here, we have valid JSON - break the retry loop
-            break;
-          } catch (error) {
-            console.error(
-              `Attempt ${attempt}: Error parsing essayEvaluation`,
-              error
-            );
-            console.error("Original string:", essayEvaluation);
-            if (attempt === maxTries) return 0;
-            // If not last attempt, continue to next try
+        try {
+          const essayEvaluationJson = await generateCompletion(
+            answer.answer,
+            questionData.questionText,
+            point,
+            testType
+          );
+          console.log("essayEvaluationJson", essayEvaluationJson);
+          if (!essayEvaluationJson || !essayEvaluationJson.aspects) {
+            return 0;
           }
-        }
+          // Check if we got an empty object
+          if (Object.keys(essayEvaluationJson).length === 0) {
+            console.error(
+              `Attempt ${attempt}: Received empty JSON after sanitization`
+            );
+            return 0;
+          }
+          let totalScore = 0;
+          let scoreCount = 0;
 
-        // Rest of the essay evaluation logic remains the same
-        if (!essayEvaluationJson || !essayEvaluationJson.aspects) {
+          for (const aspect of essayEvaluationJson.aspects) {
+            if (aspect.score) {
+              totalScore += aspect.score;
+              scoreCount++;
+            }
+          }
+          console.log("totalScore", totalScore);
+          console.log("scoreCount", scoreCount);
+          const finalScore = scoreCount > 0 ? totalScore / scoreCount : 0;
+
+          // Store the evaluation data in the answer object
+          answer.evaluation = {
+            aspects: essayEvaluationJson.aspects,
+            summary_feedback: essayEvaluationJson.summary_feedback,
+            totalScore: finalScore,
+          };
+
+          return finalScore;
+        } catch (error) {
+          console.error("Error parsing essayEvaluation", error);
           return 0;
         }
+      // Rest of the essay evaluation logic remains the same
 
-        // Calculate score
-        let totalScore = 0;
-        let scoreCount = 0;
+      // Calculate score
 
-        for (const aspect of essayEvaluationJson.aspects) {
-          if (aspect.score) {
-            totalScore += aspect.score;
-            scoreCount++;
-          }
-        }
-        console.log("totalScore", totalScore);
-        console.log("scoreCount", scoreCount);
-        const finalScore = scoreCount > 0 ? totalScore / scoreCount : 0;
-
-        // Store the evaluation data in the answer object
-        answer.evaluation = {
-          aspects: essayEvaluationJson.aspects,
-          summary_feedback: essayEvaluationJson.summary_feedback,
-          totalScore: finalScore,
-        };
-
-        return finalScore;
       case "open_ended":
         // Ensure we return a valid number for open_ended questions
         return 0;

@@ -5,6 +5,7 @@ class TestResultController {
   async getTestResultsByUser(req, res, next) {
     const { userId } = req.user;
     const testResult = await TestResultService.getTestResultByUser(userId);
+
     Response.sendSuccess(res, "Test result fetched successfully", {
       testResult,
     });

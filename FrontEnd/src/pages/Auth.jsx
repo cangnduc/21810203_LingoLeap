@@ -4,6 +4,7 @@ import Container from "../components/Container";
 import { useLocation, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const Auth = () => {
   const location = useLocation();
@@ -38,7 +39,13 @@ const Auth = () => {
             {isLogin ? "Login" : "Register"}
           </h2>
 
-          {isLogin ? <Login /> : <Register />}
+          {isLogin ? (
+            <GoogleOAuthProvider clientId="430282457443-05qn0bukdmgchidlcab4q2g36tqvidhj.apps.googleusercontent.com">
+              <Login />
+            </GoogleOAuthProvider>
+          ) : (
+            <Register />
+          )}
 
           <p className="mt-4 text-center text-text-light dark:text-text-dark">
             {isLogin ? "Don't have an account?" : "Already have an account?"}
